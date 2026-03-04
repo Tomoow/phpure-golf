@@ -1,0 +1,89 @@
+@import "@hyva-themes/hyva-modules/css";
+@import "tailwindcss" source(none);
+@source "../../**/*.phtml";
+@source "../../**/*.xml";
+
+/* Base styles */
+@import "./base";
+@import "./components";
+@import "./theme";
+@import "./utilities";
+
+/* Generated styles for Hyvä Compatible Modules and Design Tokens */
+@import "./generated/hyva-source.css";
+@import "./generated/hyva-tokens.css";
+
+@theme {
+    /* Font families */
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-heading: "Playfair Display", ui-serif, Georgia, serif;
+
+    /* Page-level defaults */
+    --color-bg: var(--color-champagne-beige-100);
+    --color-fg: var(--color-slate-blue-900);
+    --color-fg-secondary: var(--color-slate-blue-600);
+    --color-surface: var(--color-white);
+
+    /* Slate Blue */
+    --color-slate-blue-50: #eff2f5;
+    --color-slate-blue-100: #dee5eb;
+    --color-slate-blue-200: #bdcbd6;
+    --color-slate-blue-300: #9db0c2;
+    --color-slate-blue-400: #7c96ad;
+    --color-slate-blue-500: #5b7c99;
+    --color-slate-blue-600: #49637a;
+    --color-slate-blue-700: #374a5c;
+    --color-slate-blue-800: #24323d;
+    --color-slate-blue-900: #12191f;
+
+    /* Champagne Beige */
+    --color-champagne-beige-50: #ffffff;
+    --color-champagne-beige-100: #fcf9f4;
+    --color-champagne-beige-200: #f9f4e8;
+    --color-champagne-beige-300: #f7eedd;
+    --color-champagne-beige-400: #f4e9d1;
+    --color-champagne-beige-500: #f1e3c6;
+    --color-champagne-beige-600: #d8c7a4;
+    --color-champagne-beige-700: #bfab82;
+    --color-champagne-beige-800: #a58f60;
+    --color-champagne-beige-900: #8c733e;
+
+    /* Burnished Gold */
+    --color-burnished-gold-50: #f8f4ec;
+    --color-burnished-gold-100: #f0e8d9;
+    --color-burnished-gold-200: #e2d1b3;
+    --color-burnished-gold-300: #d3bb8c;
+    --color-burnished-gold-400: #c5a466;
+    --color-burnished-gold-500: #b68d40;
+    --color-burnished-gold-600: #927133;
+    --color-burnished-gold-700: #6d5526;
+    --color-burnished-gold-800: #49381a;
+    --color-burnished-gold-900: #241c0d;
+
+    /* Deep Emerald Green */
+    --color-deep-emerald-50: #6aedd7;
+    --color-deep-emerald-100: #5edbc6;
+    --color-deep-emerald-200: #47b8a5;
+    --color-deep-emerald-300: #2f9483;
+    --color-deep-emerald-400: #187162;
+    --color-deep-emerald-500: #004d40;
+    --color-deep-emerald-600: #003e33;
+    --color-deep-emerald-700: #002e26;
+    --color-deep-emerald-800: #001f1a;
+    --color-deep-emerald-900: #000f0d;
+
+    /* Focus ring colors */
+    --color-focus-primary: #e1ebdd;
+    --color-focus-error: #fecdd3;
+    --color-focus-warning: #fde68a;
+    --color-focus-success: #a7f3d0;
+
+    /* Shadows */
+    --shadow-sm: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
+    --shadow-base: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.06), 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.06), 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.05), 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 0.625rem 0.625rem rgba(0, 0, 0, 0.04), 0 1.25rem 1.5625rem rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 1.5625rem 3.125rem rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 0.125rem 0.25rem rgba(0, 0, 0, 0.06);
+}

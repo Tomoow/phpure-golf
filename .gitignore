@@ -40,10 +40,16 @@ atlassian*
 
 # Node / frontend build
 /node_modules
+**/node_modules
 /grunt-config.json
 /Gruntfile.js
 /package.json
 /package-lock.json
+
+# Tailwind build output (regenerated from source)
+app/design/frontend/Phpure/golf/web/css/
+app/design/frontend/Phpure/golf/web/tailwind/generated/
+app/design/frontend/Phpure/golf/web/tailwind/package-lock.json
 
 # OS files
 .DS_Store
