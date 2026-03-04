@@ -1,0 +1,50 @@
+/.buildpath
+/.cache
+/.metadata
+/.project
+/.settings
+/.vscode
+atlassian*
+/nbproject
+/robots.txt
+/pub/robots.txt
+/sitemap
+/sitemap.xml
+/pub/sitemap
+/pub/sitemap.xml
+/.idea
+/.gitattributes
+
+# Credentials — NEVER commit
+/auth.json
+/var/credentials_email.txt
+
+# Magento 2 generated / runtime
+/app/config_sandbox
+/app/etc/config.php
+/app/etc/env.php
+/app/code/Magento/TestModule*
+/lib/internal/flex/test
+/generated/*
+!/generated/.htaccess
+/pub/media/*
+!/pub/media/.htaccess
+/pub/static/*
+!/pub/static/.htaccess
+/var/*
+!/var/.htaccess
+
+# Vendor (managed by Composer)
+/vendor/*
+!/vendor/.htaccess
+
+# Node / frontend build
+/node_modules
+/grunt-config.json
+/Gruntfile.js
+/package.json
+/package-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db
