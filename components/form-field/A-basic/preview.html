@@ -518,7 +518,8 @@
                     <span class="caption">6.5 Phone (libphonenumber-js format-as-you-type + country picker)</span>
                     <div class="combobox phone-input"
                          x-data="initPhoneInput({ defaultCountry: 'BE' })"
-                         x-on:click.outside="closePickerOnOutside()">
+                         x-on:click.outside="closePickerOnOutside()"
+                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closePickerOnOutside()">
                         <div class="form-field">
                             <!-- Hidden label target for aria-labelledby. Lives outside
                                  the button so Alpine re-renders inside the button don't
@@ -598,7 +599,8 @@
                     <span x-bind:id="labelId" class="caption">6.7 Country selector (world-countries + searchable dropdown)</span>
                     <div class="combobox country-selector"
                          x-data="initCountrySelector()"
-                         x-on:click.outside="closeOnOutside()">
+                         x-on:click.outside="closeOnOutside()"
+                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeOnOutside()">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"
@@ -679,7 +681,8 @@
                              { value: 'm', label: 'Medium' },
                              { value: 'l', label: 'Large' }
                          ] })"
-                         x-on:click.outside="closeOnOutsideClick">
+                         x-on:click.outside="closeOnOutsideClick"
+                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"
@@ -884,7 +887,8 @@
                              { value: 'beta',  label: 'Beta' },
                              { value: 'gamma', label: 'Gamma' }
                          ] })"
-                         x-on:click.outside="closeOnOutsideClick">
+                         x-on:click.outside="closeOnOutsideClick"
+                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"

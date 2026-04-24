@@ -68,6 +68,18 @@ Thumbs.db
 # Per-user Claude Code overrides (agent files + project settings.json are shared)
 /.claude/settings.local.json
 
+# Accessibility specialist agents symlinked from
+# https://github.com/Community-Access/accessibility-agents — symlinks don't
+# travel across machines. Each contributor clones the repo and runs the
+# `ln -sf` setup documented in README.md.
+/.claude/agents/accessibility-lead.md
+/.claude/agents/aria-specialist.md
+/.claude/agents/contrast-master.md
+/.claude/agents/design-system-auditor.md
+/.claude/agents/forms-specialist.md
+/.claude/agents/keyboard-navigator.md
+/.claude/agents/modal-specialist.md
+
 # hyva-ai-tools skills are symlinked from the user's clone of
 # https://github.com/hyva-themes/hyva-ai-tools — symlinks are not portable
 # across machines. Each contributor installs the skills locally (see README).
