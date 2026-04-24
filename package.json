@@ -13,7 +13,9 @@
   "dependencies": {
     "@alpinejs/collapse": "^3.14.1",
     "@alpinejs/focus": "^3.14.1",
-    "alpinejs": "^3.14.1"
+    "alpinejs": "^3.14.1",
+    "libphonenumber-js": "^1.12.42",
+    "world-countries": "^5.1.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

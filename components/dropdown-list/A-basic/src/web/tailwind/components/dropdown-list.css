@@ -73,18 +73,22 @@
     cursor: pointer;
     user-select: none;
 
-    /* Hover AND keyboard-roving-active share the same visual (Q#22). */
+    /* Hover AND keyboard-roving-active share the same visual (Q#22).
+     * Per Figma node 1343:42177: hover bg = Tailwind `blue-50` (#EFF6FF),
+     * text stays `slate-blue-800`. NOT `slate-blue-50` — earlier draft. */
     &:hover,
     &[data-active="true"] {
-        --item-bg: var(--color-slate-blue-50);
+        --item-bg: var(--color-blue-50);
         --item-color: var(--color-slate-blue-800);
     }
 
-    /* Selected: label color turns brand emerald; weight ticks up.
-     * The trailing check-glyph inherits via --color on its SVG. */
+    /* Selected: the ENTIRE row fills with Tailwind `blue-500` (#3B82F6)
+     * and the label flips to `blue-50` (near-white). This is Figma's
+     * styling for the selected state — not the earlier emerald-text-on-
+     * white treatment. Check-glyph in __trailing inherits via currentColor. */
     &[aria-selected="true"] {
-        --item-color: var(--color-deep-emerald-green-500);
-        font-weight: 500;
+        --item-bg: var(--color-blue-500);
+        --item-color: var(--color-blue-50);
     }
 
     /* Disabled: dim, uninteractive. `pointer-events: none` blocks hover
