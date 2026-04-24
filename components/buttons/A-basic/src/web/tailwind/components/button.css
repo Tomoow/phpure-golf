@@ -89,8 +89,14 @@
         color: var(--btn-active-color, var(--btn-color));
     }
 
+    /* Focus: the soft `Focus/Primary` glow alone fails WCAG 1.4.11 (3:1)
+     * because #E1EBDD vs white is only 1.23:1. Add a 2 px solid outline in
+     * the primary brand color (deep-emerald-green-500, 9.83:1 vs white) so
+     * focus is perceivable regardless of the surrounding background, and
+     * keep the soft glow for brand feel. */
     &:focus-visible {
-        outline: none;
+        outline: 2px solid var(--color-deep-emerald-green-500);
+        outline-offset: 2px;
         box-shadow: var(--shadow-focus\/primary);
     }
 
@@ -111,9 +117,12 @@
     --btn-bg: var(--color-deep-emerald-green-500);
     --btn-color: var(--color-white);
 
+    /* Hover bg bumped from emerald-300 (#2F9483, 3.54:1 on white text →
+     * FAIL 4.5:1 for sm/md button labels) to emerald-400 (#187162, 5.03:1 ✓).
+     * Deviates from Figma for WCAG 2.2 AA (A11Y-014 in the a11y review). */
     --btn-hover-stroke: transparent;
-    --btn-hover-bg: var(--color-deep-emerald-green-300);
-    --btn-hover-color: var(--color-neutral-50);
+    --btn-hover-bg: var(--color-deep-emerald-green-400);
+    --btn-hover-color: var(--color-white);
 
     --btn-active-stroke: transparent;
     --btn-active-bg: var(--color-deep-emerald-green-500);

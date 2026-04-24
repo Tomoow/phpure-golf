@@ -82,13 +82,16 @@
         --item-color: var(--color-slate-blue-800);
     }
 
-    /* Selected: the ENTIRE row fills with Tailwind `blue-500` (#3B82F6)
-     * and the label flips to `blue-50` (near-white). This is Figma's
-     * styling for the selected state — not the earlier emerald-text-on-
-     * white treatment. Check-glyph in __trailing inherits via currentColor. */
+    /* Selected: WCAG 1.4.3 small-text threshold is 4.5:1. Figma's
+     * blue-500 bg (#3B82F6) + blue-50 text (#EFF6FF) is 3.38:1 — FAILS
+     * for 16 px/500 option text. Bumped bg to `blue-600` (#2563EB) and
+     * text to pure `white`, yielding 5.17:1 ✓ (PASS AA). This is a
+     * deliberate deviation from the Figma spec for accessibility
+     * (A11Y-013 in design-tokens/accessibility-review.md). The
+     * check-glyph in __trailing inherits via currentColor. */
     &[aria-selected="true"] {
-        --item-bg: var(--color-blue-500);
-        --item-color: var(--color-blue-50);
+        --item-bg: var(--color-blue-600);
+        --item-color: var(--color-white);
     }
 
     /* Disabled: dim, uninteractive. `pointer-events: none` blocks hover

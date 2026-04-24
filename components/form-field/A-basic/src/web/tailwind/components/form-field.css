@@ -35,10 +35,16 @@
 
 @utility form-field {
     /* Default-state tokens. Feedback modifiers override a subset of these. */
-    --field-border: var(--color-slate-blue-300);
+    /* Default border must meet WCAG 1.4.11 (3:1 for UI components).
+     * slate-blue-200 → 1.70:1 FAIL. slate-blue-300 → 2.23:1 FAIL.
+     * slate-blue-500 → 4.39:1 PASS. Deviation from Figma documented in
+     * design-tokens/accessibility-review.md (A11Y-007). */
+    --field-border: var(--color-slate-blue-500);
     --field-bg: var(--color-white);
     --field-color: var(--color-slate-blue-800);
-    --field-placeholder-color: var(--color-slate-blue-500);
+    /* Placeholder must meet 4.5:1 for small text. slate-blue-500 is
+     * 4.39:1 (just under) — bumped to slate-blue-600 (6.27:1 ✓). */
+    --field-placeholder-color: var(--color-slate-blue-600);
     --field-radius: var(--radius-sm);
     --field-pad-block: var(--spacing-2\.5);
     --field-pad-inline: var(--spacing-3\.5);
@@ -49,6 +55,7 @@
     --field-hover-border: var(--color-blue-300);
     --field-focus-border: var(--color-blue-400);
     --field-focus-ring: var(--shadow-focus\/primary);
+    --field-focus-outline: var(--color-deep-emerald-green-500);
     --field-disabled-border: var(--color-slate-blue-200);
     --field-disabled-bg: var(--color-slate-blue-50);
     --field-disabled-color: var(--color-slate-blue-400);
@@ -80,10 +87,18 @@
         border-color: var(--field-hover-border, var(--field-border));
     }
 
-    /* Shell lights up when any inner child receives focus (spec §2 decision 1). */
+    /* Shell lights up when any inner child receives focus (spec §2 decision 1).
+     * WCAG 1.4.11 requires ≥3:1 for the focus indicator. The soft `Focus/*`
+     * glow alone is 1.23–1.41:1 against white, so we add a 2 px solid
+     * outline in a high-contrast color (primary = deep-emerald-green-500
+     * at 9.83:1 vs white; invalid/warning/success swap via the modifier
+     * blocks below). `outline-offset` keeps the ring readable without
+     * collapsing into the shell border. */
     &:focus-within {
         border-color: var(--field-focus-border, var(--field-border));
         box-shadow: var(--field-focus-ring);
+        outline: 2px solid var(--field-focus-outline);
+        outline-offset: 2px;
     }
 
     /* Error / warning / success — triggered by modifier class OR aria-invalid.
@@ -94,6 +109,7 @@
         --field-hover-border: var(--color-rose-500);
         --field-focus-border: var(--color-rose-500);
         --field-focus-ring: var(--shadow-focus\/error);
+        --field-focus-outline: var(--color-rose-700);
     }
 
     /* Disabled — matches when the shell itself is marked disabled OR when
@@ -287,25 +303,36 @@
  * reads them through the same `--field-*` slot variables so no state selector
  * logic needs to be duplicated here. */
 
+/* Feedback colors bumped for WCAG 2.2 AA:
+ *   - error: rose-500 is 3.67:1 on white (PASS 3:1 UI). Keep for border,
+ *     but outline uses rose-700 (6.37:1) so the focus indicator itself
+ *     passes the 3:1 non-text threshold with headroom.
+ *   - warning: amber-500 is 2.15:1 (FAIL). Bumped to amber-700 (4.80:1).
+ *   - success: emerald-500 is 2.54:1 (FAIL). Bumped to emerald-700 (4.87:1).
+ * The `Focus/*` soft-glow shadow stays (brand feel); the hard outline is
+ * the WCAG-compliant perceivable edge. */
 @utility form-field--error {
     --field-border: var(--color-rose-500);
     --field-hover-border: var(--color-rose-500);
     --field-focus-border: var(--color-rose-500);
     --field-focus-ring: var(--shadow-focus\/error);
+    --field-focus-outline: var(--color-rose-700);
 }
 
 @utility form-field--warning {
-    --field-border: var(--color-amber-500);
-    --field-hover-border: var(--color-amber-500);
-    --field-focus-border: var(--color-amber-500);
+    --field-border: var(--color-amber-700);
+    --field-hover-border: var(--color-amber-700);
+    --field-focus-border: var(--color-amber-700);
     --field-focus-ring: var(--shadow-focus\/warning);
+    --field-focus-outline: var(--color-amber-700);
 }
 
 @utility form-field--success {
-    --field-border: var(--color-emerald-500);
-    --field-hover-border: var(--color-emerald-500);
-    --field-focus-border: var(--color-emerald-500);
+    --field-border: var(--color-emerald-700);
+    --field-hover-border: var(--color-emerald-700);
+    --field-focus-border: var(--color-emerald-700);
     --field-focus-ring: var(--shadow-focus\/success);
+    --field-focus-outline: var(--color-emerald-700);
 }
 
 /* ─── Form group (label + field + hint wrapper) ───────────────────────────── */
@@ -339,7 +366,8 @@
 }
 
 @utility form-group__hint {
-    color: var(--color-slate-blue-500);
+    /* slate-blue-500 = 4.39:1 (just under 4.5:1). Bumped to 600 (6.27:1 ✓). */
+    color: var(--color-slate-blue-600);
     font-family: var(--font-sans);
     font-size: --spacing(3.5);
     line-height: --spacing(5);
@@ -349,14 +377,18 @@
 /* Feedback-specific hint text colors. Mirror the shell's feedback palette
  * so the hint line matches the border it sits under. Warning / success tier
  * = .500 (designer decision, answers questions.md #14). */
+/* Hint text needs 4.5:1 on white (WCAG 1.4.3 Level AA small text).
+ *   - rose-500  → 3.67:1 (FAIL). Use rose-700  (6.37:1 ✓).
+ *   - amber-500 → 2.15:1 (FAIL). Use amber-700 (4.80:1 ✓).
+ *   - emerald-500 → 2.54:1 (FAIL). Use emerald-700 (4.87:1 ✓). */
 @utility form-group__hint--error {
-    color: var(--color-rose-500);
+    color: var(--color-rose-700);
 }
 
 @utility form-group__hint--warning {
-    color: var(--color-amber-500);
+    color: var(--color-amber-700);
 }
 
 @utility form-group__hint--success {
-    color: var(--color-emerald-500);
+    color: var(--color-emerald-700);
 }
