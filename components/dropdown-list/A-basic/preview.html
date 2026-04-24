@@ -319,11 +319,13 @@
                                 x-bind:aria-controls="listboxId"
                                 x-bind:aria-activedescendant="activeOptionId"
                                 x-on:click="toggle()"
-                                x-on:keydown.down.prevent="openAndFocusFirst()"
-                                x-on:keydown.up.prevent="openAndFocusLast()"
-                                x-on:keydown.enter.prevent="toggle()"
-                                x-on:keydown.space.prevent="toggle()"
-                                x-on:keydown.escape="closeList('escape')">
+                                x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                                x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                                x-on:keydown.home.prevent="open && focusFirst()"
+                                x-on:keydown.end.prevent="open && focusLast()"
+                                x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                                x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                                x-on:keydown.escape.prevent="closeList('escape')">
                             <span x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select…'"></span>
                             <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -391,11 +393,13 @@
                                 x-bind:aria-controls="listboxId"
                                 x-bind:aria-activedescendant="activeOptionId"
                                 x-on:click="toggle()"
-                                x-on:keydown.down.prevent="openAndFocusFirst()"
-                                x-on:keydown.up.prevent="openAndFocusLast()"
-                                x-on:keydown.enter.prevent="toggle()"
-                                x-on:keydown.space.prevent="toggle()"
-                                x-on:keydown.escape="closeList('escape')">
+                                x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                                x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                                x-on:keydown.home.prevent="open && focusFirst()"
+                                x-on:keydown.end.prevent="open && focusLast()"
+                                x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                                x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                                x-on:keydown.escape.prevent="closeList('escape')">
                             <span x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select country'"></span>
                             <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />

@@ -223,7 +223,16 @@
             outline: 0;
             background: var(--color-white);
         }
-        .country-selector__search::placeholder { color: var(--color-slate-blue-400); }
+        .country-selector__search::placeholder { color: var(--color-slate-blue-600); }
+        /* K-02 fix: the search input had `outline: 0` with no replacement, so
+         * keyboard-only users couldn't tell when it had focus (WCAG 2.4.7).
+         * Restore a visible focus indicator that matches the brand green and
+         * meets 1.4.11 (3:1 vs white). */
+        .country-selector__search:focus-visible {
+            outline: 2px solid var(--color-deep-emerald-green-500);
+            outline-offset: -2px;
+            border-bottom-color: var(--color-deep-emerald-green-500);
+        }
         .country-selector__list {
             max-height: 20rem;
             border-radius: 0;
