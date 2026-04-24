@@ -277,3 +277,70 @@ Each entry is numbered, dated, and records an ambiguity that blocked full token 
   2. **Native `required` only** — browser-provided styling; may differ across browsers and be invisible to sighted users.
   3. **Both** — belt-and-braces.
 - **Cross-ref:** spec §7, OQ-10.
+
+---
+
+## 22. 2026-04-24 — Dropdown list item: no `focus` (roving / keyboard-active) variant in Figma
+
+- **Item:** The list-item component set at `1343:42177` enumerates `State = Default | Hover | Selected | Disabled` — no `Focus` / `Active-Descendant` / roving-focus state. Typical listbox patterns render keyboard-highlighted items with a distinct visual (outline, inset ring, or a brand-accent bg).
+- **Queried:** `1343:42177` metadata — 24 leaves, 4 State values, no Focus.
+- **Interim:** Spec assumes the roving-focus visual equals the Hover visual (`bg-blue.50`, same text colors) since they serve the same semantic purpose (not-yet-selected but indicated).
+- **Need from designer:** Confirm reusing Hover as roving-focus is acceptable, OR provide a distinct focus treatment (e.g. 2px inset `blue.500` ring, or `Focus/Primary` outer ring).
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §4.5, §4.7, DL-1.
+
+---
+
+## 23. 2026-04-24 — Dropdown list item: Selected state relies on color only (no trailing check icon)
+
+- **Item:** Selected state (`1343:42427`, `1343:42429`, etc.) inverts the whole row: `bg-blue.500`, label `blue.50`, trailing text `blue.200`. No check-icon / tick glyph in the trailing slot to disambiguate selection.
+- **Queried:** All 6 Selected leaves (`1343:42427`, `1343:42429`, `1343:42431`, `1343:42433`, `1343:42435`, `1343:42437`) — none include a trailing check.
+- **Why flag:** WCAG 1.4.1 discourages color-alone as the sole indicator. `aria-selected="true"` handles screen readers, but low-vision sighted users benefit from a visual glyph (typical listbox pattern: Heroicons `check` in the trailing slot at `colors.blue.50`).
+- **Need from designer:** Confirm color-only is intentional, OR approve a trailing Heroicons `check` at 20 × 20 px for the Selected state.
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §4.6, DL-2.
+
+---
+
+## 24. 2026-04-24 — Dropdown list container: no `max-height` defined in Figma
+
+- **Item:** The container at `1343:42718` uses `overflow-clip` but no explicit `max-height` on the panel. On Figma canvas every variant shows 10 items at 44 px height = 440 px tall, which happens to be the full content height — no scroll was forced. In production, dropdowns must cap height and scroll internally.
+- **Queried:** `get_design_context` on `1343:42651` — no max-height reported.
+- **Need from designer:** Pick the max-height policy:
+  1. **Fixed `max-h-60` (15rem ≈ 5 items).**
+  2. **Fixed `max-h-80` (20rem ≈ 7 items).**
+  3. **Fluid viewport-based** — e.g. `max-h-[calc(100vh-8rem)]`, clips below the fold but never taller than the viewport.
+  4. **Prop-driven** — expose `--dropdown-list-max-h` as a CSS custom property; consumers set per-instance.
+- **Interim:** spec records `max-h-60` as the default.
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §3.1, DL-3.
+
+---
+
+## 25. 2026-04-24 — Dropdown list: no inter-item separators / dividers
+
+- **Item:** Figma container (`1343:42718`) stacks items with `gap: 0` and no border-top / bottom line between rows. Each Hover / Selected row's bg simply touches the next row's bg.
+- **Queried:** `get_design_context` on `1343:42651` — no between-item borders.
+- **Why flag:** Some dropdown patterns (Stripe, Shopify) use hairline dividers for visual scannability; others (Apple, Material) don't. Need confirmation for this brand.
+- **Need from designer:** Confirm no dividers is intentional (current state), OR specify divider token (likely `1px slateBlue.200` between each item).
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §3.5, DL-4.
+
+---
+
+## 26. 2026-04-24 — Dropdown list: first/last item's bg doesn't match container corner radius
+
+- **Item:** Container has `rounded-[6px]` (`borderRadius.md`) but items have `rounded: 0` on their own bg fills (Hover / Selected). Visually in Figma this works because the container has `overflow-clip` — the item bg is masked by the container's rounded corners.
+- **Queried:** `1343:42651` (container default) and hover/selected items inside.
+- **Why flag:** The `overflow-clip` + rounded-container pattern relies on the stacking context being correct. When the consumer adds `transform` or `filter` effects to the container for animation, `overflow-clip` can break. Standard alternative: apply `rounded-t-[6px]` to the first item and `rounded-b-[6px]` to the last item (using `first:` / `last:` utilities).
+- **Need from designer:** Confirm the `overflow-clip` approach is fine (matches Figma exactly), OR approve the `first:rounded-t-md last:rounded-b-md` fallback for resilience.
+- **Interim:** spec uses `overflow-hidden` + rounded container to mirror Figma.
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §3.3, DL-5.
+
+---
+
+## 27. 2026-04-24 — Dropdown list: no empty / loading state in Figma
+
+- **Item:** No Figma design for:
+  - **Empty state:** "No results found" / "No matches" — shown when a filtered combobox has zero matches.
+  - **Loading state:** spinner / skeleton rows — shown when options are fetched async.
+- **Queried:** metadata on `1343:42718` — only 6 Type variants (Default / Leading image / Leading icon × Trailing text on/off); no state-level variants.
+- **Why flag:** A-basic ships with Alpine; eventually it'll back a country-selector and a product-search combobox — both of which need an empty-match state. Without a design, the author will either skip it or pick a default visual (centered `slateBlue.400` text at `text-sm/leading-5/font-normal`).
+- **Need from designer:** Confirm whether A-basic needs empty / loading slots now, and if yes, provide a Figma reference.
+- **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §2 (DL-6), §11.

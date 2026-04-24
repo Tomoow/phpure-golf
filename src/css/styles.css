@@ -14,3 +14,4 @@
 /* Component imports will be appended here as Phase 1 produces each atom. */
 @import '../../components/buttons/A-basic/src/web/tailwind/components/button.css';
 @import '../../components/form-field/A-basic/src/web/tailwind/components/form-field.css';
+@import '../../components/dropdown-list/A-basic/src/web/tailwind/components/dropdown-list.css';

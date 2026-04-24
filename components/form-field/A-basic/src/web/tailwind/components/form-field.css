@@ -190,9 +190,19 @@
     width: auto;
 }
 
-/* Centered numeric input — stepper / quantity picker. */
+/* Centered numeric input — stepper / quantity picker.
+ * Also hides the browser's native number-spinner arrows so the custom
+ * −/+ buttons in the leading/trailing affix slots are the only controls. */
 @utility form-field__input--numeric {
     text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 }
 
 /* ─── Affix slots ─────────────────────────────────────────────────────────── */

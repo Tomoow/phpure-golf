@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dropdown list — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only helpers. Same layout idiom as form-field/preview.html
+         * so the two screens read consistently for the design lead.
+         *
+         * Forced-state classes (`.force-hover`, `.force-selected`,
+         * `.force-disabled`) mirror the real attribute selectors in
+         * `dropdown-list.css` so every visual state is captured without
+         * interaction. These classes are NOT part of the shipped component.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .section {
+            margin-block-end: 2.5rem;
+        }
+        .panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+            gap: 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            /* A neutral surface behind the elevated panels so the shadow
+             * is visible against something other than pure white. */
+            background: var(--color-slate-blue-50);
+        }
+        .panel-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+        .caption {
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--color-slate-blue-500);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .combobox {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            width: 18rem;
+        }
+        .combobox .dropdown-list {
+            position: absolute;
+            top: calc(100% + 0.25rem);
+            left: 0;
+            right: 0;
+            z-index: 10;
+            width: 100%;
+        }
+        .trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--color-slate-blue-300);
+            border-radius: var(--radius-sm);
+            background: var(--color-white);
+            color: var(--color-slate-blue-800);
+            font-family: var(--font-sans);
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .trigger:hover { border-color: var(--color-blue-300); }
+        .trigger:focus-visible {
+            outline: none;
+            border-color: var(--color-blue-400);
+            box-shadow: var(--shadow-focus\/primary);
+        }
+        .trigger .chev {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--color-slate-blue-500);
+            flex: none;
+        }
+        .flag {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-sm);
+        }
+
+        /* ── Forced-state demo classes (preview-only) ──────────────── */
+        /* These duplicate the real attribute selectors in
+         * dropdown-list.css so each state can be captured in a single
+         * screenshot. They are scoped to the preview page only. */
+
+        .force-hover {
+            background: var(--color-slate-blue-50) !important;
+            color: var(--color-slate-blue-800) !important;
+        }
+        .force-selected {
+            color: var(--color-deep-emerald-green-500) !important;
+        }
+        .force-selected .dropdown-list__trailing {
+            color: var(--color-deep-emerald-green-500) !important;
+        }
+        .force-disabled {
+            color: var(--color-slate-blue-300) !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+
+        /* Preview-scaffold: keyboard-shortcut hint style for the trailing slot. */
+        .kbd-hint {
+            font: inherit;
+            white-space: nowrap;
+            color: var(--color-slate-blue-400);
+        }
+
+        /* Preview-scaffold: national flag swatches used in the country-picker
+         * example. Raw hex is intentional — these are flag colors, not brand
+         * tokens, and they stay scoped to the preview. */
+        .flag { display: block; width: 100%; height: 100%; border-radius: var(--radius-sm); }
+        .flag--be { background: linear-gradient(to right, #000 0 33%, #FFD700 33% 66%, #EF3340 66% 100%); }
+        .flag--nl { background: linear-gradient(to bottom, #AE1C28 0 33%, #FFFFFF 33% 66%, #21468B 66% 100%); }
+        .flag--fr { background: linear-gradient(to right, #0055A4 0 33%, #FFFFFF 33% 66%, #EF4135 66% 100%); }
+        .flag--de { background: linear-gradient(to bottom, #000 0 33%, #DD0000 33% 66%, #FFCE00 66% 100%); }
+        .flag--uk { background: #012169; }
+    </style>
+</head>
+<body x-cloak>
+    <main class="page">
+        <h1>Dropdown list — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 dropdown-list. Figma nodes
+            <code>1343:42718</code> (container) and <code>1343:42177</code> (item, 24 leaf
+            variants). The container is a <code>&lt;ul role="listbox"&gt;</code> driven
+            by the <code>@utility dropdown-list</code> shell; rows use
+            <code>@utility dropdown-list__item</code> with state selectors on
+            <code>aria-selected</code>, <code>aria-disabled</code>, and
+            <code>data-active</code>. Alpine supplies keyboard navigation, selection,
+            and roving-focus; CSS paints the states.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- EXAMPLE 1 — Static visual matrix -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Example 1 — Static matrix (no JS)</h2>
+            <p class="note">
+                Five options, two disabled, one selected. Forced-state classes make the
+                hover, selected, and disabled rows visible side-by-side without interaction.
+            </p>
+            <div class="panels">
+                <div class="panel-group">
+                    <span class="caption">Plain (no leading slot)</span>
+                    <ul class="dropdown-list" role="listbox" aria-label="Example plain list">
+                        <li class="dropdown-list__item" role="option" aria-selected="false" data-value="default">
+                            <span class="dropdown-list__label">Default row</span>
+                        </li>
+                        <li class="dropdown-list__item force-hover" role="option" aria-selected="false" data-value="hover">
+                            <span class="dropdown-list__label">Hover / roving-focus</span>
+                        </li>
+                        <li class="dropdown-list__item force-selected" role="option" aria-selected="true" data-value="selected">
+                            <span class="dropdown-list__label">Selected row</span>
+                            <span class="dropdown-list__trailing" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </span>
+                        </li>
+                        <li class="dropdown-list__item force-disabled" role="option" aria-selected="false" aria-disabled="true" data-value="disabled-1">
+                            <span class="dropdown-list__label">Disabled row</span>
+                        </li>
+                        <li class="dropdown-list__item force-disabled" role="option" aria-selected="false" aria-disabled="true" data-value="disabled-2">
+                            <span class="dropdown-list__label">Another disabled row</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="panel-group">
+                    <span class="caption">With leading icon + trailing hint text</span>
+                    <ul class="dropdown-list" role="listbox" aria-label="Example icon list">
+                        <li class="dropdown-list__item" role="option" aria-selected="false" data-value="profile">
+                            <span class="dropdown-list__leading" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                            </span>
+                            <span class="dropdown-list__label">Profile</span>
+                            <span class="dropdown-list__trailing" aria-hidden="true">
+                                <span class="kbd-hint">⌘P</span>
+                            </span>
+                        </li>
+                        <li class="dropdown-list__item force-hover" role="option" aria-selected="false" data-value="settings">
+                            <span class="dropdown-list__leading" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.004.827c-.292.24-.437.613-.43.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.004.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </span>
+                            <span class="dropdown-list__label">Settings</span>
+                            <span class="dropdown-list__trailing" aria-hidden="true">
+                                <span class="kbd-hint">⌘,</span>
+                            </span>
+                        </li>
+                        <li class="dropdown-list__item force-selected" role="option" aria-selected="true" data-value="billing">
+                            <span class="dropdown-list__leading" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                </svg>
+                            </span>
+                            <span class="dropdown-list__label">Billing</span>
+                            <span class="dropdown-list__trailing" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                            </span>
+                        </li>
+                        <li class="dropdown-list__divider" role="separator"></li>
+                        <li class="dropdown-list__item force-disabled" role="option" aria-selected="false" aria-disabled="true" data-value="admin">
+                            <span class="dropdown-list__leading" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                </svg>
+                            </span>
+                            <span class="dropdown-list__label">Admin panel</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- EXAMPLE 2 — Alpine-wired combobox (trigger + dropdown) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Example 2 — Alpine-wired combobox</h2>
+            <p class="note">
+                A trigger toggles the list. Click outside to close. Keyboard nav:
+                Arrow keys, Home / End, Enter / Space to select, Escape to close. The
+                trigger label updates from the <code>dropdown:select</code> event.
+            </p>
+            <div class="panels">
+                <div class="panel-group">
+                    <span class="caption">Fruit picker</span>
+                    <div class="combobox"
+                         x-data="{ label: 'Apple', open: false }"
+                         @dropdown:open="open = true"
+                         @dropdown:close="open = false"
+                         @dropdown:select="label = $event.detail.label">
+                        <button type="button"
+                                class="trigger"
+                                :aria-expanded="open"
+                                aria-haspopup="listbox"
+                                @click="$refs.list.dispatchEvent(new CustomEvent('preview:toggle', { bubbles: false }))">
+                            <span x-text="label"></span>
+                            <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <!-- The listbox is the Alpine component. It owns `open`
+                             internally; the outer scope just reads events. -->
+                        <ul x-data="initDropdownList"
+                            x-ref="list"
+                            class="dropdown-list"
+                            role="listbox"
+                            aria-label="Fruit options"
+                            tabindex="0"
+                            x-show="open"
+                            x-cloak
+                            x-transition.opacity
+                            @keydown="handleKeydown"
+                            @click.outside="closeOnOutsideClick"
+                            @preview:toggle="toggle">
+                            <template x-for="(item, index) in items" :key="item.value">
+                                <li class="dropdown-list__item"
+                                    role="option"
+                                    :id="'dl-fruit-option-' + index"
+                                    :data-value="item.value"
+                                    :data-active="isActive"
+                                    :aria-selected="isSelected"
+                                    :aria-disabled="item.disabled ? 'true' : 'false'"
+                                    @click="select"
+                                    @mouseenter="hoverItem">
+                                    <span class="dropdown-list__label" x-text="item.el.querySelector('.dropdown-list__label').textContent"></span>
+                                </li>
+                            </template>
+
+                            <!-- Static fallback options the Alpine init() reads
+                                 on mount. Once init runs, x-for above re-renders
+                                 from `items`. We keep a simple DOM-seed pattern. -->
+                            <li class="dropdown-list__item" role="option" data-value="apple" aria-selected="true" hidden>
+                                <span class="dropdown-list__label">Apple</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="banana" hidden>
+                                <span class="dropdown-list__label">Banana</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="cherry" hidden>
+                                <span class="dropdown-list__label">Cherry</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="grape" aria-disabled="true" hidden>
+                                <span class="dropdown-list__label">Grape (out of stock)</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="mango" hidden>
+                                <span class="dropdown-list__label">Mango</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="pear" hidden>
+                                <span class="dropdown-list__label">Pear</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- EXAMPLE 3 — Alpine-wired with leading colored flags -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Example 3 — Alpine-wired with leading flag squares</h2>
+            <p class="note">
+                Country picker. Leading slot renders a colored square standing in for a
+                national flag (real flags would be <code>&lt;img&gt;</code> tags in
+                production). Same keyboard + outside-click behavior as Example 2.
+            </p>
+            <div class="panels">
+                <div class="panel-group">
+                    <span class="caption">Country picker</span>
+                    <div class="combobox"
+                         x-data="{ label: 'Belgium', open: false }"
+                         @dropdown:open="open = true"
+                         @dropdown:close="open = false"
+                         @dropdown:select="label = $event.detail.label">
+                        <button type="button"
+                                class="trigger"
+                                :aria-expanded="open"
+                                aria-haspopup="listbox"
+                                @click="$refs.list.dispatchEvent(new CustomEvent('preview:toggle', { bubbles: false }))">
+                            <span x-text="label"></span>
+                            <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <ul class="dropdown-list"
+                            role="listbox"
+                            aria-label="Country options"
+                            tabindex="0"
+                            x-show="open"
+                            x-cloak
+                            x-transition.opacity>
+                            <li class="dropdown-list__item" role="option" aria-selected="true" data-value="be">
+                                <span class="dropdown-list__leading" aria-hidden="true">
+                                    <span class="flag flag--be"></span>
+                                </span>
+                                <span class="dropdown-list__label">Belgium</span>
+                                <span class="dropdown-list__trailing" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    </svg>
+                                </span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="nl">
+                                <span class="dropdown-list__leading" aria-hidden="true">
+                                    <span class="flag flag--nl"></span>
+                                </span>
+                                <span class="dropdown-list__label">Netherlands</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="fr">
+                                <span class="dropdown-list__leading" aria-hidden="true">
+                                    <span class="flag flag--fr"></span>
+                                </span>
+                                <span class="dropdown-list__label">France</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="de">
+                                <span class="dropdown-list__leading" aria-hidden="true">
+                                    <span class="flag flag--de"></span>
+                                </span>
+                                <span class="dropdown-list__label">Germany</span>
+                            </li>
+                            <li class="dropdown-list__item" role="option" data-value="uk">
+                                <span class="dropdown-list__leading" aria-hidden="true">
+                                    <span class="flag flag--uk"></span>
+                                </span>
+                                <span class="dropdown-list__label">United Kingdom</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- EXAMPLE 4 — Empty + Loading -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Example 4 — Empty and Loading states</h2>
+            <p class="note">
+                Slot classes <code>dropdown-list__empty</code> and
+                <code>dropdown-list__loading</code>. Both sit inside the same
+                container shell. Use <code>role="presentation"</code> so screen
+                readers don't announce them as options.
+            </p>
+            <div class="panels">
+                <div class="panel-group">
+                    <span class="caption">Empty</span>
+                    <ul class="dropdown-list" role="listbox" aria-label="Empty list demo">
+                        <li class="dropdown-list__empty" role="presentation">No results found</li>
+                    </ul>
+                </div>
+                <div class="panel-group">
+                    <span class="caption">Loading</span>
+                    <ul class="dropdown-list" role="listbox" aria-label="Loading list demo" aria-busy="true">
+                        <li class="dropdown-list__loading" role="presentation">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            <span>Loading options…</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Load component constructors BEFORE alpine.js so they can register
+         their `alpine:init` listener before Alpine.start() fires the event. -->
+    <script type="module" src="/components/dropdown-list/A-basic/src/web/js/dropdown-list.js"></script>
+    <script type="module" src="/src/js/alpine.js"></script>
+</body>
+</html>

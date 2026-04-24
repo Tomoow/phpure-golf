@@ -1,0 +1,204 @@
+/**
+ * Dropdown list styles — PHPure Golf brand variant of Hyvä UI 2.7.1
+ * dropdown-list (A-basic).
+ *
+ * Spec: components/dropdown-list/A-basic/spec.md
+ * Figma nodes: 1343:42718 (container) + 1343:42177 (item, 24 leaf variants).
+ *
+ * Architecture mirrors the button / form-field pattern:
+ *   • `@utility dropdown-list` is the floating panel shell (a `<ul role="listbox">`).
+ *   • `@utility dropdown-list__item` is a CSS-variable-driven row. State
+ *     selectors (`:hover`, `[data-active="true"]`, `[aria-selected="true"]`,
+ *     `[aria-disabled="true"]`) only override the `--item-*` tokens.
+ *   • `__leading`, `__label`, `__trailing` are the three slots inside the row
+ *     (icon / image / flag · main text · check-glyph or hint text).
+ *   • `__divider`, `__empty`, `__loading` are consumer-composable slot classes.
+ *
+ * Decisions applied (cross-referenced with design-tokens/questions.md):
+ *   • Q#22 — keyboard roving-focus visual = same as hover. Alpine flips
+ *     `data-active="true"` on the highlighted row; the same selector that
+ *     drives `:hover` drives `[data-active="true"]`.
+ *   • Q#23 — selected check glyph = Heroicons outline-24 `check`, colored
+ *     `--color-deep-emerald-green-500`. Rendered in the `__trailing` slot
+ *     by the consumer when `aria-selected="true"`.
+ *   • Q#24 — container `max-height: --spacing(80)` (~320 px, ~8–10 items),
+ *     `overflow-y: auto`, native scrollbar.
+ *   • Q#25 — no default dividers. Consumer may insert `<li
+ *     class="dropdown-list__divider" role="separator">` between items.
+ *   • Q#26 — container uses `border-radius` + `overflow: hidden` so item
+ *     backgrounds remain flush against container edges; outer radius
+ *     inherits from the container via the clip.
+ *   • Q#27 — empty / loading slots share one visual treatment: centered,
+ *     slate-blue-400 text, no hover. Consumer sets `role="presentation"`.
+ *
+ * Tokens: every color / spacing / radius / shadow resolves to a CSS custom
+ * property declared in `src/css/theme.css` (generated `@theme` block).
+ * No raw hex. No arbitrary spacing.
+ */
+
+/* ─── Container (listbox shell) ───────────────────────────────────────────── */
+
+@utility dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding-inline: 0;
+    padding-block: --spacing(1);
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-shadow\/lg);
+    overflow: hidden;
+    max-height: --spacing(80);
+    overflow-y: auto;
+}
+
+/* ─── Row (option) ────────────────────────────────────────────────────────── */
+
+@utility dropdown-list__item {
+    /* Default-state tokens. State selectors below override these. */
+    --item-bg: transparent;
+    --item-color: var(--color-slate-blue-800);
+    --item-pad-block: --spacing(2.5);
+    --item-pad-inline: --spacing(3);
+
+    display: flex;
+    align-items: center;
+    gap: --spacing(2);
+    padding: var(--item-pad-block) var(--item-pad-inline);
+    background: var(--item-bg);
+    color: var(--item-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+
+    /* Hover AND keyboard-roving-active share the same visual (Q#22). */
+    &:hover,
+    &[data-active="true"] {
+        --item-bg: var(--color-slate-blue-50);
+        --item-color: var(--color-slate-blue-800);
+    }
+
+    /* Selected: label color turns brand emerald; weight ticks up.
+     * The trailing check-glyph inherits via --color on its SVG. */
+    &[aria-selected="true"] {
+        --item-color: var(--color-deep-emerald-green-500);
+        font-weight: 500;
+    }
+
+    /* Disabled: dim, uninteractive. `pointer-events: none` blocks hover
+     * and click; Alpine also guards disabled in keyboard nav. */
+    &[aria-disabled="true"] {
+        --item-color: var(--color-slate-blue-300);
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+
+/* ─── Leading slot (icon / image / flag / avatar) ─────────────────────────── */
+
+@utility dropdown-list__leading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: --spacing(6);
+    height: --spacing(6);
+    color: var(--color-slate-blue-500);
+
+    /* Images (flags, avatars, product thumbs) fill the slot. */
+    & > img {
+        width: 100%;
+        height: 100%;
+        border-radius: var(--radius-sm);
+        object-fit: cover;
+    }
+
+    /* SVG icons scale to the slot and inherit color by default. */
+    & > svg {
+        width: 100%;
+        height: 100%;
+        flex: none;
+    }
+}
+
+/* ─── Label ───────────────────────────────────────────────────────────────── */
+
+@utility dropdown-list__label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font: inherit;
+    color: inherit;
+}
+
+/* ─── Trailing slot (check glyph / hint text / shortcut) ──────────────────── */
+
+@utility dropdown-list__trailing {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    color: inherit;
+    width: --spacing(5);
+    height: --spacing(5);
+
+    & > svg {
+        width: 100%;
+        height: 100%;
+        flex: none;
+    }
+}
+
+/* Within a selected row the trailing check glyph lights up brand-emerald.
+ * The row's `--item-color` already resolves to that color, so `currentColor`
+ * on the SVG is enough — but we pin the SVG color explicitly in case the
+ * consumer colors the label via an inner span and strips `color: inherit`. */
+.dropdown-list__item[aria-selected="true"] .dropdown-list__trailing {
+    color: var(--color-deep-emerald-green-500);
+}
+
+/* ─── Divider (optional, consumer-inserted) ───────────────────────────────── */
+
+@utility dropdown-list__divider {
+    /* Use border-top so the 1 px hairline falls under the approved
+     * `border-width` exemption rather than a bare height:1px declaration. */
+    height: 0;
+    border-top: 1px solid var(--color-slate-blue-100);
+    margin-block: --spacing(1);
+    list-style: none;
+    padding: 0;
+}
+
+/* ─── Empty / loading state (Q#27) ────────────────────────────────────────── */
+
+@utility dropdown-list__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: --spacing(6) --spacing(3);
+    color: var(--color-slate-blue-400);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+    cursor: default;
+    user-select: none;
+}
+
+@utility dropdown-list__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: --spacing(2);
+    padding: --spacing(6) --spacing(3);
+    color: var(--color-slate-blue-400);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+    cursor: default;
+    user-select: none;
+}
