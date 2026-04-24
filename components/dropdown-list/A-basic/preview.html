@@ -310,7 +310,7 @@
                              { value: 'pear',   label: 'Pear' }
                          ], selectedValue: 'apple' })"
                          x-on:click.outside="closeOnOutsideClick"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
                         <button type="button"
                                 class="trigger"
                                 x-ref="trigger"
@@ -384,7 +384,7 @@
                     <div class="combobox"
                          x-data="initDropdownList()"
                          x-on:click.outside="closeOnOutsideClick"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
                         <button type="button"
                                 class="trigger"
                                 x-ref="trigger"

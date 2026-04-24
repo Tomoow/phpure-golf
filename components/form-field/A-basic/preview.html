@@ -528,7 +528,7 @@
                     <div class="combobox phone-input"
                          x-data="initPhoneInput({ defaultCountry: 'BE' })"
                          x-on:click.outside="closePickerOnOutside()"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closePickerOnOutside()">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closePickerOnOutside()">
                         <div class="form-field">
                             <!-- Hidden label target for aria-labelledby. Lives outside
                                  the button so Alpine re-renders inside the button don't
@@ -576,6 +576,7 @@
                                 <template x-for="c in uniqueDialCountries" :key="c.code">
                                     <li class="dropdown-list__item" role="option"
                                         x-bind:id="optionId(c.code)"
+                                        x-bind:data-value="c.code"
                                         x-bind:aria-selected="selected.code === c.code ? 'true' : 'false'"
                                         x-bind:data-active="activeValue === c.code ? 'true' : 'false'"
                                         x-on:click="pickCountry(c)"
@@ -609,7 +610,7 @@
                     <div class="combobox country-selector"
                          x-data="initCountrySelector()"
                          x-on:click.outside="closeOnOutside()"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeOnOutside()">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeOnOutside()">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"
@@ -691,7 +692,7 @@
                              { value: 'l', label: 'Large' }
                          ] })"
                          x-on:click.outside="closeOnOutsideClick"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"
@@ -897,7 +898,7 @@
                              { value: 'gamma', label: 'Gamma' }
                          ] })"
                          x-on:click.outside="closeOnOutsideClick"
-                         x-on:focusout="if (!$el.contains($event.relatedTarget)) closeList('blur')">
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
                         <div class="form-field"
                              role="combobox"
                              tabindex="0"
