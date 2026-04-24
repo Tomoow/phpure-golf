@@ -1,0 +1,290 @@
+/**
+ * Button styles — PHPure Golf brand variant of Hyvä UI 2.7.1 button (A-basic).
+ *
+ * Structure mirrors the upstream kit file
+ * (`hyva-ui-reference/components/buttons/A-basic/src/web/tailwind/components/button.css`):
+ * a base `@utility btn` skeleton exposes three CSS custom properties per state
+ * (`--btn-stroke`, `--btn-bg`, `--btn-color`, plus hover/active/disabled
+ * overrides), and each style modifier (`btn-primary`, `btn-secondary`, ...)
+ * only overrides those variables. Size modifiers set padding / typography / gap.
+ * Icon-layout modifiers set padding symmetry and aspect ratio.
+ *
+ * Conventions:
+ * - We avoid `@apply` inside the base `@utility btn` definition so it stays
+ *   forward-compatible and legible. Size modifiers use `@apply` for Tailwind's
+ *   `text-*` tokens (font-size + line-height come from Tailwind v4 defaults).
+ * - All colors, shadows, radii, and spacing resolve to CSS custom properties
+ *   declared in `src/css/theme.css` (the generated `@theme` block). No raw hex.
+ * - Spacing uses the emitted `var(--spacing-N)` tokens rather than the
+ *   `--spacing(N)` Tailwind helper function when we need to compose the value
+ *   through a CSS custom property (the helper expands at compile time and does
+ *   not survive round-tripping through `var()`). Direct property usages still
+ *   use `--spacing(N)` to match the kit's idiom.
+ * - Shadow token names from Figma contain slashes (e.g. `--shadow-shadow/lg`);
+ *   CSS requires escaping the slash in identifiers, hence `\/` in `var()` refs.
+ *
+ * Decisions (see components/buttons/A-basic/README.md#notes and spec decision log):
+ *  - Heroicons Outline-24 across all sizes and slots.
+ *  - Round icon-only = icon-only + `border-radius: 9999px` (resolves Q#9).
+ *  - Border width 2px on every bordered variant (Figma Tertiary=1px treated as drift).
+ *  - Focus = single `Focus/Primary` box-shadow on every variant; no outer ring.
+ *  - Font-weight 600 on the button label (Figma renders Demi despite `font-medium` slot).
+ */
+
+@utility btn {
+    /* Default-state tokens. Style modifiers override these. */
+    --btn-stroke: transparent;
+    --btn-bg: var(--color-deep-emerald-green-500);
+    --btn-color: var(--color-white);
+
+    /* Layout defaults (Size=M). Size modifiers override these so the
+     * icon-leading / icon-trailing asymmetric padding composes correctly.
+     * Values reference the emitted `--spacing-N` theme tokens. */
+    --btn-pad-block: var(--spacing-2\.5);
+    --btn-pad-inline: var(--spacing-5);
+    --btn-icon-only-pad: var(--spacing-2\.5);
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: --spacing(1.5);
+    padding-block: var(--btn-pad-block);
+    padding-inline: var(--btn-pad-inline);
+    border-radius: var(--radius-full);
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--btn-stroke);
+    background-color: var(--btn-bg);
+    color: var(--btn-color);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0;
+    user-select: none;
+    vertical-align: middle;
+    cursor: pointer;
+    overflow: clip;
+    transition-property: color, background-color, border-color, outline-color, box-shadow;
+    transition-timing-function: var(--default-transition-timing-function);
+    transition-duration: var(--default-transition-duration);
+
+    & > svg {
+        flex: none;
+        width: --spacing(5);
+        height: --spacing(5);
+        stroke-width: 1.5;
+    }
+
+    &:hover {
+        box-shadow: var(--shadow-shadow\/lg);
+        border-color: var(--btn-hover-stroke, var(--btn-stroke));
+        background-color: var(--btn-hover-bg, var(--btn-bg));
+        color: var(--btn-hover-color, var(--btn-color));
+        text-decoration: none;
+    }
+
+    &:is(:active, .is-active, [aria-current="page"], [aria-current="true"]) {
+        box-shadow: var(--shadow-shadow\/base);
+        border-color: var(--btn-active-stroke, var(--btn-stroke));
+        background-color: var(--btn-active-bg, var(--btn-bg));
+        color: var(--btn-active-color, var(--btn-color));
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--shadow-focus\/primary);
+    }
+
+    &:is(:disabled, [aria-disabled="true"]) {
+        box-shadow: none;
+        border-color: var(--btn-disabled-stroke, var(--btn-stroke));
+        background-color: var(--btn-disabled-bg, var(--color-slate-blue-600));
+        color: var(--btn-disabled-color, var(--color-slate-blue-50));
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+}
+
+/* ─── Style modifiers ─────────────────────────────────────────────────────── */
+
+@utility btn-primary {
+    --btn-stroke: transparent;
+    --btn-bg: var(--color-deep-emerald-green-500);
+    --btn-color: var(--color-white);
+
+    --btn-hover-stroke: transparent;
+    --btn-hover-bg: var(--color-deep-emerald-green-300);
+    --btn-hover-color: var(--color-neutral-50);
+
+    --btn-active-stroke: transparent;
+    --btn-active-bg: var(--color-deep-emerald-green-500);
+    --btn-active-color: var(--color-white);
+
+    --btn-disabled-stroke: transparent;
+    --btn-disabled-bg: var(--color-slate-blue-600);
+    --btn-disabled-color: var(--color-slate-blue-50);
+}
+
+@utility btn-secondary {
+    --btn-stroke: transparent;
+    --btn-bg: var(--color-champagne-beige-200);
+    --btn-color: var(--color-burnished-gold-800);
+
+    --btn-hover-stroke: transparent;
+    --btn-hover-bg: var(--color-burnished-gold-200);
+    --btn-hover-color: var(--color-burnished-gold-800);
+
+    --btn-active-stroke: transparent;
+    --btn-active-bg: var(--color-burnished-gold-200);
+    --btn-active-color: var(--color-burnished-gold-800);
+
+    --btn-disabled-stroke: transparent;
+    --btn-disabled-bg: var(--color-slate-blue-50);
+    --btn-disabled-color: var(--color-slate-blue-600);
+}
+
+@utility btn-tertiary {
+    --btn-stroke: var(--color-deep-emerald-green-500);
+    --btn-bg: var(--color-white);
+    --btn-color: var(--color-deep-emerald-green-500);
+
+    --btn-hover-stroke: var(--color-deep-emerald-green-500);
+    --btn-hover-bg: var(--color-white);
+    --btn-hover-color: var(--color-deep-emerald-green-500);
+
+    --btn-active-stroke: var(--color-deep-emerald-green-500);
+    --btn-active-bg: var(--color-white);
+    --btn-active-color: var(--color-deep-emerald-green-500);
+
+    --btn-disabled-stroke: var(--color-slate-blue-200);
+    --btn-disabled-bg: var(--color-white);
+    --btn-disabled-color: var(--color-slate-blue-600);
+}
+
+@utility btn-transparent {
+    --btn-stroke: transparent;
+    --btn-bg: transparent;
+    --btn-color: var(--color-blue-700);
+
+    --btn-hover-stroke: var(--color-blue-100);
+    --btn-hover-bg: transparent;
+    --btn-hover-color: var(--color-blue-800);
+
+    --btn-active-stroke: var(--color-blue-500);
+    --btn-active-bg: transparent;
+    --btn-active-color: var(--color-blue-800);
+
+    --btn-disabled-stroke: transparent;
+    --btn-disabled-bg: transparent;
+    --btn-disabled-color: var(--color-slate-blue-600);
+
+    /* Transparent hover/active skip the global drop-shadow — the border alone
+     * signals the state (see spec §2 note ²). */
+    &:hover {
+        box-shadow: none;
+    }
+    &:is(:active, .is-active, [aria-current="page"], [aria-current="true"]) {
+        box-shadow: none;
+    }
+}
+
+/* ─── Size modifiers ──────────────────────────────────────────────────────── */
+
+@utility btn-size-s {
+    --btn-pad-block: var(--spacing-2);
+    --btn-pad-inline: var(--spacing-4);
+    /* Icon-only fill = 36×36 per Figma (content+padding, border drawn around). */
+    --btn-icon-only-pad: var(--spacing-2);
+    gap: --spacing(1.5);
+    @apply text-sm;
+    line-height: --spacing(5);
+}
+
+@utility btn-size-m {
+    --btn-pad-block: var(--spacing-2\.5);
+    --btn-pad-inline: var(--spacing-5);
+    /* Icon-only fill = 40×40 per Figma (content+padding, border drawn around). */
+    --btn-icon-only-pad: var(--spacing-2\.5);
+    gap: --spacing(1.5);
+    @apply text-sm;
+    line-height: --spacing(5);
+}
+
+@utility btn-size-l {
+    --btn-pad-block: var(--spacing-2\.5);
+    --btn-pad-inline: var(--spacing-5);
+    /* Icon-only fill = 44×44 per Figma (content+padding, border drawn around). */
+    --btn-icon-only-pad: var(--spacing-3);
+    gap: --spacing(1.5);
+    @apply text-base;
+    line-height: --spacing(6);
+}
+
+@utility btn-size-xl {
+    --btn-pad-block: var(--spacing-3);
+    --btn-pad-inline: var(--spacing-6);
+    /* Icon-only fill = 48×48 per Figma (content+padding, border drawn around). */
+    --btn-icon-only-pad: var(--spacing-3\.5);
+    gap: --spacing(1.5);
+    @apply text-base;
+    line-height: --spacing(6);
+}
+
+@utility btn-size-2xl {
+    --btn-pad-block: var(--spacing-4);
+    --btn-pad-inline: var(--spacing-8);
+    /* Icon-only fill = 60×60 per Figma (content+padding, border drawn around). */
+    --btn-icon-only-pad: var(--spacing-3\.5);
+    gap: --spacing(1.5);
+    @apply text-lg;
+    line-height: --spacing(7);
+
+    /* Leading / Trailing glyph scales to 24px at 2XL. */
+    & > svg {
+        width: --spacing(6);
+        height: --spacing(6);
+    }
+
+    /* Icon-only at 2XL: the glyph jumps to 32px (spec §3). The selector
+     * reaches inside both `btn-icon-only` and `btn-icon-only-round` when
+     * either is composed alongside `btn-size-2xl` on the same element. */
+    &.btn-icon-only > svg,
+    &.btn-icon-only-round > svg {
+        width: --spacing(8);
+        height: --spacing(8);
+    }
+}
+
+/* ─── Icon-layout modifiers ───────────────────────────────────────────────── */
+
+/* Asymmetric horizontal padding: the icon side gets 2px less inline padding
+ * (see spec §7). `var(--spacing-0\.5)` = 2px. Using logical properties so the
+ * rule still mirrors correctly in RTL contexts. The size modifier sets
+ * `--btn-pad-inline`; we subtract 2px on the icon side. */
+@utility btn-icon-leading {
+    padding-inline-start: calc(var(--btn-pad-inline) - var(--spacing-0\.5));
+}
+
+@utility btn-icon-trailing {
+    padding-inline-end: calc(var(--btn-pad-inline) - var(--spacing-0\.5));
+}
+
+/* Icon-only: square with rounded corners (spec §7 — `8px` = `--radius-lg`),
+ * NOT the base pill radius. Equal padding all sides, 1:1 aspect ratio.
+ * Per-size padding flows through `--btn-icon-only-pad`, set on each
+ * `btn-size-*` modifier. */
+@utility btn-icon-only {
+    aspect-ratio: 1;
+    padding-inline: var(--btn-icon-only-pad);
+    padding-block: var(--btn-icon-only-pad);
+    gap: 0;
+    border-radius: var(--radius-lg);
+}
+
+/* Round variant: icon-only plus a fully circular border-radius (resolves Q#9). */
+@utility btn-icon-only-round {
+    aspect-ratio: 1;
+    padding-inline: var(--btn-icon-only-pad);
+    padding-block: var(--btn-icon-only-pad);
+    gap: 0;
+    border-radius: var(--radius-full);
+}

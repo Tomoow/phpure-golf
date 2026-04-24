@@ -144,8 +144,14 @@ function buildBlock() {
     }
 
     // Spacing (usually Tailwind defaults — emit only if explicitly present).
+    // Tailwind v4's `--spacing(N)` CSS function expects a base `--spacing` variable
+    // (default 0.25rem). Emitting individual `--spacing-N` entries alone is not
+    // enough — the function fails with "--spacing theme variable not found" unless
+    // the base is also declared. We emit both: the base for `--spacing(N)` usage,
+    // plus every concrete `--spacing-N` for `var(--spacing-N)` references.
     if (tokens.spacing && Object.keys(tokens.spacing).filter(k => k !== '_meta').length) {
-        lines.push('    /* Spacing. */');
+        lines.push('    /* Spacing. The base `--spacing` underpins Tailwind v4\'s --spacing(N) function. */');
+        lines.push('    --spacing: 0.25rem;');
         for (const [k, v] of Object.entries(tokens.spacing)) {
             if (k === '_meta') continue;
             lines.push(`    --spacing-${kebab(k)}: ${v};`);

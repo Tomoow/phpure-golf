@@ -249,7 +249,8 @@
     --background-image-slate-800-60-to-80: linear-gradient(0deg, rgba(30, 41, 59, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
     --background-image-slate-800-0-to-100: linear-gradient(0deg, rgba(30, 41, 59, 0) 0%, rgba(30, 41, 59, 1) 100%);
 
-    /* Spacing. */
+    /* Spacing. The base `--spacing` underpins Tailwind v4's --spacing(N) function. */
+    --spacing: 0.25rem;
     --spacing-0: 0rem;
     --spacing-1: 0.25rem;
     --spacing-2: 0.5rem;

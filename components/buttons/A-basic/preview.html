@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Button — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only helper classes that simulate :hover / :active /
+         * :focus-visible / :disabled without user interaction, so every state
+         * can be screenshot/reviewed at once. These mirror the real
+         * selectors in `button.css` but are inert (no interaction required).
+         * They are NOT part of the shipped component — they exist only in
+         * this preview file.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: 9rem repeat(5, minmax(0, 1fr));
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+        .matrix > .col-head,
+        .matrix > .row-head {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .matrix > .row-head {
+            text-align: right;
+            padding-inline-end: 0.5rem;
+        }
+        .cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 4rem;
+        }
+
+        /* ── Forced-state demo classes (preview-only) ───────────────── */
+        .force-hover > .btn {
+            box-shadow: var(--shadow-shadow\/lg);
+            border-color: var(--btn-hover-stroke, var(--btn-stroke));
+            background-color: var(--btn-hover-bg, var(--btn-bg));
+            color: var(--btn-hover-color, var(--btn-color));
+        }
+        .force-hover > .btn-transparent {
+            box-shadow: none;
+        }
+        .force-active > .btn {
+            box-shadow: var(--shadow-shadow\/base);
+            border-color: var(--btn-active-stroke, var(--btn-stroke));
+            background-color: var(--btn-active-bg, var(--btn-bg));
+            color: var(--btn-active-color, var(--btn-color));
+        }
+        .force-active > .btn-transparent {
+            box-shadow: none;
+        }
+        .force-focus > .btn {
+            box-shadow: var(--shadow-focus\/primary);
+        }
+        .force-disabled > .btn {
+            box-shadow: none;
+            border-color: var(--btn-disabled-stroke, var(--btn-stroke));
+            background-color: var(--btn-disabled-bg, var(--color-slate-blue-600));
+            color: var(--btn-disabled-color, var(--color-slate-blue-50));
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .sizes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+
+        .caption {
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--color-slate-blue-500);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-block-end: 0.25rem;
+        }
+
+        .group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            /* Prevent icon-only buttons (which use aspect-ratio: 1) from
+             * stretching horizontally to match the width of a wide caption
+             * label. Without this, a caption like "Size 2XL (icon 32px)" drags
+             * the button to ~108×108 instead of the intended 60×60. */
+            align-items: flex-start;
+        }
+
+        .section {
+            margin-block-end: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Button — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of Hyvä UI 2.7.1 <code>button.css</code>. Figma node
+            <code>1286:12715</code>. This preview renders every style × state and a
+            size ladder so the design lead can review visual parity against Figma.
+        </p>
+
+        <!-- Style × State matrix for Size=M, Icon=None -->
+        <section class="section">
+            <h2>Style × State (Size=M)</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Active</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Disabled</div>
+
+                <!-- Primary row -->
+                <div class="row-head">Primary</div>
+                <div class="cell"><button type="button" class="btn btn-primary btn-size-m">Primary</button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-primary btn-size-m">Primary</button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-primary btn-size-m">Primary</button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-primary btn-size-m">Primary</button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-primary btn-size-m" aria-disabled="true">Primary</button></div>
+
+                <!-- Secondary row -->
+                <div class="row-head">Secondary</div>
+                <div class="cell"><button type="button" class="btn btn-secondary btn-size-m">Secondary</button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-secondary btn-size-m">Secondary</button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-secondary btn-size-m">Secondary</button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-secondary btn-size-m">Secondary</button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-secondary btn-size-m" aria-disabled="true">Secondary</button></div>
+
+                <!-- Tertiary row -->
+                <div class="row-head">Tertiary</div>
+                <div class="cell"><button type="button" class="btn btn-tertiary btn-size-m">Tertiary</button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-tertiary btn-size-m">Tertiary</button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-tertiary btn-size-m">Tertiary</button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-tertiary btn-size-m">Tertiary</button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-tertiary btn-size-m" aria-disabled="true">Tertiary</button></div>
+
+                <!-- Transparent row -->
+                <div class="row-head">Transparent</div>
+                <div class="cell"><button type="button" class="btn btn-transparent btn-size-m">Transparent</button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-transparent btn-size-m">Transparent</button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-transparent btn-size-m">Transparent</button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-transparent btn-size-m">Transparent</button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-transparent btn-size-m" aria-disabled="true">Transparent</button></div>
+            </div>
+        </section>
+
+        <!-- Icon variants -->
+        <section class="section">
+            <h2>Icon layouts (Primary, Size=M)</h2>
+            <div class="sizes">
+                <div class="group">
+                    <span class="caption">Leading</span>
+                    <button type="button" class="btn btn-primary btn-size-m btn-icon-leading">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        Add item
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Trailing</span>
+                    <button type="button" class="btn btn-primary btn-size-m btn-icon-trailing">
+                        Next
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Icon only</span>
+                    <button type="button" class="btn btn-primary btn-size-m btn-icon-only" aria-label="Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.213-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Icon only (round)</span>
+                    <button type="button" class="btn btn-primary btn-size-m btn-icon-only-round" aria-label="Add to cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-.388 2.3-1.61 2.814-2.868l1.45-3.547c.283-.692-.24-1.455-.987-1.455H5.106M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Icon-only square + round × state, Secondary style -->
+        <section class="section">
+            <h2>Icon-only (Secondary, Size=M) × State</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Active</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Disabled</div>
+
+                <div class="row-head">Square</div>
+                <div class="cell"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only" aria-label="Add" aria-disabled="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+
+                <div class="row-head">Round</div>
+                <div class="cell"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only-round" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-hover"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only-round" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-active"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only-round" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-focus"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only-round" aria-label="Add">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+                <div class="cell force-disabled"><button type="button" class="btn btn-secondary btn-size-m btn-icon-only-round" aria-label="Add" aria-disabled="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                </button></div>
+            </div>
+        </section>
+
+        <!-- Size ladder -->
+        <section class="section">
+            <h2>Sizes (Primary, Icon=None)</h2>
+            <div class="sizes">
+                <div class="group">
+                    <span class="caption">Size S</span>
+                    <button type="button" class="btn btn-primary btn-size-s">Shop now</button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size M</span>
+                    <button type="button" class="btn btn-primary btn-size-m">Shop now</button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size L</span>
+                    <button type="button" class="btn btn-primary btn-size-l">Shop now</button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size XL</span>
+                    <button type="button" class="btn btn-primary btn-size-xl">Shop now</button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size 2XL</span>
+                    <button type="button" class="btn btn-primary btn-size-2xl">Shop now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Size ladder with icon-only (round) to confirm 2XL icon scales up -->
+        <section class="section">
+            <h2>Sizes — Icon-only round (Tertiary)</h2>
+            <div class="sizes">
+                <div class="group">
+                    <span class="caption">Size S</span>
+                    <button type="button" class="btn btn-tertiary btn-size-s btn-icon-only-round" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size M</span>
+                    <button type="button" class="btn btn-tertiary btn-size-m btn-icon-only-round" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size L</span>
+                    <button type="button" class="btn btn-tertiary btn-size-l btn-icon-only-round" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size XL</span>
+                    <button type="button" class="btn btn-tertiary btn-size-xl btn-icon-only-round" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+                <div class="group">
+                    <span class="caption">Size 2XL (icon 32px)</span>
+                    <button type="button" class="btn btn-tertiary btn-size-2xl btn-icon-only-round" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive samples so reviewers can test real :hover / :focus-visible -->
+        <section class="section">
+            <h2>Interactive samples (hover / click / Tab to focus)</h2>
+            <div class="sizes">
+                <button type="button" class="btn btn-primary btn-size-m">Primary live</button>
+                <button type="button" class="btn btn-secondary btn-size-m">Secondary live</button>
+                <button type="button" class="btn btn-tertiary btn-size-m">Tertiary live</button>
+                <button type="button" class="btn btn-transparent btn-size-m">Transparent live</button>
+                <a href="#" class="btn btn-primary btn-size-m btn-icon-trailing">
+                    As a link
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

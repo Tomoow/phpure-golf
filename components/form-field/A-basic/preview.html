@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Form field — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only helper classes that simulate :hover / :focus-within /
+         * :disabled / error / warning / success without user interaction so
+         * every state can be reviewed side-by-side. They mirror the real
+         * selectors in `form-field.css` but are inert.
+         * These classes are NOT part of the shipped component.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: 9rem repeat(5, minmax(0, 1fr));
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+        .matrix > .col-head,
+        .matrix > .row-head {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .matrix > .row-head {
+            text-align: right;
+            padding-inline-end: 0.5rem;
+        }
+        .cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-height: 3rem;
+        }
+        .stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(16rem, 1fr));
+            gap: 1rem 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+        .stack--full {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .caption {
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--color-slate-blue-500);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-block-end: 0.25rem;
+        }
+        .group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 0;
+        }
+        .section {
+            margin-block-end: 2rem;
+        }
+
+        /* ── Forced-state demo classes (preview-only) ───────────────── */
+        /* Mirror the real selectors in form-field.css so each state can be
+         * captured in a single screenshot, not via interaction. */
+
+        .force-hover > .form-field {
+            border-color: var(--field-hover-border, var(--field-border));
+        }
+        .force-focus > .form-field {
+            border-color: var(--field-focus-border, var(--field-border));
+            box-shadow: var(--field-focus-ring);
+        }
+        .force-disabled > .form-field {
+            border-color: var(--field-disabled-border);
+            background-color: var(--field-disabled-bg);
+            color: var(--field-disabled-color);
+            cursor: not-allowed;
+        }
+
+        /* Simple visual divider inside the `stack` for readability. */
+        .divider {
+            grid-column: 1 / -1;
+            height: 1px;
+            background: var(--color-slate-blue-100);
+            margin-block: 0.25rem;
+        }
+
+        /* Preview-scaffold grid helpers — let a cell span the full row, or 5
+         * columns for the label+field+hint stack. Scoped to the preview. */
+        .cell--span-full { grid-column: 1 / -1; }
+        .cell--span-5    { grid-column: span 5; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Form field — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 form-field shell. Figma nodes
+            <code>1329:15249</code> (base) and <code>1331:14308</code> (variants). The shell is
+            one <code>@utility form-field</code> + feedback modifiers; every "variant" is
+            HTML composition inside the shell (see spec §6). This preview renders every
+            composition pattern in every relevant state so the design lead can verify
+            parity against Figma.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. STATE MATRIX (plain text input) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>State matrix (plain text input, feedback = none)</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Filled</div>
+                <div class="col-head">Disabled</div>
+
+                <div class="row-head">Plain</div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="hello@phpure.golf" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" disabled />
+                    </div>
+                </div>
+
+                <div class="row-head">Readonly</div>
+                <div class="cell cell--span-5">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="READ-ONLY-VALUE" readonly />
+                    </div>
+                    <p class="note">Readonly shares the disabled palette but keeps <code>cursor: text</code> so users can select and copy the value.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. FEEDBACK STATES -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Feedback states</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Filled</div>
+                <div class="col-head">Disabled</div>
+
+                <!-- Error -->
+                <div class="row-head">Error</div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="user@example" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="user@example" disabled />
+                    </div>
+                </div>
+
+                <!-- Warning -->
+                <div class="row-head">Warning</div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" disabled />
+                    </div>
+                </div>
+
+                <!-- Success -->
+                <div class="row-head">Success</div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" disabled />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. COMPOSITION PATTERNS -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Composition patterns (spec §6)</h2>
+            <p class="note">
+                All 11+ patterns from the variants catalog (<code>1331:14308</code>) rendered through
+                HTML composition inside the single <code>form-field</code> shell. Every interactive
+                toggle/button below is visually correct but behaviorally inert — this is a static
+                preview file with no JS (per hard rules).
+            </p>
+
+            <form novalidate class="stack">
+                <!-- 6.1 Plain text -->
+                <div class="group">
+                    <span class="caption">6.1 Plain text</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your name" />
+                    </div>
+                </div>
+
+                <!-- 6.2 Search with leading magnifier icon -->
+                <div class="group">
+                    <span class="caption">6.2 Search (leading icon 24px)</span>
+                    <div class="form-field">
+                        <span class="form-field__affix">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                        </span>
+                        <input type="search" class="form-field__input" placeholder="Search products" />
+                    </div>
+                </div>
+
+                <!-- 6.2 Email with trailing envelope icon -->
+                <div class="group">
+                    <span class="caption">6.2 Email (trailing icon 20px)</span>
+                    <div class="form-field">
+                        <input type="email" class="form-field__input" placeholder="you@phpure.golf" />
+                        <span class="form-field__affix">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 6.2 Password with visibility toggle button (inert in preview) -->
+                <div class="group">
+                    <span class="caption">6.2 Password (trailing toggle — inert in preview, no JS)</span>
+                    <div class="form-field">
+                        <input type="password" class="form-field__input" value="hunter2hunter" />
+                        <button type="button" class="form-field__affix" aria-label="Show password" aria-pressed="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="note">Caption: in production this toggle would wire up Alpine <code>x-data="{ shown: false }"</code> and flip the input type. Preview is static.</p>
+                </div>
+
+                <!-- 6.3 Currency with leading text -->
+                <div class="group">
+                    <span class="caption">6.3 Currency (leading text affix)</span>
+                    <div class="form-field">
+                        <span class="form-field__leading-text" aria-hidden="true">€</span>
+                        <input type="number" class="form-field__input" placeholder="0.00" step="0.01" />
+                    </div>
+                </div>
+
+                <!-- 6.4 Currency with leading + trailing text -->
+                <div class="group">
+                    <span class="caption">6.4 Currency (leading € + trailing .00 suffix)</span>
+                    <div class="form-field">
+                        <span class="form-field__leading-text" aria-hidden="true">€</span>
+                        <input type="number" class="form-field__input" value="1250" step="1" />
+                        <span class="form-field__trailing-text" aria-hidden="true">.00</span>
+                    </div>
+                </div>
+
+                <!-- 6.5 Phone with country code select prefix + tel input -->
+                <div class="group">
+                    <span class="caption">6.5 Phone (leading country-code select + tel input)</span>
+                    <div class="form-field">
+                        <select class="form-field__input form-field__select form-field__select--auto" aria-label="Country code">
+                            <option value="+32">+32</option>
+                            <option value="+31">+31</option>
+                            <option value="+33">+33</option>
+                            <option value="+44">+44</option>
+                        </select>
+                        <input type="tel" class="form-field__input" placeholder="4 123 45 67" />
+                    </div>
+                </div>
+
+                <!-- 6.6 / 6.7 Country selector — styled native select with trailing chevron -->
+                <div class="group">
+                    <span class="caption">6.7 Country selector (native select + trailing chevron)</span>
+                    <div class="form-field">
+                        <select class="form-field__input form-field__select" aria-label="Country">
+                            <option value="">Select a country</option>
+                            <option value="be">Belgium</option>
+                            <option value="nl">Netherlands</option>
+                            <option value="fr">France</option>
+                            <option value="de">Germany</option>
+                        </select>
+                        <span class="form-field__affix" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 6.7 Simple size select -->
+                <div class="group">
+                    <span class="caption">6.7 Plain select (size)</span>
+                    <div class="form-field">
+                        <select class="form-field__input form-field__select" aria-label="Size">
+                            <option value="">Select a size</option>
+                            <option value="s">Small</option>
+                            <option value="m">Medium</option>
+                            <option value="l">Large</option>
+                        </select>
+                        <span class="form-field__affix" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 6.10 Native datepicker -->
+                <div class="group">
+                    <span class="caption">6.10 Datepicker (native <code>&lt;input type="date"&gt;</code>)</span>
+                    <div class="form-field">
+                        <input type="date" class="form-field__input" aria-label="Tee time" />
+                        <span class="form-field__affix" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 6.9 Stepper composition (static, no JS) -->
+                <div class="group">
+                    <span class="caption">6.9 Stepper (−/+ buttons — inert in preview, no JS)</span>
+                    <div class="form-field">
+                        <button type="button" class="form-field__affix" aria-label="Decrease quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                            </svg>
+                        </button>
+                        <input type="number" class="form-field__input form-field__input--numeric" value="1" min="0" />
+                        <button type="button" class="form-field__affix" aria-label="Increase quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="note">Caption: stepper is a composition pattern only — no dedicated CSS. In production, wire Alpine <code>x-data="{ v: 1 }"</code> + <code>@click</code> on the buttons.</p>
+                </div>
+
+                <!-- Textarea composition -->
+                <div class="group cell--span-full">
+                    <span class="caption">Textarea (uses <code>form-field--textarea</code> modifier to top-align children)</span>
+                    <div class="form-field form-field--textarea">
+                        <textarea class="form-field__input" rows="4" placeholder="Leave a note for the pro shop…"></textarea>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 4. FULL FORM-GROUP EXAMPLE (label + field + hint + required) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Form group (label + field + hint + required asterisk)</h2>
+            <form novalidate class="stack">
+                <!-- Default with hint -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-name">
+                        Full name
+                    </label>
+                    <div class="form-field">
+                        <input id="fg-name" type="text" class="form-field__input" placeholder="Jane Doe" aria-describedby="fg-name-hint" />
+                    </div>
+                    <span id="fg-name-hint" class="form-group__hint">As it appears on your ID.</span>
+                </div>
+
+                <!-- Required with asterisk -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-email">
+                        Email
+                        <span class="form-group__required" aria-hidden="true">*</span>
+                    </label>
+                    <div class="form-field">
+                        <input id="fg-email" type="email" class="form-field__input" placeholder="you@phpure.golf" required aria-describedby="fg-email-hint" />
+                    </div>
+                    <span id="fg-email-hint" class="form-group__hint">We will send your booking confirmation here.</span>
+                </div>
+
+                <!-- Error state with error hint -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-error">
+                        Password
+                        <span class="form-group__required" aria-hidden="true">*</span>
+                    </label>
+                    <div class="form-field form-field--error">
+                        <input id="fg-error" type="password" class="form-field__input" value="123" required aria-invalid="true" aria-describedby="fg-error-hint" />
+                    </div>
+                    <span id="fg-error-hint" class="form-group__hint form-group__hint--error">
+                        Password must be at least 8 characters.
+                    </span>
+                </div>
+
+                <!-- Warning state -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-warning">Username</label>
+                    <div class="form-field form-field--warning">
+                        <input id="fg-warning" type="text" class="form-field__input" value="jane" aria-describedby="fg-warning-hint" />
+                    </div>
+                    <span id="fg-warning-hint" class="form-group__hint form-group__hint--warning">
+                        This username is short. Consider something more unique.
+                    </span>
+                </div>
+
+                <!-- Success state -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-success">Subdomain</label>
+                    <div class="form-field form-field--success">
+                        <input id="fg-success" type="text" class="form-field__input" value="phpure" aria-describedby="fg-success-hint" />
+                        <span class="form-field__trailing-text" aria-hidden="true">.golf</span>
+                    </div>
+                    <span id="fg-success-hint" class="form-group__hint form-group__hint--success">
+                        Subdomain is available.
+                    </span>
+                </div>
+
+                <!-- Disabled -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-disabled">Account ID</label>
+                    <div class="form-field">
+                        <input id="fg-disabled" type="text" class="form-field__input" value="PGC-00421" disabled aria-describedby="fg-disabled-hint" />
+                    </div>
+                    <span id="fg-disabled-hint" class="form-group__hint">Assigned automatically after checkout.</span>
+                </div>
+            </form>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 5. INTERACTIVE SANDBOX -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Interactive samples (click / Tab to focus)</h2>
+            <p class="note">
+                Focus moves via Tab. The shell lights up (border + focus ring) whenever
+                the inner input/select/textarea receives focus, courtesy of
+                <code>:focus-within</code>.
+            </p>
+            <form novalidate class="stack">
+                <div class="group">
+                    <span class="caption">Plain text (live)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Type here" />
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption">Select (live)</span>
+                    <div class="form-field">
+                        <select class="form-field__input form-field__select" aria-label="Pick one">
+                            <option value="">Pick one</option>
+                            <option>Alpha</option>
+                            <option>Beta</option>
+                            <option>Gamma</option>
+                        </select>
+                        <span class="form-field__affix" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption">Disabled input (live)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="Locked value" disabled />
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption">Readonly input (live — select/copy works)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="READ-ONLY-1234" readonly />
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
