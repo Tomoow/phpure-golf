@@ -537,11 +537,13 @@
                                     x-bind:aria-activedescendant="activeOptionId"
                                     x-bind:aria-labelledby="labelId"
                                     x-on:click="togglePicker()"
-                                    x-on:keydown.down.prevent="openAndFocusFirst()"
-                                    x-on:keydown.up.prevent="openAndFocusLast()"
-                                    x-on:keydown.enter.prevent="togglePicker()"
-                                    x-on:keydown.space.prevent="togglePicker()"
-                                    x-on:keydown.escape="closePicker()">
+                                    x-on:keydown.down.prevent="pickerOpen ? focusNext() : openAndFocusFirst()"
+                                    x-on:keydown.up.prevent="pickerOpen ? focusPrev() : openAndFocusLast()"
+                                    x-on:keydown.home.prevent="pickerOpen && focusFirst()"
+                                    x-on:keydown.end.prevent="pickerOpen && focusLast()"
+                                    x-on:keydown.enter.prevent="pickerOpen ? pickActive() : togglePicker()"
+                                    x-on:keydown.space.prevent="pickerOpen ? pickActive() : togglePicker()"
+                                    x-on:keydown.escape.prevent="closePicker()">
                                 <span class="phone-input__flag" aria-hidden="true" x-text="selected.flag"></span>
                                 <span aria-hidden="true" x-text="selected.dial"></span>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron" aria-hidden="true">
@@ -688,11 +690,13 @@
                              x-bind:aria-controls="listboxId"
                              x-bind:aria-activedescendant="activeOptionId"
                              x-on:click="toggle()"
-                             x-on:keydown.down.prevent="openAndFocusFirst()"
-                             x-on:keydown.up.prevent="openAndFocusLast()"
-                             x-on:keydown.enter.prevent="toggle()"
-                             x-on:keydown.space.prevent="toggle()"
-                             x-on:keydown.escape="closeList('escape')">
+                             x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                             x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                             x-on:keydown.home.prevent="open && focusFirst()"
+                             x-on:keydown.end.prevent="open && focusLast()"
+                             x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.escape.prevent="closeList('escape')">
                             <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select a size'"></span>
                             <span class="form-field__affix" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
@@ -891,11 +895,13 @@
                              x-bind:aria-controls="listboxId"
                              x-bind:aria-activedescendant="activeOptionId"
                              x-on:click="toggle()"
-                             x-on:keydown.down.prevent="openAndFocusFirst()"
-                             x-on:keydown.up.prevent="openAndFocusLast()"
-                             x-on:keydown.enter.prevent="toggle()"
-                             x-on:keydown.space.prevent="toggle()"
-                             x-on:keydown.escape="closeList('escape')">
+                             x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                             x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                             x-on:keydown.home.prevent="open && focusFirst()"
+                             x-on:keydown.end.prevent="open && focusLast()"
+                             x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.escape.prevent="closeList('escape')">
                             <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Pick one'"></span>
                             <span class="form-field__affix" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">

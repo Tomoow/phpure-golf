@@ -255,6 +255,18 @@
         cursor: pointer;
         font: inherit;
         appearance: none;
+
+        /* The outer form-field draws its own focus ring on :focus-within
+         * (2 px solid outline in the brand focus color). Suppress the
+         * browser's default button outline so we don't end up with two
+         * rings — an orange / UA-themed one on the button AND the
+         * brand-correct green one on the shell. */
+        &:focus {
+            outline: 0;
+        }
+        &:focus-visible {
+            outline: 0;
+        }
     }
 }
 
