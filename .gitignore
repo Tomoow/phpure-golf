@@ -54,3 +54,21 @@ app/design/frontend/Phpure/golf/web/tailwind/package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# ── PHPure Golf Hyvä UI POC ──
+# Vite build output
+/dist
+
+# hyva-ui kit is commercial and lives outside this repo — symlink only
+/hyva-ui-reference
+
+# Saved MCP tool-result dumps
+/.claude/tool-results
+
+# Per-user Claude Code overrides (agent files + project settings.json are shared)
+/.claude/settings.local.json
+
+# Override Magento's /package.json and /package-lock.json ignores — the POC
+# has its own npm workspace at the repo root (Vite + Tailwind + Alpine).
+!/package.json
+!/package-lock.json

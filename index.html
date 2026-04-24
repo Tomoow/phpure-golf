@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHPure Golf — Hyvä UI POC gallery</title>
+    <link rel="stylesheet" href="/src/css/styles.css">
+</head>
+<body class="min-h-screen bg-white font-sans text-slate-900 antialiased">
+    <main class="mx-auto max-w-4xl px-6 py-16">
+        <header class="mb-12">
+            <p class="mb-2 text-sm uppercase tracking-widest text-slate-500">PHPure Golf</p>
+            <h1 class="text-4xl font-medium tracking-tight">Hyvä UI POC — component gallery</h1>
+            <p class="mt-4 max-w-2xl text-slate-600">
+                This page links to every component preview produced during Phase 1. Phase 0 has scaffolded
+                the project; no components exist yet. Each entry below fills in as <code>component-reviewer</code>
+                flips its status to <em>approved</em> in <code>ui-kit-inventory.md</code>.
+            </p>
+        </header>
+
+        <section class="mb-12 rounded-lg border border-slate-200 bg-slate-50 p-6">
+            <h2 class="mb-3 text-lg font-medium">Phase 0 status</h2>
+            <ul class="list-disc space-y-1 pl-6 text-slate-700">
+                <li>Folder structure, subagent definitions, UI kit inventory: done.</li>
+                <li>Design token resolution: blocked on Figma Desktop MCP — see <code>design-tokens/questions.md</code> entry #1.</li>
+                <li>Tailwind v4 <code>@theme</code> block: placeholder until tokens resolve.</li>
+                <li>Vite preview: working. This page is the entry point.</li>
+            </ul>
+        </section>
+
+        <section id="component-links">
+            <h2 class="mb-4 text-lg font-medium">Components (Phase 1)</h2>
+            <p class="text-slate-500">No components built yet. This list will be populated as each one is approved.</p>
+        </section>
+    </main>
+
+    <script type="module" src="/src/js/alpine.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* Vite + Tailwind v4 entry.
+ *
+ * Import order matters:
+ *   1. Self-hosted DM Sans @font-face declarations.
+ *   2. Tailwind v4 core (utilities, preflight).
+ *   3. Project @theme tokens (generated from tokens.resolved.json — see scripts/build-tailwind-config.mjs).
+ *   4. Component @utility definitions (atoms like button.css will be @imported here as they're built).
+ */
+
+@import './../fonts/dm-sans/fonts.css';
+@import 'tailwindcss';
+@import './theme.css';
+
+/* Component imports will be appended here as Phase 1 produces each atom.
+ * Example (once Phase 1 writes it):
+ *   @import '../../components/buttons/A-basic/src/web/tailwind/components/button.css';
+ */
