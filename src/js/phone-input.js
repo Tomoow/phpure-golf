@@ -14,7 +14,12 @@
 //   • On close (Escape, outside-click, selection) focus is restored to the
 //     trigger via `$refs.trigger?.focus()` (A11Y-005).
 
-import { AsYouType, getCountryCallingCode } from 'libphonenumber-js';
+import { AsYouType, getCountryCallingCode, getExampleNumber } from 'libphonenumber-js';
+// Per-country example phone numbers (mobile) shipped with libphonenumber-js.
+// Used to generate a real-format placeholder so the user sees what a number
+// for the currently selected country actually looks like — e.g. BE renders
+// `0470 12 34 56`, NL renders `06 12345678`, FR renders `06 12 34 56 78`.
+import mobileExamples from 'libphonenumber-js/examples.mobile.json';
 import { countriesPopularFirst, countryByCode } from './country-data.js';
 
 // Distinct dial-code list — some countries share +1 etc.; we keep the first
@@ -59,6 +64,22 @@ function initPhoneInput(opts = {}) {
             if (!this.pickerOpen) return '';
             if (!this.activeValue) return '';
             return this.optionId(this.activeValue);
+        },
+
+        // Country-specific placeholder for the `<input type="tel">`. Uses
+        // libphonenumber-js's bundled example-mobile-number dataset — so BE
+        // renders `0470 12 34 56`, NL renders `06 12345678`, GB renders
+        // `07400 123456`, etc. Falls back to an empty string if an example
+        // isn't available (rare — libphonenumber ships one for every ISO
+        // code we support).
+        get placeholder() {
+            if (!this.selected) return '';
+            try {
+                const example = getExampleNumber(this.selected.code, mobileExamples);
+                return example ? example.formatNational() : '';
+            } catch (e) {
+                return '';
+            }
         },
 
         // ── Open / close / toggle ────────────────────────────────────────

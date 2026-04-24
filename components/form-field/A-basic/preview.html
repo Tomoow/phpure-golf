@@ -554,7 +554,7 @@
                                    class="form-field__input"
                                    x-bind:value="national"
                                    x-on:input="onInput($event.target.value)"
-                                   placeholder="4 123 45 67" />
+                                   x-bind:placeholder="placeholder" />
                         </div>
                         <div class="combobox__panel phone-input__panel" x-show="pickerOpen" x-cloak>
                             <ul class="dropdown-list" role="listbox" aria-label="Country code"
