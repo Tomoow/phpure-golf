@@ -3,36 +3,16 @@
 // dial codes. Dispatches `phone:change` with { country, number, e164 } when
 // either the country or the number changes.
 //
-// Usage (HTML):
-//   <div class="form-field" x-data="initPhoneInput({ defaultCountry: 'BE' })">
-//       <!-- Country-code trigger. Opens a small dial-code picker. -->
-//       <div class="combobox combobox--auto" x-on:click.outside="closePicker()">
-//           <button type="button" class="form-field__affix combobox__trigger"
-//                   aria-haspopup="listbox"
-//                   :aria-expanded="pickerOpen"
-//                   x-on:click="togglePicker()">
-//               <span x-text="selected.flag"></span>
-//               <span x-text="selected.dial"></span>
-//               <svg class="size-5 combobox__chevron" …></svg>
-//           </button>
-//           <div class="combobox__panel" x-show="pickerOpen" x-cloak>
-//               <ul class="dropdown-list" role="listbox">
-//                   <template x-for="c in uniqueDialCountries" :key="c.code">
-//                       <li class="dropdown-list__item" role="option"
-//                           :aria-selected="selected.code === c.code"
-//                           x-on:click="pickCountry(c)">
-//                           <span class="dropdown-list__leading" x-text="c.flag"></span>
-//                           <span class="dropdown-list__label" x-text="`${c.native} (${c.dial})`"></span>
-//                       </li>
-//                   </template>
-//               </ul>
-//           </div>
-//       </div>
-//       <input type="tel" class="form-field__input"
-//              :value="national"
-//              x-on:input="onInput($event.target.value)"
-//              placeholder="4 123 45 67" />
-//   </div>
+// Accessibility (WAI-ARIA 1.2 combobox) for the country-code picker:
+//   • The trigger carries `role="combobox"`, `aria-haspopup="listbox"`,
+//     `:aria-expanded="pickerOpen"`, `:aria-controls="listboxId"`,
+//     `:aria-activedescendant="activeOptionId"`, and `:aria-labelledby="labelId"`
+//     pointing at a hidden `<span>` carrying stable context text
+//     ("Country code: <flag> <dial>") so screen readers announce the current
+//     selection without stuttering on every re-render (A11Y-026).
+//   • ArrowDown/ArrowUp/Enter/Space/Escape work from the trigger.
+//   • On close (Escape, outside-click, selection) focus is restored to the
+//     trigger via `$refs.trigger?.focus()` (A11Y-005).
 
 import { AsYouType, getCountryCallingCode } from 'libphonenumber-js';
 import { countriesPopularFirst, countryByCode } from './country-data.js';
@@ -58,18 +38,139 @@ function initPhoneInput(opts = {}) {
         national: '',   // user-visible national portion, formatted as they type
         e164: '',       // canonical E.164 (+32412345678) for form submission
         pickerOpen: false,
+        // The code of the currently-highlighted option, or null when nothing
+        // is active. Drives `:aria-activedescendant` on the trigger.
+        activeValue: null,
+        // Stable ids for ARIA wiring.
+        listboxId: '',
+        labelId: '',
 
-        togglePicker() { this.pickerOpen = !this.pickerOpen; },
-        closePicker() { this.pickerOpen = false; },
+        init() {
+            this.listboxId = this.$id('phone-input-listbox');
+            this.labelId = this.$id('phone-input-label');
+        },
 
+        // ── ARIA id helpers ──────────────────────────────────────────────
+        optionId(code) {
+            return this.listboxId + '-option-' + code;
+        },
+
+        get activeOptionId() {
+            if (!this.pickerOpen) return '';
+            if (!this.activeValue) return '';
+            return this.optionId(this.activeValue);
+        },
+
+        // ── Open / close / toggle ────────────────────────────────────────
+        togglePicker() {
+            if (this.pickerOpen) {
+                this.closePicker();
+            } else {
+                this.openPicker();
+            }
+        },
+
+        openPicker() {
+            if (this.pickerOpen) return;
+            this.pickerOpen = true;
+            // Seed activeValue to the selected country so keyboard nav
+            // starts from the current selection.
+            this.activeValue = this.selected ? this.selected.code : this.uniqueDialCountries[0].code;
+            this.$nextTick(() => this.scrollActiveIntoView());
+        },
+
+        closePicker() {
+            if (!this.pickerOpen) return;
+            this.pickerOpen = false;
+            this.activeValue = null;
+            this.restoreFocus();
+        },
+
+        // Outside-click close: no focus restoration (user has already
+        // focused somewhere else by clicking).
+        closePickerOnOutside() {
+            if (!this.pickerOpen) return;
+            this.pickerOpen = false;
+            this.activeValue = null;
+        },
+
+        restoreFocus() {
+            if (this.$refs.trigger && typeof this.$refs.trigger.focus === 'function') {
+                this.$refs.trigger.focus();
+            }
+        },
+
+        openAndFocusFirst() {
+            if (!this.pickerOpen) this.openPicker();
+            this.$nextTick(() => this.focusFirst());
+        },
+
+        openAndFocusLast() {
+            if (!this.pickerOpen) this.openPicker();
+            this.$nextTick(() => this.focusLast());
+        },
+
+        // ── Roving-focus navigation ──────────────────────────────────────
+        focusNext() {
+            const list = this.uniqueDialCountries;
+            if (list.length === 0) { this.activeValue = null; return; }
+            const idx = list.findIndex((c) => c.code === this.activeValue);
+            const next = idx < 0 ? 0 : (idx + 1) % list.length;
+            this.activeValue = list[next].code;
+            this.scrollActiveIntoView();
+        },
+
+        focusPrev() {
+            const list = this.uniqueDialCountries;
+            if (list.length === 0) { this.activeValue = null; return; }
+            const idx = list.findIndex((c) => c.code === this.activeValue);
+            const prev = idx < 0
+                ? list.length - 1
+                : (idx - 1 + list.length) % list.length;
+            this.activeValue = list[prev].code;
+            this.scrollActiveIntoView();
+        },
+
+        focusFirst() {
+            const list = this.uniqueDialCountries;
+            if (list.length === 0) { this.activeValue = null; return; }
+            this.activeValue = list[0].code;
+            this.scrollActiveIntoView();
+        },
+
+        focusLast() {
+            const list = this.uniqueDialCountries;
+            if (list.length === 0) { this.activeValue = null; return; }
+            this.activeValue = list[list.length - 1].code;
+            this.scrollActiveIntoView();
+        },
+
+        scrollActiveIntoView() {
+            if (!this.pickerOpen || !this.activeValue) return;
+            const el = document.getElementById(this.optionId(this.activeValue));
+            if (el && typeof el.scrollIntoView === 'function') {
+                el.scrollIntoView({ block: 'nearest' });
+            }
+        },
+
+        // ── Selection ────────────────────────────────────────────────────
         pickCountry(country) {
             this.selected = country;
-            this.closePicker();
+            this.pickerOpen = false;
+            this.activeValue = null;
             // Re-format the existing national number with the new country.
             this.reformat();
             this.emit();
+            this.restoreFocus();
         },
 
+        pickActive() {
+            if (!this.activeValue) return;
+            const country = this.uniqueDialCountries.find((c) => c.code === this.activeValue);
+            if (country) this.pickCountry(country);
+        },
+
+        // ── Input handling ───────────────────────────────────────────────
         onInput(raw) {
             this.national = this.formatAsYouType(raw);
             this.updateE164();

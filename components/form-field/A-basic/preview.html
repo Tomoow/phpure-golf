@@ -149,6 +149,12 @@
             width: 100%;
             text-align: left;
         }
+        /* When the form-field itself is the combobox trigger (tabindex=0,
+         * role="combobox"), show the click-hand cursor so the interaction
+         * affordance matches the old `<button class="form-field">` it
+         * replaced. The inner `.form-field__input` span is click-through. */
+        .combobox .form-field[role="combobox"] { cursor: pointer; }
+        .combobox .form-field[role="combobox"] .form-field__input { cursor: pointer; }
         /* Narrow combobox variant: trigger hugs its content (used for the phone
          * country-code prefix). */
         .combobox--auto { display: inline-block; width: auto; }
@@ -169,9 +175,16 @@
         .flag--de { background: linear-gradient(to bottom, #000 0 33%, #DD0000 33% 66%, #FFCE00 66% 100%); }
 
         /* Chevron rotation: points down when collapsed, flips 180° when the
-         * parent button reports aria-expanded="true". Smooth 150ms transition. */
-        .combobox__chevron { transition: transform 150ms ease; transform-origin: center; }
-        button[aria-expanded="true"] .combobox__chevron { transform: rotate(180deg); }
+         * nearest combobox trigger (a `<button>` for the phone picker, a
+         * `<div role="combobox">` for size/country/select) reports
+         * aria-expanded="true". The transition is wrapped in a reduced-motion
+         * guard (A11Y-020) so users who request reduced motion don't see the
+         * spin; the end-state rotation still applies. */
+        .combobox__chevron { transform-origin: center; }
+        [aria-expanded="true"] .combobox__chevron { transform: rotate(180deg); }
+        @media (prefers-reduced-motion: no-preference) {
+            .combobox__chevron { transition: transform 150ms ease; }
+        }
 
         /* ─── Phone input (libphonenumber-js + world-countries) ───────── */
         .phone-input__trigger {
@@ -453,7 +466,7 @@
                         <button type="button"
                                 class="form-field__affix"
                                 x-bind:aria-label="shown ? 'Hide password' : 'Show password'"
-                                x-bind:aria-pressed="shown.toString()"
+                                x-bind:aria-pressed="shown"
                                 x-on:click="shown = !shown">
                             <!-- Eye (password hidden): shown when shown=false -->
                             <svg x-show="!shown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
@@ -490,22 +503,47 @@
                 <!-- 6.5 Phone — format-as-you-type via libphonenumber-js.
                      Wrapper IS the combobox/positioning context; the form-field is a
                      child, and the dropdown panel is a SIBLING of the form-field so
-                     it drops below the whole input instead of being clipped inside it. -->
+                     it drops below the whole input instead of being clipped inside it.
+
+                     Country-code picker is a `<button role="combobox">` that lives
+                     NEXT TO the `<input type="tel">` (siblings inside the form-field).
+                     This is the WAI-ARIA 1.2 combobox pattern: the button is the
+                     combobox, `aria-controls` points at the listbox, and
+                     `aria-activedescendant` follows keyboard navigation. A hidden
+                     `<span>` carries stable "Country code: flag +dial" text that
+                     `aria-labelledby` points at so screen readers announce the
+                     current selection without stuttering on every re-render
+                     (A11Y-026). -->
                 <div class="group">
                     <span class="caption">6.5 Phone (libphonenumber-js format-as-you-type + country picker)</span>
                     <div class="combobox phone-input"
                          x-data="initPhoneInput({ defaultCountry: 'BE' })"
-                         x-on:click.outside="closePicker()">
+                         x-on:click.outside="closePickerOnOutside()">
                         <div class="form-field">
+                            <!-- Hidden label target for aria-labelledby. Lives outside
+                                 the button so Alpine re-renders inside the button don't
+                                 retrigger the SR announcement (A11Y-026). -->
+                            <span x-bind:id="labelId" hidden>
+                                Country code:
+                                <span x-text="selected.native"></span>
+                                <span x-text="selected.dial"></span>
+                            </span>
                             <button type="button"
                                     class="form-field__affix phone-input__trigger"
+                                    x-ref="trigger"
                                     aria-haspopup="listbox"
-                                    x-bind:aria-label="'Country: ' + selected.native"
                                     x-bind:aria-expanded="pickerOpen"
+                                    x-bind:aria-controls="listboxId"
+                                    x-bind:aria-activedescendant="activeOptionId"
+                                    x-bind:aria-labelledby="labelId"
                                     x-on:click="togglePicker()"
+                                    x-on:keydown.down.prevent="openAndFocusFirst()"
+                                    x-on:keydown.up.prevent="openAndFocusLast()"
+                                    x-on:keydown.enter.prevent="togglePicker()"
+                                    x-on:keydown.space.prevent="togglePicker()"
                                     x-on:keydown.escape="closePicker()">
-                                <span class="phone-input__flag" x-text="selected.flag"></span>
-                                <span x-text="selected.dial"></span>
+                                <span class="phone-input__flag" aria-hidden="true" x-text="selected.flag"></span>
+                                <span aria-hidden="true" x-text="selected.dial"></span>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
@@ -517,12 +555,20 @@
                                    placeholder="4 123 45 67" />
                         </div>
                         <div class="combobox__panel phone-input__panel" x-show="pickerOpen" x-cloak>
-                            <ul class="dropdown-list" role="listbox" aria-label="Country code">
+                            <ul class="dropdown-list" role="listbox" aria-label="Country code"
+                                x-bind:id="listboxId"
+                                x-on:keydown.down.prevent="focusNext()"
+                                x-on:keydown.up.prevent="focusPrev()"
+                                x-on:keydown.enter.prevent="pickActive()"
+                                x-on:keydown.escape="closePicker()">
                                 <template x-for="c in uniqueDialCountries" :key="c.code">
                                     <li class="dropdown-list__item" role="option"
-                                        x-bind:aria-selected="(selected.code === c.code).toString()"
-                                        x-on:click="pickCountry(c)">
-                                        <span class="dropdown-list__leading" x-text="c.flag"></span>
+                                        x-bind:id="optionId(c.code)"
+                                        x-bind:aria-selected="selected.code === c.code ? 'true' : 'false'"
+                                        x-bind:data-active="activeValue === c.code ? 'true' : 'false'"
+                                        x-on:click="pickCountry(c)"
+                                        x-on:mouseenter="activeValue = c.code">
+                                        <span class="dropdown-list__leading" aria-hidden="true" x-text="c.flag"></span>
                                         <span class="dropdown-list__label">
                                             <span x-text="c.native"></span>
                                             <span class="phone-input__dial" x-text="c.dial"></span>
@@ -535,18 +581,37 @@
                 </div>
 
                 <!-- 6.7 Country selector — all ~250 countries (world-countries), searchable,
-                     emoji flags, native names. Starts blank with a globe placeholder. -->
+                     emoji flags, native names. Starts blank with a globe placeholder.
+
+                     Trigger is a `<div class="form-field" role="combobox" tabindex="0">`,
+                     NOT a `<button>`. The button-wrapping-a-span-as-input pattern
+                     created invalid HTML and broke AT (A11Y-001 / A11Y-014); the
+                     ARIA 1.2 combobox pattern uses a focusable wrapper with a
+                     value-display child. `aria-controls` / `aria-activedescendant`
+                     are wired to the listbox id that `$id()` allocates on mount
+                     (A11Y-002). `aria-labelledby` points at the visible caption
+                     "6.7 Country selector". Focus returns to the trigger on close
+                     (A11Y-005). -->
                 <div class="group">
-                    <span class="caption">6.7 Country selector (world-countries + searchable dropdown)</span>
+                    <span x-bind:id="labelId" class="caption">6.7 Country selector (world-countries + searchable dropdown)</span>
                     <div class="combobox country-selector"
                          x-data="initCountrySelector()"
-                         x-on:click.outside="close()">
-                        <button type="button"
-                                class="form-field"
-                                aria-haspopup="listbox"
-                                x-bind:aria-expanded="open"
-                                x-on:click="toggle()"
-                                x-on:keydown.escape="close()">
+                         x-on:click.outside="closeOnOutside()">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-bind:aria-labelledby="labelId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="openAndFocusFirst()"
+                             x-on:keydown.up.prevent="openAndFocusLast()"
+                             x-on:keydown.enter.prevent="toggle()"
+                             x-on:keydown.space.prevent="toggle()"
+                             x-on:keydown.escape="close()">
                             <span class="form-field__affix country-selector__leading" aria-hidden="true">
                                 <!-- Globe until a country is picked, then the flag emoji. -->
                                 <svg x-show="!selected" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6">
@@ -560,19 +625,27 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </span>
-                        </button>
+                        </div>
                         <div class="combobox__panel country-selector__panel" x-show="open" x-cloak>
                             <input type="search"
                                    class="country-selector__search"
+                                   x-ref="search"
                                    x-model="filter"
                                    placeholder="Search country…"
                                    aria-label="Search country"
+                                   x-on:keydown.down.prevent="focusNext()"
+                                   x-on:keydown.up.prevent="focusPrev()"
+                                   x-on:keydown.enter.prevent="pickActive()"
                                    x-on:keydown.escape="close()" />
-                            <ul class="dropdown-list country-selector__list" role="listbox" aria-label="Country">
+                            <ul class="dropdown-list country-selector__list" role="listbox" aria-label="Country"
+                                x-bind:id="listboxId">
                                 <template x-for="c in filtered()" :key="c.code">
                                     <li class="dropdown-list__item" role="option"
-                                        x-bind:aria-selected="(selected && selected.code === c.code).toString()"
-                                        x-on:click="pick(c)">
+                                        x-bind:id="optionId(c.code)"
+                                        x-bind:aria-selected="selected && selected.code === c.code ? 'true' : 'false'"
+                                        x-bind:data-active="activeValue === c.code ? 'true' : 'false'"
+                                        x-on:click="pick(c)"
+                                        x-on:mouseenter="activeValue = c.code">
                                         <span class="dropdown-list__leading country-selector__flag" x-text="c.flag"></span>
                                         <span class="dropdown-list__label" x-text="c.native"></span>
                                         <span class="dropdown-list__trailing country-selector__dial" x-text="c.dial"></span>
@@ -587,32 +660,63 @@
                 </div>
 
                 <!-- 6.7 Size selector — Alpine combobox + dropdown-list (matches the Figma
-                     dropdown styling with blue-50 hover and blue-500 selected). -->
+                     dropdown styling with blue-50 hover and blue-600 selected).
+
+                     The combobox and the dropdown-list share ONE Alpine scope so the
+                     trigger can bind `aria-controls` / `aria-activedescendant` to the
+                     same `listboxId` the listbox renders. `<div role="combobox">`
+                     (not `<button>`) because the trigger carries a `form-field__input`
+                     span — spans aren't allowed inside a `<button>` when the button
+                     is claiming combobox behavior (A11Y-001 / A11Y-014). Focus
+                     returns to the trigger on close (A11Y-005). -->
                 <div class="group">
-                    <span class="caption">6.7 Size selector (Alpine combobox + dropdown-list)</span>
+                    <span class="caption" id="size-selector-caption">6.7 Size selector (Alpine combobox + dropdown-list)</span>
                     <div class="combobox"
-                         x-data="{ label: 'Select a size', open: false }"
-                         x-on:dropdown:select="label = $event.detail.label; open = false"
-                         x-on:click.outside="open = false">
-                        <button type="button"
-                                class="form-field"
-                                aria-haspopup="listbox"
-                                x-bind:aria-expanded="open"
-                                x-on:click="open = !open"
-                                x-on:keydown.escape="open = false"
-                                x-on:keydown.down.prevent="open = true">
-                            <span class="form-field__input" x-text="label"></span>
+                         x-data="initDropdownList({ items: [
+                             { value: 's', label: 'Small' },
+                             { value: 'm', label: 'Medium' },
+                             { value: 'l', label: 'Large' }
+                         ] })"
+                         x-on:click.outside="closeOnOutsideClick">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             aria-labelledby="size-selector-caption"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="openAndFocusFirst()"
+                             x-on:keydown.up.prevent="openAndFocusLast()"
+                             x-on:keydown.enter.prevent="toggle()"
+                             x-on:keydown.space.prevent="toggle()"
+                             x-on:keydown.escape="closeList('escape')">
+                            <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select a size'"></span>
                             <span class="form-field__affix" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </span>
-                        </button>
+                        </div>
                         <div class="combobox__panel" x-show="open" x-cloak>
-                            <ul class="dropdown-list" role="listbox" aria-label="Size" x-data="initDropdownList">
-                                <li class="dropdown-list__item" role="option" data-value="s" data-label="Small"  x-on:click="selectValue('s', $event.currentTarget)"><span class="dropdown-list__label">Small</span></li>
-                                <li class="dropdown-list__item" role="option" data-value="m" data-label="Medium" x-on:click="selectValue('m', $event.currentTarget)"><span class="dropdown-list__label">Medium</span></li>
-                                <li class="dropdown-list__item" role="option" data-value="l" data-label="Large"  x-on:click="selectValue('l', $event.currentTarget)"><span class="dropdown-list__label">Large</span></li>
+                            <ul class="dropdown-list"
+                                role="listbox"
+                                aria-labelledby="size-selector-caption"
+                                x-bind:id="listboxId"
+                                x-on:keydown="handleKeydown">
+                                <template x-for="(item, index) in items" :key="item.value">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(item.value, index)"
+                                        x-bind:data-value="item.value"
+                                        x-bind:data-active="activeValue === item.value ? 'true' : 'false'"
+                                        x-bind:aria-selected="item.value === selectedValue ? 'true' : 'false'"
+                                        x-on:click="pickItem(item)"
+                                        x-on:mouseenter="hoverItemByValue(item.value)">
+                                        <span class="dropdown-list__label" x-text="item.label"></span>
+                                    </li>
+                                </template>
                             </ul>
                         </div>
                     </div>
@@ -765,30 +869,57 @@
                     </div>
                 </div>
                 <div class="group">
-                    <span class="caption">Select (live — Alpine combobox + dropdown-list)</span>
+                    <span class="caption" id="select-live-caption">Select (live — Alpine combobox + dropdown-list)</span>
+                    <!-- Same refactor as the 6.7 size selector: combobox and
+                         dropdown-list share one scope; trigger is a
+                         `<div role="combobox">` with full ARIA wiring; focus
+                         returns to the trigger on close. -->
                     <div class="combobox"
-                         x-data="{ label: 'Pick one', open: false }"
-                         x-on:dropdown:select="label = $event.detail.label; open = false"
-                         x-on:click.outside="open = false">
-                        <button type="button"
-                                class="form-field"
-                                aria-haspopup="listbox"
-                                x-bind:aria-expanded="open"
-                                x-on:click="open = !open"
-                                x-on:keydown.escape="open = false"
-                                x-on:keydown.down.prevent="open = true">
-                            <span class="form-field__input" x-text="label"></span>
+                         x-data="initDropdownList({ items: [
+                             { value: 'alpha', label: 'Alpha' },
+                             { value: 'beta',  label: 'Beta' },
+                             { value: 'gamma', label: 'Gamma' }
+                         ] })"
+                         x-on:click.outside="closeOnOutsideClick">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             aria-labelledby="select-live-caption"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="openAndFocusFirst()"
+                             x-on:keydown.up.prevent="openAndFocusLast()"
+                             x-on:keydown.enter.prevent="toggle()"
+                             x-on:keydown.space.prevent="toggle()"
+                             x-on:keydown.escape="closeList('escape')">
+                            <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Pick one'"></span>
                             <span class="form-field__affix" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </span>
-                        </button>
+                        </div>
                         <div class="combobox__panel" x-show="open" x-cloak>
-                            <ul class="dropdown-list" role="listbox" aria-label="Pick one" x-data="initDropdownList">
-                                <li class="dropdown-list__item" role="option" data-value="alpha" data-label="Alpha" x-on:click="selectValue('alpha', $event.currentTarget)"><span class="dropdown-list__label">Alpha</span></li>
-                                <li class="dropdown-list__item" role="option" data-value="beta" data-label="Beta" x-on:click="selectValue('beta', $event.currentTarget)"><span class="dropdown-list__label">Beta</span></li>
-                                <li class="dropdown-list__item" role="option" data-value="gamma" data-label="Gamma" x-on:click="selectValue('gamma', $event.currentTarget)"><span class="dropdown-list__label">Gamma</span></li>
+                            <ul class="dropdown-list"
+                                role="listbox"
+                                aria-labelledby="select-live-caption"
+                                x-bind:id="listboxId"
+                                x-on:keydown="handleKeydown">
+                                <template x-for="(item, index) in items" :key="item.value">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(item.value, index)"
+                                        x-bind:data-value="item.value"
+                                        x-bind:data-active="activeValue === item.value ? 'true' : 'false'"
+                                        x-bind:aria-selected="item.value === selectedValue ? 'true' : 'false'"
+                                        x-on:click="pickItem(item)"
+                                        x-on:mouseenter="hoverItemByValue(item.value)">
+                                        <span class="dropdown-list__label" x-text="item.label"></span>
+                                    </li>
+                                </template>
                             </ul>
                         </div>
                     </div>

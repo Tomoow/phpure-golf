@@ -116,6 +116,14 @@
             color: var(--color-slate-blue-500);
             flex: none;
         }
+        /* Chevron flips 180° when its nearest combobox trigger is expanded.
+         * The rotation transition is wrapped in a reduced-motion guard
+         * (A11Y-020) so users who request reduced motion don't see the spin. */
+        .trigger .chev { transform-origin: center; }
+        .trigger[aria-expanded="true"] .chev { transform: rotate(180deg); }
+        @media (prefers-reduced-motion: no-preference) {
+            .trigger .chev { transition: transform 150ms ease; }
+        }
         .flag {
             display: inline-block;
             width: 100%;
@@ -252,7 +260,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-list__divider" role="separator"></li>
+                        <li class="dropdown-list__divider" role="separator" aria-orientation="horizontal"></li>
                         <li class="dropdown-list__item force-disabled" role="option" aria-selected="false" aria-disabled="true" data-value="admin">
                             <span class="dropdown-list__leading" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -280,71 +288,68 @@
             <div class="panels">
                 <div class="panel-group">
                     <span class="caption">Fruit picker</span>
+                    <!--
+                      Config-driven combobox. The fruit catalog lives on the Alpine
+                      data model (passed to `initDropdownList`) — NOT on the DOM —
+                      so there is a single source of truth. `x-for` renders the
+                      real options; there are no hidden seed `<li>`s (A11Y-003).
+
+                      Trigger is a `<button>` because it doesn't contain the
+                      value's inner span markup — it just carries a text node
+                      bound via `x-text`. The combobox pattern with
+                      `aria-controls` + `aria-activedescendant` wires screen
+                      readers to track highlighted options (A11Y-002).
+                    -->
                     <div class="combobox"
-                         x-data="{ label: 'Apple', open: false }"
-                         @dropdown:open="open = true"
-                         @dropdown:close="open = false"
-                         @dropdown:select="label = $event.detail.label">
+                         x-data="initDropdownList({ items: [
+                             { value: 'apple',  label: 'Apple' },
+                             { value: 'banana', label: 'Banana' },
+                             { value: 'cherry', label: 'Cherry' },
+                             { value: 'grape',  label: 'Grape (out of stock)', disabled: true },
+                             { value: 'mango',  label: 'Mango' },
+                             { value: 'pear',   label: 'Pear' }
+                         ], selectedValue: 'apple' })"
+                         x-on:click.outside="closeOnOutsideClick">
                         <button type="button"
                                 class="trigger"
-                                :aria-expanded="open"
+                                x-ref="trigger"
                                 aria-haspopup="listbox"
-                                @click="$refs.list.dispatchEvent(new CustomEvent('preview:toggle', { bubbles: false }))">
-                            <span x-text="label"></span>
+                                x-bind:aria-expanded="open"
+                                x-bind:aria-controls="listboxId"
+                                x-bind:aria-activedescendant="activeOptionId"
+                                x-on:click="toggle()"
+                                x-on:keydown.down.prevent="openAndFocusFirst()"
+                                x-on:keydown.up.prevent="openAndFocusLast()"
+                                x-on:keydown.enter.prevent="toggle()"
+                                x-on:keydown.space.prevent="toggle()"
+                                x-on:keydown.escape="closeList('escape')">
+                            <span x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select…'"></span>
                             <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
 
-                        <!-- The listbox is the Alpine component. It owns `open`
-                             internally; the outer scope just reads events. -->
-                        <ul x-data="initDropdownList"
-                            x-ref="list"
-                            class="dropdown-list"
+                        <ul class="dropdown-list"
+                            x-bind:id="listboxId"
                             role="listbox"
                             aria-label="Fruit options"
-                            tabindex="0"
                             x-show="open"
                             x-cloak
                             x-transition.opacity
-                            @keydown="handleKeydown"
-                            @click.outside="closeOnOutsideClick"
-                            @preview:toggle="toggle">
+                            x-on:keydown="handleKeydown">
                             <template x-for="(item, index) in items" :key="item.value">
                                 <li class="dropdown-list__item"
                                     role="option"
-                                    :id="'dl-fruit-option-' + index"
-                                    :data-value="item.value"
-                                    :data-active="isActive"
-                                    :aria-selected="isSelected"
-                                    :aria-disabled="item.disabled ? 'true' : 'false'"
-                                    @click="select"
-                                    @mouseenter="hoverItem">
-                                    <span class="dropdown-list__label" x-text="item.el.querySelector('.dropdown-list__label').textContent"></span>
+                                    x-bind:id="optionId(item.value, index)"
+                                    x-bind:data-value="item.value"
+                                    x-bind:data-active="activeValue === item.value ? 'true' : 'false'"
+                                    x-bind:aria-selected="item.value === selectedValue ? 'true' : 'false'"
+                                    x-bind:aria-disabled="item.disabled ? 'true' : 'false'"
+                                    x-on:click="pickItem(item)"
+                                    x-on:mouseenter="hoverItemByValue(item.value)">
+                                    <span class="dropdown-list__label" x-text="item.label"></span>
                                 </li>
                             </template>
-
-                            <!-- Static fallback options the Alpine init() reads
-                                 on mount. Once init runs, x-for above re-renders
-                                 from `items`. We keep a simple DOM-seed pattern. -->
-                            <li class="dropdown-list__item" role="option" data-value="apple" aria-selected="true" hidden>
-                                <span class="dropdown-list__label">Apple</span>
-                            </li>
-                            <li class="dropdown-list__item" role="option" data-value="banana" hidden>
-                                <span class="dropdown-list__label">Banana</span>
-                            </li>
-                            <li class="dropdown-list__item" role="option" data-value="cherry" hidden>
-                                <span class="dropdown-list__label">Cherry</span>
-                            </li>
-                            <li class="dropdown-list__item" role="option" data-value="grape" aria-disabled="true" hidden>
-                                <span class="dropdown-list__label">Grape (out of stock)</span>
-                            </li>
-                            <li class="dropdown-list__item" role="option" data-value="mango" hidden>
-                                <span class="dropdown-list__label">Mango</span>
-                            </li>
-                            <li class="dropdown-list__item" role="option" data-value="pear" hidden>
-                                <span class="dropdown-list__label">Pear</span>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -365,30 +370,49 @@
             <div class="panels">
                 <div class="panel-group">
                     <span class="caption">Country picker</span>
+                    <!--
+                      DOM-driven combobox: the `<li>` options are authored
+                      directly. `initDropdownList()` (no args) reads them from
+                      the DOM in `init()`, assigns stable ids, and wires
+                      keyboard navigation. The trigger is a `<button>` bound
+                      to `listboxId` / `activeOptionId` (A11Y-002) with focus
+                      restoration on close (A11Y-005).
+                    -->
                     <div class="combobox"
-                         x-data="{ label: 'Belgium', open: false }"
-                         @dropdown:open="open = true"
-                         @dropdown:close="open = false"
-                         @dropdown:select="label = $event.detail.label">
+                         x-data="initDropdownList()"
+                         x-on:click.outside="closeOnOutsideClick">
                         <button type="button"
                                 class="trigger"
-                                :aria-expanded="open"
+                                x-ref="trigger"
                                 aria-haspopup="listbox"
-                                @click="$refs.list.dispatchEvent(new CustomEvent('preview:toggle', { bubbles: false }))">
-                            <span x-text="label"></span>
+                                x-bind:aria-expanded="open"
+                                x-bind:aria-controls="listboxId"
+                                x-bind:aria-activedescendant="activeOptionId"
+                                x-on:click="toggle()"
+                                x-on:keydown.down.prevent="openAndFocusFirst()"
+                                x-on:keydown.up.prevent="openAndFocusLast()"
+                                x-on:keydown.enter.prevent="toggle()"
+                                x-on:keydown.space.prevent="toggle()"
+                                x-on:keydown.escape="closeList('escape')">
+                            <span x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select country'"></span>
                             <svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
 
                         <ul class="dropdown-list"
+                            x-ref="list"
+                            x-bind:id="listboxId"
                             role="listbox"
                             aria-label="Country options"
-                            tabindex="0"
                             x-show="open"
                             x-cloak
-                            x-transition.opacity>
-                            <li class="dropdown-list__item" role="option" aria-selected="true" data-value="be">
+                            x-transition.opacity
+                            x-on:keydown="handleKeydown">
+                            <li class="dropdown-list__item" role="option" aria-selected="true" data-value="be"
+                                x-bind:data-active="activeValue === 'be' ? 'true' : 'false'"
+                                x-on:click="select"
+                                x-on:mouseenter="hoverItemByValue('be')">
                                 <span class="dropdown-list__leading" aria-hidden="true">
                                     <span class="flag flag--be"></span>
                                 </span>
@@ -399,25 +423,37 @@
                                     </svg>
                                 </span>
                             </li>
-                            <li class="dropdown-list__item" role="option" data-value="nl">
+                            <li class="dropdown-list__item" role="option" data-value="nl"
+                                x-bind:data-active="activeValue === 'nl' ? 'true' : 'false'"
+                                x-on:click="select"
+                                x-on:mouseenter="hoverItemByValue('nl')">
                                 <span class="dropdown-list__leading" aria-hidden="true">
                                     <span class="flag flag--nl"></span>
                                 </span>
                                 <span class="dropdown-list__label">Netherlands</span>
                             </li>
-                            <li class="dropdown-list__item" role="option" data-value="fr">
+                            <li class="dropdown-list__item" role="option" data-value="fr"
+                                x-bind:data-active="activeValue === 'fr' ? 'true' : 'false'"
+                                x-on:click="select"
+                                x-on:mouseenter="hoverItemByValue('fr')">
                                 <span class="dropdown-list__leading" aria-hidden="true">
                                     <span class="flag flag--fr"></span>
                                 </span>
                                 <span class="dropdown-list__label">France</span>
                             </li>
-                            <li class="dropdown-list__item" role="option" data-value="de">
+                            <li class="dropdown-list__item" role="option" data-value="de"
+                                x-bind:data-active="activeValue === 'de' ? 'true' : 'false'"
+                                x-on:click="select"
+                                x-on:mouseenter="hoverItemByValue('de')">
                                 <span class="dropdown-list__leading" aria-hidden="true">
                                     <span class="flag flag--de"></span>
                                 </span>
                                 <span class="dropdown-list__label">Germany</span>
                             </li>
-                            <li class="dropdown-list__item" role="option" data-value="uk">
+                            <li class="dropdown-list__item" role="option" data-value="uk"
+                                x-bind:data-active="activeValue === 'uk' ? 'true' : 'false'"
+                                x-on:click="select"
+                                x-on:mouseenter="hoverItemByValue('uk')">
                                 <span class="dropdown-list__leading" aria-hidden="true">
                                     <span class="flag flag--uk"></span>
                                 </span>
