@@ -68,6 +68,11 @@ Thumbs.db
 # Per-user Claude Code overrides (agent files + project settings.json are shared)
 /.claude/settings.local.json
 
+# hyva-ai-tools skills are symlinked from the user's clone of
+# https://github.com/hyva-themes/hyva-ai-tools — symlinks are not portable
+# across machines. Each contributor installs the skills locally (see README).
+/.claude/skills
+
 # Override Magento's /package.json and /package-lock.json ignores — the POC
 # has its own npm workspace at the repo root (Vite + Tailwind + Alpine).
 !/package.json

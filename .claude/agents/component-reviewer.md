@@ -38,6 +38,7 @@ You are the **component-reviewer** subagent. You are the last step before a comp
 - Zero `onclick=`, `onchange=`, `onsubmit=`, `on*=` attributes.
 - Zero `javascript:` URLs.
 - All event handlers via Alpine `x-on:` / `@` or `x-data` methods.
+- **Alpine CSP patterns per `.claude/skills/hyva-alpine-component/SKILL.md`:** constructors are named global functions registered inside `alpine:init` with `{once: true}`. `$hyvaCsp->registerInlineScript()` follows every `<script>` block in PHTML. No `x-model` (use `:value` + `@input`), no range iteration (`x-for="i in 10"`), no inline mutations or method args — look those up in the skill if a finding is uncertain.
 
 ### 5. PHTML/CSS ↔ preview.html sync
 - Read both files. For each element, diff the class list, the DOM structure, and the Alpine directives.

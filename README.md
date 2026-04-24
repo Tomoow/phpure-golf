@@ -60,6 +60,28 @@ Four specialized agents handle the per-component work. Each has its operating pr
 
 ---
 
+## Hyvä AI skills
+
+Two official [hyva-themes/hyva-ai-tools](https://github.com/hyva-themes/hyva-ai-tools) skills are consulted by the `hyva-component-author` and `component-reviewer` subagents as authoritative references:
+
+- **`hyva-ui-component`** — variant matrix, dependency graph, README-reading protocol, layout-XML merge rules, `etc/view.xml` configuration pattern.
+- **`hyva-alpine-component`** — CSP-compatible Alpine patterns (mandatory for any interactive component: modal, menu, minicart, accordion, gallery, etc.).
+
+The skills live outside this repo — [`.claude/skills/`](./.claude/skills/) is gitignored because it's a symlink to the user's local clone of `hyva-ai-tools`. To bootstrap on a fresh machine:
+
+```sh
+git clone https://github.com/hyva-themes/hyva-ai-tools.git ~/hyva-ai-tools
+cd /path/to/this/repo
+~/hyva-ai-tools/install-hyva-skill.sh hyva-ui-component claude
+~/hyva-ai-tools/install-hyva-skill.sh hyva-alpine-component claude
+```
+
+The installer auto-detects this project's `.claude/skills/` and symlinks both skills (plus their dependencies). `git pull ~/hyva-ai-tools` updates every installed skill.
+
+The subagent files reference these by their symlinked paths (`.claude/skills/<name>/SKILL.md`). If the symlinks are missing, the subagent will stop and print the install command above.
+
+---
+
 ## Phased workflow
 
 - **Phase 0 — setup (current):** folders, subagents, tokens, Vite preview, inventory. This README, `CLAUDE.md`, and `.claude/agents/*` are the output.
