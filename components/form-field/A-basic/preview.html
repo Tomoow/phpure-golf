@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Form field — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only helper classes that simulate :hover / :focus-within /
+         * :disabled / error / warning / success without user interaction so
+         * every state can be reviewed side-by-side. They mirror the real
+         * selectors in `form-field.css` but are inert.
+         * These classes are NOT part of the shipped component.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: 9rem repeat(5, minmax(0, 1fr));
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+        .matrix > .col-head,
+        .matrix > .row-head {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .matrix > .row-head {
+            text-align: right;
+            padding-inline-end: 0.5rem;
+        }
+        .cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-height: 3rem;
+        }
+        .stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(16rem, 1fr));
+            gap: 1rem 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+        .stack--full {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .caption {
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--color-slate-blue-500);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-block-end: 0.25rem;
+        }
+        .group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 0;
+        }
+        .section {
+            margin-block-end: 2rem;
+        }
+
+        /* ── Forced-state demo classes (preview-only) ───────────────── */
+        /* Mirror the real selectors in form-field.css so each state can be
+         * captured in a single screenshot, not via interaction. */
+
+        .force-hover > .form-field {
+            border-color: var(--field-hover-border, var(--field-border));
+        }
+        .force-focus > .form-field {
+            border-color: var(--field-focus-border, var(--field-border));
+            box-shadow: var(--field-focus-ring);
+        }
+        .force-disabled > .form-field {
+            border-color: var(--field-disabled-border);
+            background-color: var(--field-disabled-bg);
+            color: var(--field-disabled-color);
+            cursor: not-allowed;
+        }
+
+        /* Simple visual divider inside the `stack` for readability. */
+        .divider {
+            grid-column: 1 / -1;
+            height: 1px;
+            background: var(--color-slate-blue-100);
+            margin-block: 0.25rem;
+        }
+
+        /* Preview-scaffold grid helpers — let a cell span the full row, or 5
+         * columns for the label+field+hint stack. Scoped to the preview. */
+        .cell--span-full { grid-column: 1 / -1; }
+        .cell--span-5    { grid-column: span 5; }
+
+        /* Preview-scaffold combobox positioning — anchors the dropdown panel
+         * just below the trigger button. Production consumers will likely use
+         * a popover/floating-ui lib; this is enough for the static preview. */
+        .combobox { position: relative; display: block; }
+        .combobox__panel {
+            position: absolute;
+            inset-inline: 0;
+            top: calc(100% + 0.25rem);
+            z-index: 10;
+        }
+        .combobox .form-field {
+            width: 100%;
+            text-align: left;
+        }
+        /* When the form-field itself is the combobox trigger (tabindex=0,
+         * role="combobox"), show the click-hand cursor so the interaction
+         * affordance matches the old `<button class="form-field">` it
+         * replaced. The inner `.form-field__input` span is click-through. */
+        .combobox .form-field[role="combobox"] { cursor: pointer; }
+        .combobox .form-field[role="combobox"] .form-field__input { cursor: pointer; }
+        /* Narrow combobox variant: trigger hugs its content (used for the phone
+         * country-code prefix). */
+        .combobox--auto { display: inline-block; width: auto; }
+        .combobox--auto .form-field { width: auto; }
+
+        /* National flag swatches for the country selector (preview-only; raw
+         * hex is intentional — flag colors are not brand tokens). */
+        .flag {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: var(--radius-sm);
+            flex: none;
+        }
+        .flag--be { background: linear-gradient(to right, #000 0 33%, #FFD700 33% 66%, #EF3340 66% 100%); }
+        .flag--nl { background: linear-gradient(to bottom, #AE1C28 0 33%, #FFFFFF 33% 66%, #21468B 66% 100%); }
+        .flag--fr { background: linear-gradient(to right, #0055A4 0 33%, #FFFFFF 33% 66%, #EF4135 66% 100%); }
+        .flag--de { background: linear-gradient(to bottom, #000 0 33%, #DD0000 33% 66%, #FFCE00 66% 100%); }
+
+        /* Chevron rotation: points down when collapsed, flips 180° when the
+         * nearest combobox trigger (a `<button>` for the phone picker, a
+         * `<div role="combobox">` for size/country/select) reports
+         * aria-expanded="true". The transition is wrapped in a reduced-motion
+         * guard (A11Y-020) so users who request reduced motion don't see the
+         * spin; the end-state rotation still applies. */
+        .combobox__chevron { transform-origin: center; }
+        [aria-expanded="true"] .combobox__chevron { transform: rotate(180deg); }
+        @media (prefers-reduced-motion: no-preference) {
+            .combobox__chevron { transition: transform 150ms ease; }
+        }
+
+        /* ─── Phone input (libphonenumber-js + world-countries) ───────── */
+        .phone-input__trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+        }
+        .phone-input__flag,
+        .country-selector__flag {
+            font-size: 1.25rem;
+            line-height: 1;
+            font-family: "Twemoji Country Flags", "Apple Color Emoji", "Segoe UI Emoji",
+                "Noto Color Emoji", sans-serif;
+        }
+        .phone-input__panel,
+        .country-selector__panel {
+            inset-inline: auto;
+            left: 0;
+            min-width: 18rem;
+            max-width: 28rem;
+        }
+        .phone-input__dial {
+            color: var(--color-slate-blue-400);
+            font-size: 0.8125rem;
+            margin-inline-start: 0.5rem;
+        }
+
+        /* ─── Country selector ────────────────────────────────────────── */
+        .country-selector__search {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid var(--color-slate-blue-100);
+            padding: 0.75rem 1rem;
+            font: inherit;
+            outline: 0;
+            background: var(--color-white);
+        }
+        .country-selector__search::placeholder { color: var(--color-slate-blue-600); }
+        /* K-02 fix: the search input had `outline: 0` with no replacement, so
+         * keyboard-only users couldn't tell when it had focus (WCAG 2.4.7).
+         * Restore a visible focus indicator that matches the brand green and
+         * meets 1.4.11 (3:1 vs white). */
+        .country-selector__search:focus-visible {
+            outline: 2px solid var(--color-deep-emerald-green-500);
+            outline-offset: -2px;
+            border-bottom-color: var(--color-deep-emerald-green-500);
+        }
+        .country-selector__list {
+            max-height: 20rem;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .country-selector__dial {
+            color: inherit;
+            opacity: 0.7;
+            font-size: 0.8125rem;
+            width: auto;
+        }
+        .country-selector__panel {
+            background: var(--color-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-shadow\/lg);
+            overflow: hidden;
+        }
+
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Form field — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 form-field shell. Figma nodes
+            <code>1329:15249</code> (base) and <code>1331:14308</code> (variants). The shell is
+            one <code>@utility form-field</code> + feedback modifiers; every "variant" is
+            HTML composition inside the shell (see spec §6). This preview renders every
+            composition pattern in every relevant state so the design lead can verify
+            parity against Figma.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. STATE MATRIX (plain text input) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>State matrix (plain text input, feedback = none)</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Filled</div>
+                <div class="col-head">Disabled</div>
+
+                <div class="row-head">Plain</div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="hello@phpure.golf" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your email" disabled />
+                    </div>
+                </div>
+
+                <div class="row-head">Readonly</div>
+                <div class="cell cell--span-5">
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="READ-ONLY-VALUE" readonly />
+                    </div>
+                    <p class="note">Readonly shares the disabled palette but keeps <code>cursor: text</code> so users can select and copy the value.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. FEEDBACK STATES -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Feedback states</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus</div>
+                <div class="col-head">Filled</div>
+                <div class="col-head">Disabled</div>
+
+                <!-- Error -->
+                <div class="row-head">Error</div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="not-an-email" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="user@example" aria-invalid="true" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--error">
+                        <input type="email" class="form-field__input" value="user@example" disabled />
+                    </div>
+                </div>
+
+                <!-- Warning -->
+                <div class="row-head">Warning</div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--warning">
+                        <input type="text" class="form-field__input" value="short" disabled />
+                    </div>
+                </div>
+
+                <!-- Success -->
+                <div class="row-head">Success</div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell force-hover">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell force-focus">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" />
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="form-field form-field--success">
+                        <input type="text" class="form-field__input" value="available-handle" disabled />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. COMPOSITION PATTERNS -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Composition patterns (spec §6)</h2>
+            <p class="note">
+                All 11+ patterns from the variants catalog (<code>1331:14308</code>) rendered through
+                HTML composition inside the single <code>form-field</code> shell. Every interactive
+                toggle/button below is visually correct but behaviorally inert — this is a static
+                preview file with no JS (per hard rules).
+            </p>
+
+            <form novalidate class="stack">
+                <!-- 6.1 Plain text -->
+                <div class="group">
+                    <span class="caption">6.1 Plain text</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Your name" />
+                    </div>
+                </div>
+
+                <!-- 6.2 Search with leading magnifier icon -->
+                <div class="group">
+                    <span class="caption">6.2 Search (leading icon 24px)</span>
+                    <div class="form-field">
+                        <span class="form-field__affix">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                        </span>
+                        <input type="search" class="form-field__input" placeholder="Search products" />
+                    </div>
+                </div>
+
+                <!-- 6.2 Email with trailing envelope icon -->
+                <div class="group">
+                    <span class="caption">6.2 Email (trailing icon 20px)</span>
+                    <div class="form-field">
+                        <input type="email" class="form-field__input" placeholder="you@phpure.golf" />
+                        <span class="form-field__affix">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 6.2 Password with visibility toggle — live Alpine. -->
+                <div class="group">
+                    <span class="caption">6.2 Password (Alpine-powered visibility toggle)</span>
+                    <div class="form-field" x-data="{ shown: false }">
+                        <input x-bind:type="shown ? 'text' : 'password'"
+                               class="form-field__input"
+                               value="hunter2hunter" />
+                        <button type="button"
+                                class="form-field__affix"
+                                x-bind:aria-label="shown ? 'Hide password' : 'Show password'"
+                                x-bind:aria-pressed="shown"
+                                x-on:click="shown = !shown">
+                            <!-- Eye (password hidden): shown when shown=false -->
+                            <svg x-show="!shown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            <!-- Eye-slash (password visible): shown when shown=true -->
+                            <svg x-show="shown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 6.3 Currency with leading text -->
+                <div class="group">
+                    <span class="caption">6.3 Currency (leading text affix)</span>
+                    <div class="form-field">
+                        <span class="form-field__leading-text" aria-hidden="true">€</span>
+                        <input type="number" class="form-field__input" placeholder="0.00" step="0.01" />
+                    </div>
+                </div>
+
+                <!-- 6.4 Currency with leading + trailing text -->
+                <div class="group">
+                    <span class="caption">6.4 Currency (leading € + trailing .00 suffix)</span>
+                    <div class="form-field">
+                        <span class="form-field__leading-text" aria-hidden="true">€</span>
+                        <input type="number" class="form-field__input" value="1250" step="1" />
+                        <span class="form-field__trailing-text" aria-hidden="true">.00</span>
+                    </div>
+                </div>
+
+                <!-- 6.5 Phone — format-as-you-type via libphonenumber-js.
+                     Wrapper IS the combobox/positioning context; the form-field is a
+                     child, and the dropdown panel is a SIBLING of the form-field so
+                     it drops below the whole input instead of being clipped inside it.
+
+                     Country-code picker is a `<button role="combobox">` that lives
+                     NEXT TO the `<input type="tel">` (siblings inside the form-field).
+                     This is the WAI-ARIA 1.2 combobox pattern: the button is the
+                     combobox, `aria-controls` points at the listbox, and
+                     `aria-activedescendant` follows keyboard navigation. A hidden
+                     `<span>` carries stable "Country code: flag +dial" text that
+                     `aria-labelledby` points at so screen readers announce the
+                     current selection without stuttering on every re-render
+                     (A11Y-026). -->
+                <div class="group">
+                    <span class="caption">6.5 Phone (libphonenumber-js format-as-you-type + country picker)</span>
+                    <div class="combobox phone-input"
+                         x-data="initPhoneInput({ defaultCountry: 'BE' })"
+                         x-on:click.outside="closePickerOnOutside()"
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closePickerOnOutside()">
+                        <div class="form-field">
+                            <!-- Hidden label target for aria-labelledby. Lives outside
+                                 the button so Alpine re-renders inside the button don't
+                                 retrigger the SR announcement (A11Y-026). -->
+                            <span x-bind:id="labelId" hidden>
+                                Country code:
+                                <span x-text="selected.native"></span>
+                                <span x-text="selected.dial"></span>
+                            </span>
+                            <button type="button"
+                                    class="form-field__affix phone-input__trigger"
+                                    x-ref="trigger"
+                                    aria-haspopup="listbox"
+                                    x-bind:aria-expanded="pickerOpen"
+                                    x-bind:aria-controls="listboxId"
+                                    x-bind:aria-activedescendant="activeOptionId"
+                                    x-bind:aria-labelledby="labelId"
+                                    x-on:click="togglePicker()"
+                                    x-on:keydown.down.prevent="pickerOpen ? focusNext() : openAndFocusFirst()"
+                                    x-on:keydown.up.prevent="pickerOpen ? focusPrev() : openAndFocusLast()"
+                                    x-on:keydown.home.prevent="pickerOpen && focusFirst()"
+                                    x-on:keydown.end.prevent="pickerOpen && focusLast()"
+                                    x-on:keydown.enter.prevent="pickerOpen ? pickActive() : togglePicker()"
+                                    x-on:keydown.space.prevent="pickerOpen ? pickActive() : togglePicker()"
+                                    x-on:keydown.escape.prevent="closePicker()">
+                                <span class="phone-input__flag" aria-hidden="true" x-text="selected.flag"></span>
+                                <span aria-hidden="true" x-text="selected.dial"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                            <input type="tel"
+                                   class="form-field__input"
+                                   x-bind:value="national"
+                                   x-on:input="onInput($event.target.value)"
+                                   x-bind:placeholder="placeholder" />
+                        </div>
+                        <div class="combobox__panel phone-input__panel" x-show="pickerOpen" x-cloak>
+                            <ul class="dropdown-list" role="listbox" aria-label="Country code"
+                                x-bind:id="listboxId"
+                                x-on:keydown.down.prevent="focusNext()"
+                                x-on:keydown.up.prevent="focusPrev()"
+                                x-on:keydown.enter.prevent="pickActive()"
+                                x-on:keydown.escape="closePicker()">
+                                <template x-for="c in uniqueDialCountries" :key="c.code">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(c.code)"
+                                        x-bind:data-value="c.code"
+                                        x-bind:aria-selected="selected.code === c.code ? 'true' : 'false'"
+                                        x-bind:data-active="activeValue === c.code ? 'true' : 'false'"
+                                        x-on:click="pickCountry(c)"
+                                        x-on:mouseenter="activeValue = c.code">
+                                        <span class="dropdown-list__leading" aria-hidden="true" x-text="c.flag"></span>
+                                        <span class="dropdown-list__label">
+                                            <span x-text="c.native"></span>
+                                            <span class="phone-input__dial" x-text="c.dial"></span>
+                                        </span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6.7 Country selector — all ~250 countries (world-countries), searchable,
+                     emoji flags, native names. Starts blank with a globe placeholder.
+
+                     Trigger is a `<div class="form-field" role="combobox" tabindex="0">`,
+                     NOT a `<button>`. The button-wrapping-a-span-as-input pattern
+                     created invalid HTML and broke AT (A11Y-001 / A11Y-014); the
+                     ARIA 1.2 combobox pattern uses a focusable wrapper with a
+                     value-display child. `aria-controls` / `aria-activedescendant`
+                     are wired to the listbox id that `$id()` allocates on mount
+                     (A11Y-002). `aria-labelledby` points at the visible caption
+                     "6.7 Country selector". Focus returns to the trigger on close
+                     (A11Y-005). -->
+                <div class="group">
+                    <span x-bind:id="labelId" class="caption">6.7 Country selector (world-countries + searchable dropdown)</span>
+                    <div class="combobox country-selector"
+                         x-data="initCountrySelector()"
+                         x-on:click.outside="closeOnOutside()"
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeOnOutside()">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-bind:aria-labelledby="labelId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="openAndFocusFirst()"
+                             x-on:keydown.up.prevent="openAndFocusLast()"
+                             x-on:keydown.enter.prevent="toggle()"
+                             x-on:keydown.space.prevent="toggle()"
+                             x-on:keydown.escape="close()">
+                            <span class="form-field__affix country-selector__leading" aria-hidden="true">
+                                <!-- Globe until a country is picked, then the flag emoji. -->
+                                <svg x-show="!selected" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                                </svg>
+                                <span x-show="selected" class="country-selector__flag" x-text="selected && selected.flag"></span>
+                            </span>
+                            <span class="form-field__input" x-text="selected ? selected.native : 'Select a country'"></span>
+                            <span class="form-field__affix" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="combobox__panel country-selector__panel" x-show="open" x-cloak>
+                            <input type="search"
+                                   class="country-selector__search"
+                                   x-ref="search"
+                                   x-model="filter"
+                                   placeholder="Search country…"
+                                   aria-label="Search country"
+                                   x-on:keydown.down.prevent="focusNext()"
+                                   x-on:keydown.up.prevent="focusPrev()"
+                                   x-on:keydown.enter.prevent="pickActive()"
+                                   x-on:keydown.escape="close()" />
+                            <ul class="dropdown-list country-selector__list" role="listbox" aria-label="Country"
+                                x-bind:id="listboxId">
+                                <template x-for="c in filtered()" :key="c.code">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(c.code)"
+                                        x-bind:aria-selected="selected && selected.code === c.code ? 'true' : 'false'"
+                                        x-bind:data-active="activeValue === c.code ? 'true' : 'false'"
+                                        x-on:click="pick(c)"
+                                        x-on:mouseenter="activeValue = c.code">
+                                        <span class="dropdown-list__leading country-selector__flag" x-text="c.flag"></span>
+                                        <span class="dropdown-list__label" x-text="c.native"></span>
+                                        <span class="dropdown-list__trailing country-selector__dial" x-text="c.dial"></span>
+                                    </li>
+                                </template>
+                                <template x-if="filtered().length === 0">
+                                    <li class="dropdown-list__empty" role="presentation">No countries match.</li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6.7 Size selector — Alpine combobox + dropdown-list (matches the Figma
+                     dropdown styling with blue-50 hover and blue-600 selected).
+
+                     The combobox and the dropdown-list share ONE Alpine scope so the
+                     trigger can bind `aria-controls` / `aria-activedescendant` to the
+                     same `listboxId` the listbox renders. `<div role="combobox">`
+                     (not `<button>`) because the trigger carries a `form-field__input`
+                     span — spans aren't allowed inside a `<button>` when the button
+                     is claiming combobox behavior (A11Y-001 / A11Y-014). Focus
+                     returns to the trigger on close (A11Y-005). -->
+                <div class="group">
+                    <span class="caption" id="size-selector-caption">6.7 Size selector (Alpine combobox + dropdown-list)</span>
+                    <div class="combobox"
+                         x-data="initDropdownList({ items: [
+                             { value: 's', label: 'Small' },
+                             { value: 'm', label: 'Medium' },
+                             { value: 'l', label: 'Large' }
+                         ] })"
+                         x-on:click.outside="closeOnOutsideClick"
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             aria-labelledby="size-selector-caption"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                             x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                             x-on:keydown.home.prevent="open && focusFirst()"
+                             x-on:keydown.end.prevent="open && focusLast()"
+                             x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.escape.prevent="closeList('escape')">
+                            <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Select a size'"></span>
+                            <span class="form-field__affix" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="combobox__panel" x-show="open" x-cloak>
+                            <ul class="dropdown-list"
+                                role="listbox"
+                                aria-labelledby="size-selector-caption"
+                                x-bind:id="listboxId"
+                                x-on:keydown="handleKeydown">
+                                <template x-for="(item, index) in items" :key="item.value">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(item.value, index)"
+                                        x-bind:data-value="item.value"
+                                        x-bind:data-active="activeValue === item.value ? 'true' : 'false'"
+                                        x-bind:aria-selected="item.value === selectedValue ? 'true' : 'false'"
+                                        x-on:click="pickItem(item)"
+                                        x-on:mouseenter="hoverItemByValue(item.value)">
+                                        <span class="dropdown-list__label" x-text="item.label"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6.10 Native datepicker — the browser's own <input type="date"> already renders
+                     a calendar picker button on the right, so no custom icon is added. -->
+                <div class="group">
+                    <span class="caption">6.10 Datepicker (native <code>&lt;input type="date"&gt;</code>)</span>
+                    <div class="form-field">
+                        <input type="date" class="form-field__input" aria-label="Tee time" />
+                    </div>
+                </div>
+
+                <!-- 6.9 Stepper composition — Alpine-powered. -->
+                <div class="group">
+                    <span class="caption">6.9 Stepper (Alpine-powered −/+ quantity picker)</span>
+                    <div class="form-field" x-data="{ v: 1, min: 0, max: 99 }">
+                        <button type="button"
+                                class="form-field__affix"
+                                aria-label="Decrease quantity"
+                                x-bind:disabled="v <= min"
+                                x-on:click="v = Math.max(min, v - 1)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                            </svg>
+                        </button>
+                        <input type="number"
+                               class="form-field__input form-field__input--numeric"
+                               x-bind:value="v"
+                               x-on:input="v = Math.max(min, Math.min(max, Number($event.target.value) || 0))"
+                               x-bind:min="min"
+                               x-bind:max="max" />
+                        <button type="button"
+                                class="form-field__affix"
+                                aria-label="Increase quantity"
+                                x-bind:disabled="v >= max"
+                                x-on:click="v = Math.min(max, v + 1)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Textarea composition -->
+                <div class="group cell--span-full">
+                    <span class="caption">Textarea (uses <code>form-field--textarea</code> modifier to top-align children)</span>
+                    <div class="form-field form-field--textarea">
+                        <textarea class="form-field__input" rows="4" placeholder="Leave a note for the pro shop…"></textarea>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 4. FULL FORM-GROUP EXAMPLE (label + field + hint + required) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Form group (label + field + hint + required asterisk)</h2>
+            <form novalidate class="stack">
+                <!-- Default with hint -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-name">
+                        Full name
+                    </label>
+                    <div class="form-field">
+                        <input id="fg-name" type="text" class="form-field__input" placeholder="Jane Doe" aria-describedby="fg-name-hint" />
+                    </div>
+                    <span id="fg-name-hint" class="form-group__hint">As it appears on your ID.</span>
+                </div>
+
+                <!-- Required with asterisk -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-email">
+                        Email
+                        <span class="form-group__required" aria-hidden="true">*</span>
+                    </label>
+                    <div class="form-field">
+                        <input id="fg-email" type="email" class="form-field__input" placeholder="you@phpure.golf" required aria-describedby="fg-email-hint" />
+                    </div>
+                    <span id="fg-email-hint" class="form-group__hint">We will send your booking confirmation here.</span>
+                </div>
+
+                <!-- Error state with error hint -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-error">
+                        Password
+                        <span class="form-group__required" aria-hidden="true">*</span>
+                    </label>
+                    <div class="form-field form-field--error">
+                        <input id="fg-error" type="password" class="form-field__input" value="123" required aria-invalid="true" aria-describedby="fg-error-hint" />
+                    </div>
+                    <span id="fg-error-hint" class="form-group__hint form-group__hint--error">
+                        Password must be at least 8 characters.
+                    </span>
+                </div>
+
+                <!-- Warning state -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-warning">Username</label>
+                    <div class="form-field form-field--warning">
+                        <input id="fg-warning" type="text" class="form-field__input" value="jane" aria-describedby="fg-warning-hint" />
+                    </div>
+                    <span id="fg-warning-hint" class="form-group__hint form-group__hint--warning">
+                        This username is short. Consider something more unique.
+                    </span>
+                </div>
+
+                <!-- Success state -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-success">Subdomain</label>
+                    <div class="form-field form-field--success">
+                        <input id="fg-success" type="text" class="form-field__input" value="phpure" aria-describedby="fg-success-hint" />
+                        <span class="form-field__trailing-text" aria-hidden="true">.golf</span>
+                    </div>
+                    <span id="fg-success-hint" class="form-group__hint form-group__hint--success">
+                        Subdomain is available.
+                    </span>
+                </div>
+
+                <!-- Disabled -->
+                <div class="form-group">
+                    <label class="form-group__label" for="fg-disabled">Account ID</label>
+                    <div class="form-field">
+                        <input id="fg-disabled" type="text" class="form-field__input" value="PGC-00421" disabled aria-describedby="fg-disabled-hint" />
+                    </div>
+                    <span id="fg-disabled-hint" class="form-group__hint">Assigned automatically after checkout.</span>
+                </div>
+            </form>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 5. INTERACTIVE SANDBOX -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Interactive samples (click / Tab to focus)</h2>
+            <p class="note">
+                Focus moves via Tab. The shell lights up (border + focus ring) whenever
+                the inner input/select/textarea receives focus, courtesy of
+                <code>:focus-within</code>.
+            </p>
+            <form novalidate class="stack">
+                <div class="group">
+                    <span class="caption">Plain text (live)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" placeholder="Type here" />
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption" id="select-live-caption">Select (live — Alpine combobox + dropdown-list)</span>
+                    <!-- Same refactor as the 6.7 size selector: combobox and
+                         dropdown-list share one scope; trigger is a
+                         `<div role="combobox">` with full ARIA wiring; focus
+                         returns to the trigger on close. -->
+                    <div class="combobox"
+                         x-data="initDropdownList({ items: [
+                             { value: 'alpha', label: 'Alpha' },
+                             { value: 'beta',  label: 'Beta' },
+                             { value: 'gamma', label: 'Gamma' }
+                         ] })"
+                         x-on:click.outside="closeOnOutsideClick"
+                         x-on:focusout="if ($event.relatedTarget && !$el.contains($event.relatedTarget)) closeList('blur')">
+                        <div class="form-field"
+                             role="combobox"
+                             tabindex="0"
+                             x-ref="trigger"
+                             aria-haspopup="listbox"
+                             aria-labelledby="select-live-caption"
+                             x-bind:aria-expanded="open"
+                             x-bind:aria-controls="listboxId"
+                             x-bind:aria-activedescendant="activeOptionId"
+                             x-on:click="toggle()"
+                             x-on:keydown.down.prevent="open ? focusNext() : openAndFocusFirst()"
+                             x-on:keydown.up.prevent="open ? focusPrev() : openAndFocusLast()"
+                             x-on:keydown.home.prevent="open && focusFirst()"
+                             x-on:keydown.end.prevent="open && focusLast()"
+                             x-on:keydown.enter.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.space.prevent="open ? selectActive() : toggle()"
+                             x-on:keydown.escape.prevent="closeList('escape')">
+                            <span class="form-field__input" x-text="(items.find(i => i.value === selectedValue) || {}).label || 'Pick one'"></span>
+                            <span class="form-field__affix" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 combobox__chevron">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="combobox__panel" x-show="open" x-cloak>
+                            <ul class="dropdown-list"
+                                role="listbox"
+                                aria-labelledby="select-live-caption"
+                                x-bind:id="listboxId"
+                                x-on:keydown="handleKeydown">
+                                <template x-for="(item, index) in items" :key="item.value">
+                                    <li class="dropdown-list__item" role="option"
+                                        x-bind:id="optionId(item.value, index)"
+                                        x-bind:data-value="item.value"
+                                        x-bind:data-active="activeValue === item.value ? 'true' : 'false'"
+                                        x-bind:aria-selected="item.value === selectedValue ? 'true' : 'false'"
+                                        x-on:click="pickItem(item)"
+                                        x-on:mouseenter="hoverItemByValue(item.value)">
+                                        <span class="dropdown-list__label" x-text="item.label"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption">Disabled input (live)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="Locked value" disabled />
+                    </div>
+                </div>
+                <div class="group">
+                    <span class="caption">Readonly input (live — select/copy works)</span>
+                    <div class="form-field">
+                        <input type="text" class="form-field__input" value="READ-ONLY-1234" readonly />
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+    <!-- Load component constructors BEFORE alpine.js so they can register
+         their `alpine:init` listener before Alpine.start() fires the event. -->
+    <script type="module" src="/components/dropdown-list/A-basic/src/web/js/dropdown-list.js"></script>
+    <script type="module" src="/src/js/phone-input.js"></script>
+    <script type="module" src="/src/js/country-selector.js"></script>
+    <script type="module" src="/src/js/alpine.js"></script>
+</body>
+</html>

@@ -54,3 +54,51 @@ app/design/frontend/Phpure/golf/web/tailwind/package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# ── PHPure Golf Hyvä UI POC ──
+# Vite build output
+/dist
+
+# Hyvä UI kit is commercially licensed (see hyva-ui/LICENSE.md if present).
+# Hyvä's license forbids redistribution — the kit must NEVER land in this
+# (or any) public git repo. Both are blocked:
+#   • /hyva-ui              — the kit itself (when dropped in via zip).
+#   • /hyva-ui-reference    — the symlink we use during development.
+# Each developer installs the kit themselves, either via Composer
+# (`composer require hyva-themes/hyva-ui` with their team's auth.json) or
+# by extracting their own Hyvä download. See README.md "Bootstrapping".
+/hyva-ui
+/hyva-ui-reference
+
+# Raw Figma export at repo root contains licensed design-token references.
+# The repo carries a sanitized copy at design-tokens/figma-export.json that
+# is safe to publish; the root one stays out.
+/figma-export.json
+
+# Saved MCP tool-result dumps
+/.claude/tool-results
+
+# Per-user Claude Code overrides (agent files + project settings.json are shared)
+/.claude/settings.local.json
+
+# Accessibility specialist agents symlinked from
+# https://github.com/Community-Access/accessibility-agents — symlinks don't
+# travel across machines. Each contributor clones the repo and runs the
+# `ln -sf` setup documented in README.md.
+/.claude/agents/accessibility-lead.md
+/.claude/agents/aria-specialist.md
+/.claude/agents/contrast-master.md
+/.claude/agents/design-system-auditor.md
+/.claude/agents/forms-specialist.md
+/.claude/agents/keyboard-navigator.md
+/.claude/agents/modal-specialist.md
+
+# hyva-ai-tools skills are symlinked from the user's clone of
+# https://github.com/hyva-themes/hyva-ai-tools — symlinks are not portable
+# across machines. Each contributor installs the skills locally (see README).
+/.claude/skills
+
+# Override Magento's /package.json and /package-lock.json ignores — the POC
+# has its own npm workspace at the repo root (Vite + Tailwind + Alpine).
+!/package.json
+!/package-lock.json

@@ -1,0 +1,406 @@
+/**
+ * Form field styles — PHPure Golf brand variant of Hyvä UI 2.7.1 form-field (A-basic).
+ *
+ * Spec: components/form-field/A-basic/spec.md
+ * Figma nodes: 1329:15249 (base shell), 1331:14308 (variants catalog).
+ *
+ * Architecture mirrors the button pattern:
+ *   • `@utility form-field` is a CSS-variable-driven shell.
+ *   • Feedback modifiers (`form-field--error` / `--warning` / `--success`)
+ *     only override border / focus-ring / icon-color tokens.
+ *   • Every concrete "variant" in the Figma variants catalog (plain text,
+ *     leading icon, leading text, leading dropdown, trailing dropdown, etc.)
+ *     is HTML composition inside the shell — no new CSS classes. See spec §6.
+ *
+ * Key behaviors:
+ *   • Focus ring is driven by `:focus-within` so the shell reacts when the
+ *     inner `<input>` / `<select>` / `<textarea>` receives focus. This is the
+ *     whole point of the shell architecture (spec §2 decision 1).
+ *   • Readonly shares disabled visuals but keeps `cursor: text` so users can
+ *     select/copy the value (designer decision, answers questions.md #16).
+ *   • Leading/trailing TEXT affixes (e.g. `€` prefix, `.00` suffix) use the
+ *     `form-field__leading-text` / `form-field__trailing-text` utilities
+ *     which carry their own `slateBlue.50` background (spec §6.3). Trailing
+ *     text mirrors leading text (designer decision, answers questions.md #17).
+ *   • Native `<select>` is styled via `form-field__select` (appearance: none
+ *     + caller-supplied chevron in the trailing affix slot). A full custom
+ *     Alpine combobox lives in the future `dropdown-list` molecule
+ *     (designer decision, answers questions.md #18).
+ *
+ * Tokens: every color / spacing / radius / shadow resolves to a CSS custom
+ * property declared in `src/css/theme.css` (generated `@theme` block).
+ */
+
+/* ─── Shell ───────────────────────────────────────────────────────────────── */
+
+@utility form-field {
+    /* Default-state tokens. Feedback modifiers override a subset of these. */
+    /* Default border must meet WCAG 1.4.11 (3:1 for UI components).
+     * slate-blue-200 → 1.70:1 FAIL. slate-blue-300 → 2.23:1 FAIL.
+     * slate-blue-500 → 4.39:1 PASS. Deviation from Figma documented in
+     * design-tokens/accessibility-review.md (A11Y-007). */
+    --field-border: var(--color-slate-blue-500);
+    --field-bg: var(--color-white);
+    --field-color: var(--color-slate-blue-800);
+    /* Placeholder must meet 4.5:1 for small text. slate-blue-500 is
+     * 4.39:1 (just under) — bumped to slate-blue-600 (6.27:1 ✓). */
+    --field-placeholder-color: var(--color-slate-blue-600);
+    --field-radius: var(--radius-sm);
+    --field-pad-block: var(--spacing-2\.5);
+    --field-pad-inline: var(--spacing-3\.5);
+    --field-gap: var(--spacing-1\.5);
+
+    /* State-slot tokens. Each state selector reads its own slot and falls
+     * back to the default when the slot isn't overridden. */
+    --field-hover-border: var(--color-blue-300);
+    --field-focus-border: var(--color-blue-400);
+    --field-focus-ring: var(--shadow-focus\/primary);
+    --field-focus-outline: var(--color-deep-emerald-green-500);
+    --field-disabled-border: var(--color-slate-blue-200);
+    --field-disabled-bg: var(--color-slate-blue-50);
+    --field-disabled-color: var(--color-slate-blue-400);
+
+    display: flex;
+    align-items: center;
+    gap: var(--field-gap);
+    min-width: 0;
+    width: 100%;
+    min-height: --spacing(10);
+    padding-block: var(--field-pad-block);
+    padding-inline: var(--field-pad-inline);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--field-border);
+    border-radius: var(--field-radius);
+    background-color: var(--field-bg);
+    color: var(--field-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+    overflow: clip;
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-timing-function: var(--default-transition-timing-function);
+    transition-duration: var(--default-transition-duration);
+
+    &:hover {
+        border-color: var(--field-hover-border, var(--field-border));
+    }
+
+    /* Shell lights up when any inner child receives focus (spec §2 decision 1).
+     * WCAG 1.4.11 requires ≥3:1 for the focus indicator. The soft `Focus/*`
+     * glow alone is 1.23–1.41:1 against white, so we add a 2 px solid
+     * outline in a high-contrast color (primary = deep-emerald-green-500
+     * at 9.83:1 vs white; invalid/warning/success swap via the modifier
+     * blocks below). `outline-offset` keeps the ring readable without
+     * collapsing into the shell border. */
+    &:focus-within {
+        border-color: var(--field-focus-border, var(--field-border));
+        box-shadow: var(--field-focus-ring);
+        outline: 2px solid var(--field-focus-outline);
+        outline-offset: 2px;
+    }
+
+    /* Error / warning / success — triggered by modifier class OR aria-invalid.
+     * Keep aria-invalid ↔ error in sync at the shell level so screen readers
+     * and the visual stay aligned (spec §8). */
+    &:is([aria-invalid="true"], .is-invalid) {
+        --field-border: var(--color-rose-500);
+        --field-hover-border: var(--color-rose-500);
+        --field-focus-border: var(--color-rose-500);
+        --field-focus-ring: var(--shadow-focus\/error);
+        --field-focus-outline: var(--color-rose-700);
+    }
+
+    /* Disabled — matches when the shell itself is marked disabled OR when
+     * any descendant input/select/textarea has the native `disabled` attribute.
+     * `:has(:disabled)` is the key: it's the reason disabling just the
+     * `<input>` also grays the shell. */
+    &:is([aria-disabled="true"], .is-disabled, :has(:disabled)) {
+        border-color: var(--field-disabled-border);
+        background-color: var(--field-disabled-bg);
+        color: var(--field-disabled-color);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Readonly — same visual palette as disabled (no error/warning/success
+     * coloring), but retain `cursor: text` so users can select/copy the
+     * value (designer decision, questions.md #16). */
+    &:has([readonly]) {
+        border-color: var(--field-disabled-border);
+        background-color: var(--field-disabled-bg);
+        color: var(--field-disabled-color);
+        cursor: text;
+    }
+
+    /* Textarea composition: the shell normally centers children on the cross
+     * axis, but a multi-line textarea needs top-alignment so the first line
+     * of text lines up with the top of the affixes. Apply via the
+     * `form-field--textarea` modifier (spec §6, textarea composition note). */
+    &:is(.form-field--textarea) {
+        align-items: flex-start;
+    }
+}
+
+/* ─── Bare input ──────────────────────────────────────────────────────────── */
+
+/* `form-field__input` strips every native style so the shell owns the visual.
+ * Sits as a flex child inside the shell; `min-width: 0` + `flex: 1` lets it
+ * collapse when leading/trailing slots take their natural width (spec §9). */
+@utility form-field__input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    box-shadow: none;
+    appearance: none;
+
+    &::placeholder {
+        color: var(--field-placeholder-color);
+        opacity: 1;
+    }
+
+    &:focus,
+    &:focus-visible {
+        outline: none;
+        box-shadow: none;
+    }
+
+    /* Keep the disabled input visually consistent with the shell — the shell
+     * already paints the surface, so the input just needs to inherit color
+     * and not render a native disabled tint. */
+    &:disabled {
+        color: inherit;
+        -webkit-text-fill-color: inherit;
+        cursor: inherit;
+    }
+
+    &[readonly] {
+        cursor: text;
+    }
+}
+
+/* Native <select> extends the bare input and removes the native chevron. The
+ * caller adds a chevron SVG in the trailing affix slot (spec §6.7). */
+@utility form-field__select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    padding-right: 0;
+    cursor: pointer;
+}
+
+/* Auto-width select — e.g. the country-code dropdown in a phone input, where
+ * the select should hug its content instead of flex-growing to fill the shell.
+ * Common pair: `<select class="form-field__input form-field__select form-field__select--auto">`. */
+@utility form-field__select--auto {
+    flex: none;
+    width: auto;
+}
+
+/* Centered numeric input — stepper / quantity picker.
+ * Also hides the browser's native number-spinner arrows so the custom
+ * −/+ buttons in the leading/trailing affix slots are the only controls. */
+@utility form-field__input--numeric {
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+/* ─── Affix slots ─────────────────────────────────────────────────────────── */
+
+/* Generic leading/trailing slot for icons, buttons, selects, etc. Minimal
+ * styling — alignment only. Icons inherit `currentColor` from the shell
+ * text color (designer decision, answers questions.md #13). */
+@utility form-field__affix {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    color: inherit;
+
+    /* Leading icon = 24×24, trailing icon = 20×20. The asymmetry is
+     * intentional per Figma (designer decision, answers questions.md #15).
+     * Callers set size via Tailwind's `size-5` (20px) or `size-6` (24px) on
+     * the SVG; this default kicks in when no size is specified. */
+    & > svg {
+        width: --spacing(5);
+        height: --spacing(5);
+        flex: none;
+    }
+
+    /* When the affix is itself a <button> (password toggle, stepper −/+, etc.)
+     * strip the native button chrome so it looks like the surrounding icons.
+     * Keeps the markup clean — callers write `<button class="form-field__affix">`
+     * without needing a second reset class. Focus is still reachable; the
+     * shell's `:focus-within` ring lights up as usual. */
+    &:is(button) {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        font: inherit;
+        appearance: none;
+
+        /* The outer form-field draws its own focus ring on :focus-within
+         * (2 px solid outline in the brand focus color). Suppress the
+         * browser's default button outline so we don't end up with two
+         * rings — an orange / UA-themed one on the button AND the
+         * brand-correct green one on the shell. */
+        &:focus {
+            outline: 0;
+        }
+        &:focus-visible {
+            outline: 0;
+        }
+    }
+}
+
+/* Leading / trailing TEXT blocks (prefix like `€`, suffix like `.00`).
+ * Carry their own slateBlue.50 background per spec §6.3. Trailing mirrors
+ * leading with flipped side-padding (designer decision, questions.md #17). */
+@utility form-field__leading-text {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    align-self: stretch;
+    margin-block: calc(-1 * var(--field-pad-block));
+    margin-inline-start: calc(-1 * var(--field-pad-inline));
+    padding-block: var(--field-pad-block);
+    padding-inline: var(--field-pad-inline);
+    background-color: var(--color-slate-blue-50);
+    color: var(--color-slate-blue-500);
+    border-inline-end: 1px solid var(--field-border);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+}
+
+@utility form-field__trailing-text {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    align-self: stretch;
+    margin-block: calc(-1 * var(--field-pad-block));
+    margin-inline-end: calc(-1 * var(--field-pad-inline));
+    padding-block: var(--field-pad-block);
+    padding-inline: var(--field-pad-inline);
+    background-color: var(--color-slate-blue-50);
+    color: var(--color-slate-blue-500);
+    border-inline-start: 1px solid var(--field-border);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 500;
+}
+
+/* ─── Feedback modifiers ──────────────────────────────────────────────────── */
+
+/* Each feedback modifier only overrides border / focus-ring tokens. The shell
+ * reads them through the same `--field-*` slot variables so no state selector
+ * logic needs to be duplicated here. */
+
+/* Feedback colors bumped for WCAG 2.2 AA:
+ *   - error: rose-500 is 3.67:1 on white (PASS 3:1 UI). Keep for border,
+ *     but outline uses rose-700 (6.37:1) so the focus indicator itself
+ *     passes the 3:1 non-text threshold with headroom.
+ *   - warning: amber-500 is 2.15:1 (FAIL). Bumped to amber-700 (4.80:1).
+ *   - success: emerald-500 is 2.54:1 (FAIL). Bumped to emerald-700 (4.87:1).
+ * The `Focus/*` soft-glow shadow stays (brand feel); the hard outline is
+ * the WCAG-compliant perceivable edge. */
+@utility form-field--error {
+    --field-border: var(--color-rose-500);
+    --field-hover-border: var(--color-rose-500);
+    --field-focus-border: var(--color-rose-500);
+    --field-focus-ring: var(--shadow-focus\/error);
+    --field-focus-outline: var(--color-rose-700);
+}
+
+@utility form-field--warning {
+    --field-border: var(--color-amber-700);
+    --field-hover-border: var(--color-amber-700);
+    --field-focus-border: var(--color-amber-700);
+    --field-focus-ring: var(--shadow-focus\/warning);
+    --field-focus-outline: var(--color-amber-700);
+}
+
+@utility form-field--success {
+    --field-border: var(--color-emerald-700);
+    --field-hover-border: var(--color-emerald-700);
+    --field-focus-border: var(--color-emerald-700);
+    --field-focus-ring: var(--shadow-focus\/success);
+    --field-focus-outline: var(--color-emerald-700);
+}
+
+/* ─── Form group (label + field + hint wrapper) ───────────────────────────── */
+
+/* The labeled wrapper around the shell. 3-row flex-column per spec §7. */
+@utility form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: --spacing(1.5);
+    width: 100%;
+}
+
+@utility form-group__label {
+    display: inline-flex;
+    align-items: center;
+    gap: --spacing(1);
+    color: var(--color-slate-blue-700);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);
+    line-height: --spacing(5);
+    font-weight: 500;
+}
+
+/* Red asterisk on required labels. Marked aria-hidden in HTML so screen
+ * readers rely on the native `required` attribute instead (designer
+ * decision, answers questions.md #21). */
+@utility form-group__required {
+    color: var(--color-rose-500);
+    font-weight: 500;
+}
+
+@utility form-group__hint {
+    /* slate-blue-500 = 4.39:1 (just under 4.5:1). Bumped to 600 (6.27:1 ✓). */
+    color: var(--color-slate-blue-600);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);
+    line-height: --spacing(5);
+    font-weight: 500;
+}
+
+/* Feedback-specific hint text colors. Mirror the shell's feedback palette
+ * so the hint line matches the border it sits under. Warning / success tier
+ * = .500 (designer decision, answers questions.md #14). */
+/* Hint text needs 4.5:1 on white (WCAG 1.4.3 Level AA small text).
+ *   - rose-500  → 3.67:1 (FAIL). Use rose-700  (6.37:1 ✓).
+ *   - amber-500 → 2.15:1 (FAIL). Use amber-700 (4.80:1 ✓).
+ *   - emerald-500 → 2.54:1 (FAIL). Use emerald-700 (4.87:1 ✓). */
+@utility form-group__hint--error {
+    color: var(--color-rose-700);
+}
+
+@utility form-group__hint--warning {
+    color: var(--color-amber-700);
+}
+
+@utility form-group__hint--success {
+    color: var(--color-emerald-700);
+}

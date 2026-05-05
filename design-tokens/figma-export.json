@@ -1,0 +1,1907 @@
+{
+  "styles": {
+    "colors": [
+      {
+        "name": "Tailwind/white",
+        "token": "tailwind-white",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Transparent",
+        "token": "tailwind-transparent",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/black",
+        "token": "tailwind-black",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/50",
+        "token": "tailwind-slate-blue-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/100",
+        "token": "tailwind-slate-blue-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/200",
+        "token": "tailwind-slate-blue-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/300",
+        "token": "tailwind-slate-blue-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/400",
+        "token": "tailwind-slate-blue-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/500",
+        "token": "tailwind-slate-blue-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/600",
+        "token": "tailwind-slate-blue-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/700",
+        "token": "tailwind-slate-blue-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/800",
+        "token": "tailwind-slate-blue-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Slate Blue/900",
+        "token": "tailwind-slate-blue-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/50",
+        "token": "tailwind-gray-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/100",
+        "token": "tailwind-gray-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/200",
+        "token": "tailwind-gray-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/300",
+        "token": "tailwind-gray-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/400",
+        "token": "tailwind-gray-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/500",
+        "token": "tailwind-gray-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/600",
+        "token": "tailwind-gray-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/700",
+        "token": "tailwind-gray-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/800",
+        "token": "tailwind-gray-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/gray/900",
+        "token": "tailwind-gray-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/50",
+        "token": "tailwind-zinc-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/100",
+        "token": "tailwind-zinc-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/200",
+        "token": "tailwind-zinc-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/300",
+        "token": "tailwind-zinc-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/400",
+        "token": "tailwind-zinc-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/500",
+        "token": "tailwind-zinc-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/600",
+        "token": "tailwind-zinc-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/700",
+        "token": "tailwind-zinc-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/800",
+        "token": "tailwind-zinc-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/zinc/900",
+        "token": "tailwind-zinc-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/50",
+        "token": "tailwind-neutral-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/100",
+        "token": "tailwind-neutral-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/200",
+        "token": "tailwind-neutral-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/300",
+        "token": "tailwind-neutral-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/400",
+        "token": "tailwind-neutral-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/500",
+        "token": "tailwind-neutral-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/600",
+        "token": "tailwind-neutral-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/700",
+        "token": "tailwind-neutral-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/800",
+        "token": "tailwind-neutral-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/neutral/900",
+        "token": "tailwind-neutral-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/50",
+        "token": "tailwind-stone-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/100",
+        "token": "tailwind-stone-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/200",
+        "token": "tailwind-stone-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/300",
+        "token": "tailwind-stone-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/400",
+        "token": "tailwind-stone-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/500",
+        "token": "tailwind-stone-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/600",
+        "token": "tailwind-stone-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/700",
+        "token": "tailwind-stone-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/800",
+        "token": "tailwind-stone-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/stone/900",
+        "token": "tailwind-stone-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/50",
+        "token": "tailwind-red-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/100",
+        "token": "tailwind-red-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/200",
+        "token": "tailwind-red-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/300",
+        "token": "tailwind-red-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/400",
+        "token": "tailwind-red-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/500",
+        "token": "tailwind-red-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/600",
+        "token": "tailwind-red-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/700",
+        "token": "tailwind-red-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/800",
+        "token": "tailwind-red-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/red/900",
+        "token": "tailwind-red-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/50",
+        "token": "tailwind-orange-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/100",
+        "token": "tailwind-orange-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/200",
+        "token": "tailwind-orange-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/300",
+        "token": "tailwind-orange-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/400",
+        "token": "tailwind-orange-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/500",
+        "token": "tailwind-orange-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/600",
+        "token": "tailwind-orange-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/700",
+        "token": "tailwind-orange-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/800",
+        "token": "tailwind-orange-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/orange/900",
+        "token": "tailwind-orange-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/50",
+        "token": "tailwind-amber-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/100",
+        "token": "tailwind-amber-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/200",
+        "token": "tailwind-amber-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/300",
+        "token": "tailwind-amber-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/400",
+        "token": "tailwind-amber-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/500",
+        "token": "tailwind-amber-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/600",
+        "token": "tailwind-amber-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/700",
+        "token": "tailwind-amber-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/800",
+        "token": "tailwind-amber-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/amber/900",
+        "token": "tailwind-amber-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/50",
+        "token": "tailwind-champagne-beige-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/100",
+        "token": "tailwind-champagne-beige-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/200",
+        "token": "tailwind-champagne-beige-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/300",
+        "token": "tailwind-champagne-beige-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/400",
+        "token": "tailwind-champagne-beige-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/500",
+        "token": "tailwind-champagne-beige-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/600",
+        "token": "tailwind-champagne-beige-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/700",
+        "token": "tailwind-champagne-beige-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/800",
+        "token": "tailwind-champagne-beige-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Champagne Beige/900",
+        "token": "tailwind-champagne-beige-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/50",
+        "token": "tailwind-burnished-gold-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/100",
+        "token": "tailwind-burnished-gold-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/200",
+        "token": "tailwind-burnished-gold-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/300",
+        "token": "tailwind-burnished-gold-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/400",
+        "token": "tailwind-burnished-gold-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/500",
+        "token": "tailwind-burnished-gold-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/600",
+        "token": "tailwind-burnished-gold-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/700",
+        "token": "tailwind-burnished-gold-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/800",
+        "token": "tailwind-burnished-gold-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Burnished Gold/900",
+        "token": "tailwind-burnished-gold-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/50",
+        "token": "tailwind-deep-emerald-green-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/100",
+        "token": "tailwind-deep-emerald-green-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/200",
+        "token": "tailwind-deep-emerald-green-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/300",
+        "token": "tailwind-deep-emerald-green-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/400",
+        "token": "tailwind-deep-emerald-green-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/500",
+        "token": "tailwind-deep-emerald-green-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/600",
+        "token": "tailwind-deep-emerald-green-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/700",
+        "token": "tailwind-deep-emerald-green-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/800",
+        "token": "tailwind-deep-emerald-green-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/Deep Emerald Green/900",
+        "token": "tailwind-deep-emerald-green-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/50",
+        "token": "tailwind-emerald-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/100",
+        "token": "tailwind-emerald-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/200",
+        "token": "tailwind-emerald-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/300",
+        "token": "tailwind-emerald-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/400",
+        "token": "tailwind-emerald-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/500",
+        "token": "tailwind-emerald-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/600",
+        "token": "tailwind-emerald-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/700",
+        "token": "tailwind-emerald-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/800",
+        "token": "tailwind-emerald-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/emerald/900",
+        "token": "tailwind-emerald-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/50",
+        "token": "tailwind-teal-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/100",
+        "token": "tailwind-teal-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/200",
+        "token": "tailwind-teal-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/300",
+        "token": "tailwind-teal-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/400",
+        "token": "tailwind-teal-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/500",
+        "token": "tailwind-teal-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/600",
+        "token": "tailwind-teal-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/700",
+        "token": "tailwind-teal-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/800",
+        "token": "tailwind-teal-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/teal/900",
+        "token": "tailwind-teal-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/50",
+        "token": "tailwind-cyan-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/100",
+        "token": "tailwind-cyan-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/200",
+        "token": "tailwind-cyan-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/300",
+        "token": "tailwind-cyan-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/400",
+        "token": "tailwind-cyan-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/500",
+        "token": "tailwind-cyan-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/600",
+        "token": "tailwind-cyan-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/700",
+        "token": "tailwind-cyan-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/800",
+        "token": "tailwind-cyan-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/cyan/900",
+        "token": "tailwind-cyan-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/50",
+        "token": "tailwind-sky-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/100",
+        "token": "tailwind-sky-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/200",
+        "token": "tailwind-sky-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/300",
+        "token": "tailwind-sky-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/400",
+        "token": "tailwind-sky-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/500",
+        "token": "tailwind-sky-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/600",
+        "token": "tailwind-sky-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/700",
+        "token": "tailwind-sky-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/800",
+        "token": "tailwind-sky-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/sky/900",
+        "token": "tailwind-sky-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/50",
+        "token": "tailwind-blue-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/100",
+        "token": "tailwind-blue-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/200",
+        "token": "tailwind-blue-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/300",
+        "token": "tailwind-blue-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/400",
+        "token": "tailwind-blue-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/500",
+        "token": "tailwind-blue-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/600",
+        "token": "tailwind-blue-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/700",
+        "token": "tailwind-blue-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/800",
+        "token": "tailwind-blue-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/blue/900",
+        "token": "tailwind-blue-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/50",
+        "token": "tailwind-indigo-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/100",
+        "token": "tailwind-indigo-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/200",
+        "token": "tailwind-indigo-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/300",
+        "token": "tailwind-indigo-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/400",
+        "token": "tailwind-indigo-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/500",
+        "token": "tailwind-indigo-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/600",
+        "token": "tailwind-indigo-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/700",
+        "token": "tailwind-indigo-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/800",
+        "token": "tailwind-indigo-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/indigo/900",
+        "token": "tailwind-indigo-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/50",
+        "token": "tailwind-violet-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/100",
+        "token": "tailwind-violet-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/200",
+        "token": "tailwind-violet-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/300",
+        "token": "tailwind-violet-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/400",
+        "token": "tailwind-violet-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/500",
+        "token": "tailwind-violet-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/600",
+        "token": "tailwind-violet-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/700",
+        "token": "tailwind-violet-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/800",
+        "token": "tailwind-violet-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/violet/900",
+        "token": "tailwind-violet-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/50",
+        "token": "tailwind-purple-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/100",
+        "token": "tailwind-purple-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/200",
+        "token": "tailwind-purple-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/300",
+        "token": "tailwind-purple-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/400",
+        "token": "tailwind-purple-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/500",
+        "token": "tailwind-purple-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/600",
+        "token": "tailwind-purple-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/700",
+        "token": "tailwind-purple-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/800",
+        "token": "tailwind-purple-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/purple/900",
+        "token": "tailwind-purple-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/50",
+        "token": "tailwind-fuchsia-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/100",
+        "token": "tailwind-fuchsia-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/200",
+        "token": "tailwind-fuchsia-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/300",
+        "token": "tailwind-fuchsia-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/400",
+        "token": "tailwind-fuchsia-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/500",
+        "token": "tailwind-fuchsia-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/600",
+        "token": "tailwind-fuchsia-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/700",
+        "token": "tailwind-fuchsia-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/800",
+        "token": "tailwind-fuchsia-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/fuchsia/900",
+        "token": "tailwind-fuchsia-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/50",
+        "token": "tailwind-pink-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/100",
+        "token": "tailwind-pink-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/200",
+        "token": "tailwind-pink-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/300",
+        "token": "tailwind-pink-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/400",
+        "token": "tailwind-pink-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/500",
+        "token": "tailwind-pink-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/600",
+        "token": "tailwind-pink-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/700",
+        "token": "tailwind-pink-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/800",
+        "token": "tailwind-pink-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/pink/900",
+        "token": "tailwind-pink-900",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/50",
+        "token": "tailwind-rose-50",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/100",
+        "token": "tailwind-rose-100",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/200",
+        "token": "tailwind-rose-200",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/300",
+        "token": "tailwind-rose-300",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/400",
+        "token": "tailwind-rose-400",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/500",
+        "token": "tailwind-rose-500",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/600",
+        "token": "tailwind-rose-600",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/700",
+        "token": "tailwind-rose-700",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/800",
+        "token": "tailwind-rose-800",
+        "type": "solid"
+      },
+      {
+        "name": "Tailwind/rose/900",
+        "token": "tailwind-rose-900",
+        "type": "solid"
+      },
+      {
+        "name": "Gradients/Slate 800 [0→75][∠0°]",
+        "token": "gradients-slate-800-0-75-0",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradients/Slate 800 [60→80][∠0°]",
+        "token": "gradients-slate-800-60-80-0",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Gradients/Slate 800 [0→100][∠0°]",
+        "token": "gradients-slate-800-0-100-0",
+        "type": "gradient_linear"
+      },
+      {
+        "name": "Additional/Swatch stroke",
+        "token": "additional-swatch-stroke",
+        "type": "solid"
+      }
+    ],
+    "textStyles": [
+      {
+        "name": "text-xs/leading-4/font-light",
+        "token": "text-xs-leading-4-font-light",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xs/leading-4/font-normal",
+        "token": "text-xs-leading-4-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xs/leading-4/font-medium",
+        "token": "text-xs-leading-4-font-medium",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xs/leading-4/font-bold",
+        "token": "text-xs-leading-4-font-bold",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "700",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-sm/leading-5/font-light",
+        "token": "text-sm-leading-5-font-light",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-sm/leading-5/font-normal",
+        "token": "text-sm-leading-5-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-sm/leading-5/font-medium",
+        "token": "text-sm-leading-5-font-medium",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-sm/leading-5/font-bold",
+        "token": "text-sm-leading-5-font-bold",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "700",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-base/leading-6/font-light",
+        "token": "text-base-leading-6-font-light",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-base/leading-6/font-normal",
+        "token": "text-base-leading-6-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-base/leading-6/font-medium",
+        "token": "text-base-leading-6-font-medium",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-base/leading-6/font-bold",
+        "token": "text-base-leading-6-font-bold",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "700",
+        "fontSize": "16px",
+        "lineHeight": "24px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-lg/leading-7/font-light",
+        "token": "text-lg-leading-7-font-light",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "18px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-lg/leading-7/font-normal",
+        "token": "text-lg-leading-7-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "18px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-lg/leading-7/font-medium",
+        "token": "text-lg-leading-7-font-medium",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "18px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-lg/leading-7/font-bold",
+        "token": "text-lg-leading-7-font-bold",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "700",
+        "fontSize": "18px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xl/leading-7/font-light",
+        "token": "text-xl-leading-7-font-light",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "20px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xl/leading-7/font-normal",
+        "token": "text-xl-leading-7-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "20px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xl/leading-7/font-medium",
+        "token": "text-xl-leading-7-font-medium",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "400",
+        "fontSize": "20px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-xl/leading-7/font-bold",
+        "token": "text-xl-leading-7-font-bold",
+        "type": "text",
+        "fontFamily": "ITC Avant Garde Gothic Pro",
+        "fontWeight": "700",
+        "fontSize": "20px",
+        "lineHeight": "28px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-2xl/leading-8/font-light",
+        "token": "text-2xl-leading-8-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "24px",
+        "lineHeight": "32px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-2xl/leading-8/font-normal",
+        "token": "text-2xl-leading-8-font-normal",
+        "type": "text",
+        "fontFamily": "DM Sans",
+        "fontWeight": "500",
+        "fontSize": "24px",
+        "lineHeight": "32px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-2xl/leading-8/font-medium",
+        "token": "text-2xl-leading-8-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "24px",
+        "lineHeight": "32px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-2xl/leading-8/font-bold",
+        "token": "text-2xl-leading-8-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "24px",
+        "lineHeight": "32px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-3xl/leading-9/font-light",
+        "token": "text-3xl-leading-9-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "30px",
+        "lineHeight": "36px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-3xl/leading-9/font-normal",
+        "token": "text-3xl-leading-9-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "30px",
+        "lineHeight": "36px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-3xl/leading-9/font-medium",
+        "token": "text-3xl-leading-9-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "30px",
+        "lineHeight": "36px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-3xl/leading-9/font-bold",
+        "token": "text-3xl-leading-9-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "30px",
+        "lineHeight": "36px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-4xl/leading-10/font-light",
+        "token": "text-4xl-leading-10-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "36px",
+        "lineHeight": "40px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-4xl/leading-10/font-normal",
+        "token": "text-4xl-leading-10-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "36px",
+        "lineHeight": "40px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-4xl/leading-10/font-medium",
+        "token": "text-4xl-leading-10-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "36px",
+        "lineHeight": "40px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-4xl/leading-10/font-bold",
+        "token": "text-4xl-leading-10-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "36px",
+        "lineHeight": "40px",
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-5xl/leading-none/font-light",
+        "token": "text-5xl-leading-none-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "48px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-5xl/leading-none/font-normal",
+        "token": "text-5xl-leading-none-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "48px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-5xl/leading-none/font-medium",
+        "token": "text-5xl-leading-none-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "48px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-5xl/leading-none/font-bold",
+        "token": "text-5xl-leading-none-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "48px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-6xl/leading-none/font-light",
+        "token": "text-6xl-leading-none-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "60px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-6xl/leading-none/font-normal",
+        "token": "text-6xl-leading-none-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "60px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-6xl/leading-none/font-medium",
+        "token": "text-6xl-leading-none-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "60px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-6xl/leading-none/font-bold",
+        "token": "text-6xl-leading-none-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "60px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-7xl/leading-none/font-light",
+        "token": "text-7xl-leading-none-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "72px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-7xl/leading-none/font-normal",
+        "token": "text-7xl-leading-none-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "72px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-7xl/leading-none/font-medium",
+        "token": "text-7xl-leading-none-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "72px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-7xl/leading-none/font-bold",
+        "token": "text-7xl-leading-none-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "72px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-8xl/leading-none/font-light",
+        "token": "text-8xl-leading-none-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "96px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-8xl/leading-none/font-normal",
+        "token": "text-8xl-leading-none-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "96px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-8xl/leading-none/font-medium",
+        "token": "text-8xl-leading-none-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "96px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-8xl/leading-none/font-bold",
+        "token": "text-8xl-leading-none-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "96px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-9xl/leading-none/font-light",
+        "token": "text-9xl-leading-none-font-light",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "300",
+        "fontSize": "128px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-9xl/leading-none/font-normal",
+        "token": "text-9xl-leading-none-font-normal",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "400",
+        "fontSize": "128px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-9xl/leading-none/font-medium",
+        "token": "text-9xl-leading-none-font-medium",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "500",
+        "fontSize": "128px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      },
+      {
+        "name": "text-9xl/leading-none/font-bold",
+        "token": "text-9xl-leading-none-font-bold",
+        "type": "text",
+        "fontFamily": "Dejanire Headline",
+        "fontWeight": "700",
+        "fontSize": "128px",
+        "lineHeight": 1,
+        "letterSpacing": "0%"
+      }
+    ],
+    "effectStyles": [
+      {
+        "name": "Shadow/sm",
+        "token": "shadow-sm",
+        "type": "effect",
+        "value": "box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 1,
+            "blur": 2,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.05)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/base",
+        "token": "shadow-base",
+        "type": "effect",
+        "value": "box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 1,
+            "blur": 2,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.06)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 1,
+            "blur": 3,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.1)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/md",
+        "token": "shadow-md",
+        "type": "effect",
+        "value": "box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.06), 0px 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 2,
+            "blur": 4,
+            "spread": -1,
+            "color": "rgba(0, 0, 0, 0.06)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 4,
+            "blur": 6,
+            "spread": -1,
+            "color": "rgba(0, 0, 0, 0.1)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/lg",
+        "token": "shadow-lg",
+        "type": "effect",
+        "value": "box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.05), 0px 10px 15px -3px rgba(0, 0, 0, 0.1)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 4,
+            "blur": 6,
+            "spread": -2,
+            "color": "rgba(0, 0, 0, 0.05)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 10,
+            "blur": 15,
+            "spread": -3,
+            "color": "rgba(0, 0, 0, 0.1)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/xl",
+        "token": "shadow-xl",
+        "type": "effect",
+        "value": "box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.04), 0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 10,
+            "blur": 10,
+            "spread": -5,
+            "color": "rgba(0, 0, 0, 0.04)"
+          },
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 20,
+            "blur": 25,
+            "spread": -5,
+            "color": "rgba(0, 0, 0, 0.1)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/2xl",
+        "token": "shadow-2xl",
+        "type": "effect",
+        "value": "box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 25,
+            "blur": 50,
+            "spread": -12,
+            "color": "rgba(0, 0, 0, 0.25)"
+          }
+        ]
+      },
+      {
+        "name": "Shadow/inner",
+        "token": "shadow-inner",
+        "type": "effect",
+        "value": "box-shadow: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.06)",
+        "effects": [
+          {
+            "type": "inner-shadow",
+            "x": 0,
+            "y": 2,
+            "blur": 4,
+            "spread": 0,
+            "color": "rgba(0, 0, 0, 0.06)"
+          }
+        ]
+      },
+      {
+        "name": "Focus/Primary",
+        "token": "focus-primary",
+        "type": "effect",
+        "value": "box-shadow: 0px 0px 0px 4px #e1ebdd",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 4,
+            "color": "#e1ebdd"
+          }
+        ]
+      },
+      {
+        "name": "Focus/Error",
+        "token": "focus-error",
+        "type": "effect",
+        "value": "box-shadow: 0px 0px 0px 4px #fecdd3",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 4,
+            "color": "#fecdd3"
+          }
+        ]
+      },
+      {
+        "name": "Focus/Warning",
+        "token": "focus-warning",
+        "type": "effect",
+        "value": "box-shadow: 0px 0px 0px 4px #fde68a",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 4,
+            "color": "#fde68a"
+          }
+        ]
+      },
+      {
+        "name": "Focus/Success",
+        "token": "focus-success",
+        "type": "effect",
+        "value": "box-shadow: 0px 0px 0px 4px #a7f3d0",
+        "effects": [
+          {
+            "type": "drop-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 4,
+            "color": "#a7f3d0"
+          }
+        ]
+      },
+      {
+        "name": "Additional/Swatch inner",
+        "token": "additional-swatch-inner",
+        "type": "effect",
+        "value": "box-shadow: inset 0px 0px 0px 3px rgba(0, 0, 0, 0.24), inset 0px 0px 0px 2px #ffffff",
+        "effects": [
+          {
+            "type": "inner-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 3,
+            "color": "rgba(0, 0, 0, 0.24)"
+          },
+          {
+            "type": "inner-shadow",
+            "x": 0,
+            "y": 0,
+            "blur": 0,
+            "spread": 2,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    ],
+    "gridStyles": []
+  },
+  "collections": {},
+  "metadata": {
+    "exportDate": "2026-04-23T09:30:59.054Z",
+    "figmaFileKey": "unknown",
+    "fileName": "PHPure Golf",
+    "pluginVersion": "1.0.0",
+    "collectionsFound": 1,
+    "collectionsExported": 0
+  }
+}
