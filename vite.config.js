@@ -36,7 +36,10 @@ export default defineConfig({
     root: process.cwd(),
     plugins: [tailwindcss()],
     server: {
-        port: 5173,
+        // Honor the PORT env var when present (Claude Preview injects this for
+        // the launch.json `autoPort` flow). Falls back to 5173 for plain
+        // `npm run dev` from a developer's terminal.
+        port: process.env.PORT ? Number(process.env.PORT) : 5173,
         strictPort: false,
         open: false,
     },
