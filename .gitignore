@@ -59,8 +59,21 @@ Thumbs.db
 # Vite build output
 /dist
 
-# hyva-ui kit is commercial and lives outside this repo — symlink only
+# Hyvä UI kit is commercially licensed (see hyva-ui/LICENSE.md if present).
+# Hyvä's license forbids redistribution — the kit must NEVER land in this
+# (or any) public git repo. Both are blocked:
+#   • /hyva-ui              — the kit itself (when dropped in via zip).
+#   • /hyva-ui-reference    — the symlink we use during development.
+# Each developer installs the kit themselves, either via Composer
+# (`composer require hyva-themes/hyva-ui` with their team's auth.json) or
+# by extracting their own Hyvä download. See README.md "Bootstrapping".
+/hyva-ui
 /hyva-ui-reference
+
+# Raw Figma export at repo root contains licensed design-token references.
+# The repo carries a sanitized copy at design-tokens/figma-export.json that
+# is safe to publish; the root one stays out.
+/figma-export.json
 
 # Saved MCP tool-result dumps
 /.claude/tool-results
