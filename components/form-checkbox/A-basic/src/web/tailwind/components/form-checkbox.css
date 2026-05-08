@@ -75,7 +75,7 @@
     /* Dimensional defaults (Size = M). Size modifiers override these. */
     --check-size: --spacing(5);          /* 20 px */
     --check-glyph-size: --spacing(4);    /* 16 px — Heroicons outline-24 check */
-    --check-gap: --spacing(2\.5);        /* 10 px between box and label text */
+    --check-gap: --spacing(2);           /* 8 px — matches the project's standard input-to-label gap (form-field, button icon-leading, etc.) */
     --check-radius: var(--radius-base);  /* 4 px per spec §3.1 */
 
     display: inline-flex;
@@ -97,9 +97,14 @@
      * some flex contexts. */
     position: relative;
 
-    /* Hover (only when not disabled, not checked, not indeterminate) — neutral
-     * fill + emerald-200 border, per spec §3.3. */
-    &:has(:hover:not(:disabled, :checked, :indeterminate)) {
+    /* Hover (only when the wrapper itself is hovered AND the input is NOT
+     * disabled / checked / indeterminate). The earlier `:has(:hover:not(...))`
+     * variant fired for ANY hovered descendant — including the label <span>
+     * — which made the rule incorrectly override the checked-state bg when
+     * the user moved the mouse over the label of a checked checkbox.
+     * Tightened: the wrapper itself must be `:hover` AND must NOT contain
+     * a :checked / :indeterminate / :disabled input. */
+    &:hover:not(:has(:checked, :indeterminate, :disabled)) {
         --check-bg: var(--color-neutral-100);
         --check-border: var(--color-deep-emerald-green-200);
     }
@@ -111,6 +116,15 @@
         --check-bg: var(--color-deep-emerald-green-200);
         --check-border: transparent;
         --check-glyph: var(--color-white);
+    }
+
+    /* Checked-on-hover (and indeterminate-on-hover) — darken the fill so
+     * the white glyph stays visible (emerald-200 + white was 2.42:1, fails
+     * WCAG 1.4.11 even at rest; emerald-400 + white = 5.84:1 ✓ and is the
+     * "slightly darker than active" the designer asked for). */
+    &:hover:has(:checked:not(:disabled)),
+    &:hover:has(:indeterminate:not(:disabled)) {
+        --check-bg: var(--color-deep-emerald-green-400);
     }
 
     /* Focus ring + solid outline on the wrapper. Drives off `:focus-visible`
@@ -147,8 +161,8 @@
         --check-focus-outline: var(--color-rose-700);
     }
     /* When invalid AND unchecked, ensure border still reads as rose
-     * (the `:has(:hover...)` rule above would otherwise win on hover). */
-    &:is([aria-invalid="true"], .is-invalid):has(:hover:not(:disabled, :checked, :indeterminate)) {
+     * (the unchecked-hover rule above would otherwise paint emerald-200). */
+    &:is([aria-invalid="true"], .is-invalid):hover:not(:has(:checked, :indeterminate, :disabled)) {
         --check-border: var(--color-rose-500);
     }
 }
