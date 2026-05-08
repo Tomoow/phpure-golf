@@ -344,3 +344,81 @@ Each entry is numbered, dated, and records an ambiguity that blocked full token 
 - **Why flag:** A-basic ships with Alpine; eventually it'll back a country-selector and a product-search combobox — both of which need an empty-match state. Without a design, the author will either skip it or pick a default visual (centered `slateBlue.400` text at `text-sm/leading-5/font-normal`).
 - **Need from designer:** Confirm whether A-basic needs empty / loading slots now, and if yes, provide a Figma reference.
 - **Cross-ref:** `components/dropdown-list/A-basic/spec.md` §2 (DL-6), §11.
+
+---
+
+## 28. 2026-05-08 — Form checkbox: no Indeterminate state in Figma (OQ-CB-1)
+
+- **Item:** The Checkbox component set (`1420:30806`) enumerates `State = Default | Hover | Focus | Disabled` and `Checked = True | False`. There is NO Indeterminate variant.
+- **Queried:** `1420:30806` metadata — 72 leaves, no `Indeterminate` in any variant property.
+- **Why flag:** Indeterminate is a standard ARIA tri-state pattern used by "select all" headers in tables and parent rows in nested checklist trees. It must be supported by the shell. Without a Figma reference the author has to choose colours and a glyph shape.
+- **Need from designer:** Confirm:
+  1. **Colours:** Same emerald-200 fill + white glyph as Checked? Or a different palette (e.g. emerald with reduced opacity, or a separate token)?
+  2. **Glyph:** Horizontal bar (10 × 2 px in M)? Or Heroicons outline `minus`? Or some other shape?
+  3. **Disabled-Indeterminate:** Mirror Disabled-Checked (white box + slate-blue-200 glyph)? Or a different treatment?
+- **Interim:** Spec recommends emerald-200 fill, white horizontal bar (10 × 2 px in M, scaling proportionally), Disabled-Indeterminate matching Disabled-Checked.
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.3.
+
+---
+
+## 29. 2026-05-08 — Form checkbox: no Invalid / error state in Figma (OQ-CB-2)
+
+- **Item:** The Checkbox component set has no `Invalid` / `Error` variant, only Default / Hover / Focus / Disabled. The shell still needs an invalid affordance for use cases like "you must accept the terms" or "select at least one".
+- **Queried:** `1420:30806` metadata.
+- **Why flag:** Without a Figma reference the author has to extrapolate. Form-field's invalid state uses `rose.500` border + `Focus/Error` ring + `rose.700` outline; the same pattern likely applies here, but the question is what happens to the FILL when an invalid checkbox is also checked: keep the brand emerald, or switch to a rose fill?
+- **Need from designer:** Pick:
+  1. **Brand fill stays.** Invalid-Checked = emerald fill + white glyph + rose-500 border (or no border, since the fill IS the surface) + rose hint text underneath. Most readable for users who DID make the correct choice but the form still rejects (e.g. validation race conditions).
+  2. **Rose fill.** Invalid-Checked = rose-500 fill + white glyph. More immediate visual error.
+- **Interim:** Spec recommends option 1 (brand fill stays; rose communicated via hint text + focus ring).
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.3 (last 3 rows).
+
+---
+
+## 30. 2026-05-08 — Form checkbox: default unchecked border fails WCAG 1.4.11 (OQ-CB-3)
+
+- **Item:** Figma's default unchecked state (`1420:31133`) uses `Tailwind/Slate Blue/300 = #9DB0C2` for the box border. Contrast against `colors.white` is 2.23:1 — WCAG 2.2 AA UI components require ≥3:1 (1.4.11).
+- **Queried:** `1420:31133`, `1420:31145`, `1420:31157` — all `slateBlue.300`.
+- **Why flag:** Form-field already deviates from Figma here for the same reason — its unchecked-default border was bumped from `slateBlue.300` to `slateBlue.500` and an A11Y-007 entry was added to `accessibility-review.md`. The checkbox should match the field for consistency and to clear the audit.
+- **Need from designer:** Approve the same WCAG bump: `slateBlue.300` → `slateBlue.500` for the default unchecked border. (The disabled border stays `slateBlue.100` because disabled UI is exempt from 1.4.11.)
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.3, §7. Update `accessibility-review.md` if approved.
+
+---
+
+## 31. 2026-05-08 — Form checkbox: Disabled-Checked is unfilled white with slate-blue-200 glyph (OQ-CB-4)
+
+- **Item:** The Disabled-Checked variant (`1420:31175`) does NOT show a faded emerald fill — it's a white box with a `slateBlue.100` border and a `slateBlue.200` checkmark. Visually this reads as "unchecked but with a tick floating in it" rather than the typical "filled but greyed out" disabled-checked pattern.
+- **Queried:** `1420:31175` `get_design_context` — confirmed `bg-white`, `border-[#dee5eb]`, glyph asset `58521c5b…` rendered in slate-blue-200.
+- **Why flag:** The form-checkbox should communicate "this option WAS selected, now it's locked" — most users read a faded emerald fill as that. A white box reads as unchecked. This may be intentional (consistent with form-field's all-white disabled fields) or a Figma authoring choice that doesn't translate well to atoms.
+- **Need from designer:** Pick:
+  1. **Match Figma exactly.** White box + slate-blue-100 border + slate-blue-200 glyph.
+  2. **Standard pattern.** Faded emerald fill (e.g. `deepEmeraldGreen.200` at 50% opacity, or `deepEmeraldGreen.100` if it exists) + white glyph.
+- **Interim:** Spec mirrors Figma (option 1).
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.3 (Checked/Disabled row).
+
+---
+
+## 32. 2026-05-08 — Form checkbox: Disabled label colour stays slateBlue.700 in Figma (OQ-CB-5)
+
+- **Item:** In `1420:31277` (M / Disabled / Unchecked / Label) and `1420:31283` (M / Disabled / Checked / Label), the label text is rendered at `slateBlue.700` — the same colour as the enabled label. There is no opacity drop, no colour shift.
+- **Queried:** `1420:31277` `get_design_context`.
+- **Why flag:** A disabled checkbox row should communicate "you can't change this" through the WHOLE row, not just the box. Form-group's disabled state drops the label to `slateBlue.400`. Keeping the label at 700 makes the row read as enabled at a glance.
+- **Need from designer:** Pick:
+  1. **Match Figma.** Label stays `slateBlue.700` when disabled.
+  2. **Match form-group.** Disabled label drops to `slateBlue.400`. (Spec recommendation.)
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2.
+
+---
+
+## 33. 2026-05-08 — Form checkbox: glyph SVG identity + Size S glyph + Size S hint typography (OQ-CB-7, OQ-CB-9)
+
+- **Item — part a (OQ-CB-7):** Figma ships the checkmark as two SVG assets — `fdae2b47…` for non-disabled checked variants and `58521c5b…` for the Disabled-Checked variant. Both render a tick at 10 × 10 px inside a 20 × 20 box (Size M). The S-size glyph dimensions weren't isolated in the probed nodes (only Size M variants returned the asset URLs).
+- **Item — part b (OQ-CB-9):** No `Size = S` + `Text = Label + Hint text` variant was probed for hint typography. Spec extrapolates `text-xs/leading-4/font-normal` by analogy with the M (`text-sm/leading-5`) → L (`text-base/leading-6`) progression. Figma did return `text-xs` for the S+Label-only and S+None variants but the hint sizing was not directly observed at S.
+- **Why flag:**
+  1. The author needs to know whether to draw the glyph as inline SVG (recommended, since stroke colour can drive from `currentColor` and collapse the two Figma assets into one) or to use the Figma SVGs verbatim. Heroicons outline-24 `check` was confirmed as the project icon set in `CLAUDE.md`, so the author would prefer Heroicons here too. Confirm the Figma tick is shape-equivalent to Heroicons `check`.
+  2. The S-size glyph proportions need to be confirmed: 10px glyph in 20px box (M) → 8px glyph in 16px box (S)? Or some other ratio?
+  3. The S-size hint typography needs an explicit Figma source instead of an extrapolation.
+- **Need from designer:**
+  1. Confirm Heroicons outline-24 `check` is the canonical glyph for both checkbox and any other tick usage in the system. The author will inline it as SVG and drive colour from `currentColor`.
+  2. Provide / confirm the S-size glyph dimensions (likely 8 × 8 px).
+  3. Provide the Figma node for `Size = S, Text = Label + Hint text` so hint typography can be confirmed (Figma should have `1420:31045` and `1420:31051` covering this — agent did not probe them in this pass).
+- **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.2, §3.4, §4.

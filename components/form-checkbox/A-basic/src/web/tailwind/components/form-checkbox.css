@@ -1,0 +1,379 @@
+/**
+ * Form checkbox styles — PHPure Golf brand variant of Hyvä UI 2.7.1
+ * form-checkbox (A-basic).
+ *
+ * Spec: components/form-checkbox/A-basic/spec.md
+ * Figma node: 1420:30806 (component set).
+ *
+ * Architecture mirrors the form-field shell:
+ *   • ONE `@utility form-checkbox` on the wrapping `<label>` drives the box
+ *     appearance through CSS custom properties (`--check-bg`, `--check-border`,
+ *     `--check-glyph`, `--check-focus-ring`, `--check-focus-outline`, plus
+ *     dimension tokens `--check-size` / `--check-glyph-size` / `--check-gap`).
+ *   • State selectors are `:has(:checked)`, `:has(:indeterminate)`,
+ *     `:has(:focus-visible)`, `:has(:disabled)`, plus `[aria-invalid="true"]`
+ *     / `.is-invalid` modifiers on the wrapper. NO per-state utilities.
+ *   • Sizes (`form-checkbox--sm`, `form-checkbox--lg`) only override the
+ *     dimension tokens — palette is identical.
+ *   • Feedback modifiers (`form-checkbox--error/warning/success`) only
+ *     override the border + focus tokens. The glyph + fill stay brand-correct
+ *     (per OQ-CB-2 / decision Q#29: error is a border-only signal; the
+ *     surrounding `form-group__hint--error` carries the rose-700 message text).
+ *
+ * Decisions baked in (designer-approved 2026-05-08, see questions.md #28–#33
+ * and components/form-checkbox/A-basic/README.md "Decision log"):
+ *   • Q#28 (indeterminate): `::after` pseudo bar — 2px tall, scales with size,
+ *     same emerald-200 fill + white glyph color as the Checked state.
+ *   • Q#29 (invalid): rose-500 border + rose-700 focus outline; the SVG tick
+ *     (or indeterminate bar) keeps emerald fill / white glyph so user input
+ *     stays legible. Mirrors form-field--error.
+ *   • Q#30 (default border): slate-blue-500 (4.39:1 vs white, WCAG 1.4.11
+ *     PASS) instead of Figma's slate-blue-300 (2.23:1 FAIL). Same deviation
+ *     A11Y-007 already shipped on form-field; no regression possible.
+ *   • Q#31 (disabled-checked): box-bg STAYS deep-emerald-green-200. Glyph
+ *     shifts to slate-blue-300; cursor: not-allowed on the wrapper; the
+ *     <input> remains tab-reachable (no `pointer-events: none`) per WCAG
+ *     2.4.3 Focus Order.
+ *   • Q#32 (disabled cascade): label slate-blue-400, box border + glyph
+ *     slate-blue-300. Matches form-field's disabled palette.
+ *   • Q#33 (glyph): Heroicons outline-24 `check`. Caller renders the SVG
+ *     inline inside `.form-checkbox__box`; this stylesheet sizes it via
+ *     `--check-glyph-size` and colors it via `currentColor`. S=12px, M/L=16px.
+ *
+ * WCAG / accessibility notes:
+ *   • Focus indicator: pale `--shadow-focus/primary` glow alone is 1.23:1
+ *     against white. The shell adds a 2px solid outline in a high-contrast
+ *     color (`deep-emerald-green-500` = 9.83:1 default; `rose-700` = 6.37:1
+ *     when invalid). Same fix as form-field / button (A11Y-006).
+ *   • Touch target: the label adds `padding-block: --spacing-1` for sizes S
+ *     and M so the click target reaches ≥24×24 px (WCAG 2.5.8). Size L
+ *     (24×24 box) already meets the threshold without padding.
+ *   • Hidden input: `opacity: 0; position: absolute;` — NEVER `display: none`
+ *     or `visibility: hidden`, both of which remove the input from the
+ *     accessibility tree. The native `<input type="checkbox">` is the only
+ *     thing the AT sees; the visible `__box` is `aria-hidden`.
+ *
+ * Tokens: every value resolves to a CSS custom property declared in
+ * `src/css/theme.css` (generated `@theme` block). No raw hex anywhere.
+ */
+
+/* ─── Shell ───────────────────────────────────────────────────────────────── */
+
+@utility form-checkbox {
+    /* Default-state palette. State selectors and feedback modifiers override
+     * a subset of these; the cascade does the rest. */
+    --check-bg: var(--color-white);
+    --check-border: var(--color-slate-blue-500); /* WCAG fix per Q#30 */
+    --check-glyph: transparent;                  /* No glyph until checked / indeterminate */
+    --check-label-color: var(--color-slate-blue-700);
+    --check-hint-color: var(--color-slate-blue-400);
+
+    /* Focus slot tokens — feedback modifiers swap the ring + outline. */
+    --check-focus-ring: var(--shadow-focus\/primary);
+    --check-focus-outline: var(--color-deep-emerald-green-500);
+
+    /* Dimensional defaults (Size = M). Size modifiers override these. */
+    --check-size: --spacing(5);          /* 20 px */
+    --check-glyph-size: --spacing(4);    /* 16 px — Heroicons outline-24 check */
+    --check-gap: --spacing(2\.5);        /* 10 px between box and label text */
+    --check-radius: var(--radius-base);  /* 4 px per spec §3.1 */
+
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--check-gap);
+    /* Touch-target padding (WCAG 2.5.8): S=16 + 2*4 = 24, M=20 + 2*4 = 28,
+     * L=24 already passes. The L size modifier zeroes this out. Vertical
+     * padding only — horizontal stays tight so groups don't feel airy. */
+    padding-block: var(--spacing-1);
+    color: var(--check-label-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 600;       /* Demi — same as form-field label, see questions.md #8 */
+    cursor: pointer;
+    user-select: none;
+    /* `:focus-visible` paints the outline; without `position: relative` the
+     * outline-offset would render relative to the wrong containing block in
+     * some flex contexts. */
+    position: relative;
+
+    /* Hover (only when not disabled, not checked, not indeterminate) — neutral
+     * fill + emerald-200 border, per spec §3.3. */
+    &:has(:hover:not(:disabled, :checked, :indeterminate)) {
+        --check-bg: var(--color-neutral-100);
+        --check-border: var(--color-deep-emerald-green-200);
+    }
+
+    /* Checked — solid emerald fill, white glyph, no border (the fill IS the
+     * surface per Figma). Indeterminate shares the same palette. */
+    &:has(:checked),
+    &:has(:indeterminate) {
+        --check-bg: var(--color-deep-emerald-green-200);
+        --check-border: transparent;
+        --check-glyph: var(--color-white);
+    }
+
+    /* Focus ring + solid outline on the wrapper. Drives off `:focus-visible`
+     * inside the input so mouse clicks don't paint the ring. */
+    &:has(:focus-visible) {
+        box-shadow: var(--check-focus-ring);
+        outline: 2px solid var(--check-focus-outline);
+        outline-offset: 2px;
+    }
+
+    /* Disabled — keep emerald fill on Checked / Indeterminate so the user's
+     * choice is still legible (Q#31). Unchecked disabled gets the slate-blue
+     * cascade. The glyph color shifts to slate-blue-300 in BOTH cases so
+     * checked-disabled reads as "set but not editable". The input stays tab
+     * reachable (no pointer-events:none) per WCAG 2.4.3. */
+    &:has(:disabled) {
+        --check-label-color: var(--color-slate-blue-400);
+        --check-hint-color: var(--color-slate-blue-300);
+        --check-glyph: var(--color-slate-blue-300);
+        cursor: not-allowed;
+    }
+
+    &:has(:disabled:not(:checked, :indeterminate)) {
+        --check-bg: var(--color-white);
+        --check-border: var(--color-slate-blue-300);
+    }
+
+    /* Invalid — border-only signal (per Q#29). Box bg + glyph stay brand-correct
+     * so the selection remains legible; rose comes through the border, the focus
+     * outline, and the surrounding `form-group__hint--error` text. */
+    &:is([aria-invalid="true"], .is-invalid) {
+        --check-border: var(--color-rose-500);
+        --check-focus-ring: var(--shadow-focus\/error);
+        --check-focus-outline: var(--color-rose-700);
+    }
+    /* When invalid AND unchecked, ensure border still reads as rose
+     * (the `:has(:hover...)` rule above would otherwise win on hover). */
+    &:is([aria-invalid="true"], .is-invalid):has(:hover:not(:disabled, :checked, :indeterminate)) {
+        --check-border: var(--color-rose-500);
+    }
+}
+
+/* ─── Native input — visually hidden but accessibility-tree-visible ───────── */
+
+/* DO NOT use `display: none` / `visibility: hidden` — both remove the input
+ * from the a11y tree. We pin it on top of the `__box` so click + keyboard
+ * focus still hit the native control. The visible square is `__box`. */
+@utility form-checkbox__input {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    /* Match the box dimensions so click on the visible square hits the input. */
+    width: var(--check-size);
+    height: var(--check-size);
+    position: absolute;
+    top: var(--spacing-1); /* aligns with the box's vertical position (label has padding-block) */
+    inset-inline-start: 0;
+    opacity: 0;
+    cursor: inherit;
+
+    /* Disabled keeps focus-reachability — see Q#31 / WCAG 2.4.3. */
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+/* ─── Visible box (drawn by the wrapper's tokens) ─────────────────────────── */
+
+@utility form-checkbox__box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--check-size);
+    height: var(--check-size);
+    /* 2 px nudge so the box sits on the cap-height of the first line of label
+     * text (Figma reports `pt-[2px]`, spec §10). */
+    margin-block-start: var(--spacing-0\.5);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--check-border);
+    border-radius: var(--check-radius);
+    background-color: var(--check-bg);
+    color: var(--check-glyph);
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-timing-function: var(--default-transition-timing-function);
+    transition-duration: var(--default-transition-duration);
+    /* Pseudo-element + SVG glyph live inside, position:relative anchors them. */
+    position: relative;
+
+    /* The Heroicons SVG glyph (an `<svg>` child of the box) — sized + colored
+     * by the wrapper's tokens. Hidden by default (transparent currentColor +
+     * opacity 0); the `:checked` state ramps `--check-glyph` to white and
+     * the opacity to 1. */
+    & > svg {
+        width: var(--check-glyph-size);
+        height: var(--check-glyph-size);
+        color: currentColor;
+        opacity: 0;
+        flex: none;
+        /* Heroicons outline 24 ships at stroke-width 1.5; the check tick reads
+         * crisper at 2 inside a 16 px box. */
+        stroke-width: 2;
+    }
+
+    /* Indeterminate bar — drawn entirely in CSS so it scales with the box.
+     * 2px tall, ≈half the box wide, centered, picks up `currentColor` (which
+     * is `--check-glyph`). Hidden until the wrapper has `:has(:indeterminate)`. */
+    &::after {
+        content: "";
+        position: absolute;
+        inset-inline: 25%;     /* ≈ box-width/2, centered */
+        block-size: 2px;
+        background-color: currentColor;
+        border-radius: 1px;
+        opacity: 0;
+    }
+}
+
+/* Reveal the SVG tick when the wrapper has a checked input (and not
+ * indeterminate — indeterminate trumps checked visually). */
+.form-checkbox:has(:checked:not(:indeterminate)) .form-checkbox__box > svg {
+    opacity: 1;
+}
+
+/* Reveal the indeterminate bar; suppress the SVG so they never overlap. */
+.form-checkbox:has(:indeterminate) .form-checkbox__box::after {
+    opacity: 1;
+}
+.form-checkbox:has(:indeterminate) .form-checkbox__box > svg {
+    opacity: 0;
+}
+
+/* ─── Text column (label + optional hint) ─────────────────────────────────── */
+
+@utility form-checkbox__text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    flex: 1;
+}
+
+@utility form-checkbox__label {
+    color: var(--check-label-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);
+    line-height: --spacing(6);
+    font-weight: 600;
+}
+
+@utility form-checkbox__hint {
+    color: var(--check-hint-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(3\.5);
+    line-height: --spacing(5);
+    font-weight: 500;
+    margin-block-start: var(--spacing-0\.5);
+}
+
+/* Required asterisk inside a label — same treatment as form-group__required.
+ * Marked aria-hidden in HTML so screen readers rely on native `required`. */
+@utility form-checkbox__required {
+    color: var(--color-rose-500);
+    font-weight: 500;
+    margin-inline-start: var(--spacing-1);
+}
+
+/* ─── Size modifiers ──────────────────────────────────────────────────────── */
+
+/* Size S — 16 × 16 px box. Glyph drops to 12 px (Heroicons reads cleanly down
+ * to 12 px at stroke-width 2). Gap tightens to 8 px per spec §4. */
+@utility form-checkbox--sm {
+    --check-size: --spacing(4);          /* 16 px */
+    --check-glyph-size: --spacing(3);    /* 12 px */
+    --check-gap: var(--spacing-2);       /* 8 px */
+    font-size: --spacing(3\.5);
+    line-height: --spacing(5);
+
+    & .form-checkbox__label {
+        font-size: --spacing(3\.5);
+        line-height: --spacing(5);
+    }
+    & .form-checkbox__hint {
+        font-size: --spacing(3);
+        line-height: --spacing(4);
+    }
+}
+
+/* Size L — 24 × 24 px box. Already meets WCAG 2.5.8 without padding so the
+ * touch-target padding is suppressed. Glyph stays at 16 px (Heroicons feels
+ * right at this size; matches the spec note that 12 px = 50 % of M box, but
+ * 16 px on a 24 px box feels balanced too — designer-approved Q#33). */
+@utility form-checkbox--lg {
+    --check-size: --spacing(6);          /* 24 px */
+    --check-glyph-size: --spacing(4);    /* 16 px */
+    /* Touch target already satisfied by the 24-px hit area. */
+    padding-block: 0;
+    @apply text-lg;
+    line-height: --spacing(7);
+
+    & .form-checkbox__label {
+        @apply text-lg;
+        line-height: --spacing(7);
+    }
+    & .form-checkbox__hint {
+        font-size: --spacing(4);
+        line-height: --spacing(6);
+    }
+}
+
+/* ─── Feedback modifiers ──────────────────────────────────────────────────── */
+
+/* Each modifier overrides border + focus tokens; the shell reads them via the
+ * same `--check-*` slots so no state-selector logic is duplicated. The hint
+ * text color is driven by the consumer applying `form-group__hint--error`
+ * (or warning / success) to the hint span — same pattern as form-field. */
+
+@utility form-checkbox--error {
+    --check-border: var(--color-rose-500);
+    --check-focus-ring: var(--shadow-focus\/error);
+    --check-focus-outline: var(--color-rose-700);
+}
+
+@utility form-checkbox--warning {
+    --check-border: var(--color-amber-700);
+    --check-focus-ring: var(--shadow-focus\/warning);
+    --check-focus-outline: var(--color-amber-700);
+}
+
+@utility form-checkbox--success {
+    --check-border: var(--color-emerald-700);
+    --check-focus-ring: var(--shadow-focus\/success);
+    --check-focus-outline: var(--color-emerald-700);
+}
+
+/* ─── Group wrapper (`<fieldset>` + `<legend>`) ───────────────────────────── */
+
+/* Shipped as utilities so consumers can compose multiple checkboxes around
+ * a shared label without inventing their own spacing. The `<fieldset>` /
+ * `<legend>` pair is the simplest WCAG 1.3.1 / 4.1.2 compliant grouping
+ * (spec §5.3). */
+
+@utility form-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    /* Default `<fieldset>` styling is opinionated (UA-padded border + margin).
+     * Strip it so the group reads as a flat stack of rows. */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+@utility form-checkbox-group__legend {
+    color: var(--color-slate-blue-700);
+    font-family: var(--font-sans);
+    font-size: --spacing(3\.5);
+    line-height: --spacing(5);
+    font-weight: 500;
+    margin-block-end: var(--spacing-1\.5);
+    padding: 0;
+}
