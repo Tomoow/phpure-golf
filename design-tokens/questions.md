@@ -422,3 +422,106 @@ Each entry is numbered, dated, and records an ambiguity that blocked full token 
   2. Provide / confirm the S-size glyph dimensions (likely 8 × 8 px).
   3. Provide the Figma node for `Size = S, Text = Label + Hint text` so hint typography can be confirmed (Figma should have `1420:31045` and `1420:31051` covering this — agent did not probe them in this pass).
 - **Cross-ref:** `components/form-checkbox/A-basic/spec.md` §2, §3.2, §3.4, §4.
+
+---
+
+## 34. 2026-05-08 — Swatch out-of-stock visual: diagonal slash vs Heroicons-X overlay (OQ-SW-1)
+
+- **Item:** Figma's `Disabled` color/image swatch variants (`1385:33447`, `1385:33741`) overlay a `Heroicons solid X` icon inside a small white square at 50 % opacity over the swatch. The Disabled-Text variant (`1385:32599`) instead draws a diagonal strikethrough line (`-45°` rotation, slate-blue-400 stroke) across the pill. The Hyvä UI 2.7.1 kit (`hyva-ui/components/swatches/A-swatches-rounded/src/web/tailwind/components/swatches.css` lines 119-145) uses CSS `linear-gradient` to draw a single diagonal slash on color/image swatches when disabled.
+- **Why flag:** The two approaches diverge — Figma uses an icon overlay (extra DOM node per swatch), the kit uses a CSS gradient (zero DOM, scales with size, recognised Hyvä convention).
+- **Spec recommendation:** Use the kit's CSS-gradient diagonal-slash for color/image swatches and a strikethrough line for text swatches — no DOM cost, scales with size, matches Hyvä convention. Reject the Heroicons-X overlay.
+- **Question for designer:** Confirm the spec recommendation, OR specify that the Heroicons-X overlay must be retained. Also confirm whether "Disabled" and "Out of stock" should look identical (both use the diagonal slash) or whether they should diverge visually — Magento distinguishes the two semantically (disabled = configured-off by admin, out-of-stock = inventory zero).
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-1, §4.
+
+---
+
+## 35. 2026-05-08 — Swatch selected state: no check-glyph overlay on color swatches (OQ-SW-2)
+
+- **Item:** Figma's `Selected` color and image swatch variants (`1385:33332`, `1385:33334`, `1385:33747`) do NOT overlay a check glyph. The selection signifier is a two-stop `box-shadow` (the `Additional/Swatch inner` token: 3 px black-24 % + 2 px white inset) plus an outer 2 px ring colored per shape (blue-500 Rectangle / deep-emerald-green-300 Round).
+- **Why flag:** Many Magento swatch implementations stamp a check icon on the selected color swatch. The Figma design omits this in favor of the inner+outer ring affordance alone. This is a deliberate visual choice and could be controversial — small color swatches at XS / S (16 × 16 px) may not show the inner ring clearly.
+- **Spec recommendation:** Adopt Figma's design exactly — no check glyph on color swatches. Document as a known divergence from common Magento defaults in the component README.
+- **Question for designer:** Confirm. Specifically, is the white inner ring sufficient for accessibility on bright product colors (e.g. teal-300 / pink-300) where white-on-pale has minimal edge contrast, or should we additionally render a check glyph at sizes M and below?
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-2, §3.4, §4.
+
+---
+
+## 36. 2026-05-08 — Swatch shape switches the outer-ring palette (Rectangle = blue, Round = emerald) (OQ-SW-3)
+
+- **Item:** Figma uses **different colors** for the selected/hover outer ring depending on shape:
+  - Rectangle Selected color swatch (`1385:33332`): outer ring = `blue.500` (`#3B82F6`)
+  - Round Selected color swatch (`1385:33334`): outer ring = `deepEmeraldGreen.300` (`#2F9483`)
+  - Rectangle Hover color swatch (`1385:33186`): outer ring = `blue.300` (`#93C5FD`)
+  - Text swatches always use emerald regardless of shape (Rectangle Hover/Selected/Focus all use `deepEmeraldGreen.300` per `1385:32473` / `1385:32557` / `1385:32515`)
+- **Why flag:** The shape-based palette switch is unusual. A typical pattern uses ONE brand color for selection regardless of shape. Two questions: (a) is the blue palette intentional for the Rectangle color/image swatches, or is it a leftover from an earlier design iteration, and (b) which is the brand-recommended default for the homepage?
+- **Spec recommendation:** Treat shape as a palette switch (`swatch--round` → emerald, default Rectangle → blue) but document that **Round + emerald is the brand-recommended default**. Rectangle + blue is retained for backwards compatibility with merchant overrides.
+- **Question for designer:** Confirm. Or unify on emerald-300 across both shapes for color swatches, in which case the Rectangle blue palette is dropped.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-3, §3.1, §4.1, §4.2.
+
+---
+
+## 37. 2026-05-08 — Swatch text-hover border = `deepEmeraldGreen.300`, not blue (OQ-SW-4)
+
+- **Item:** Figma reports text · M · Hover (`1385:32473`) border = `deepEmeraldGreen.300`. The Hyvä UI 2.7.1 kit uses `--swatch-stroke: var(--color-blue-300)` on hover instead.
+- **Why flag:** The PHPure Golf brand wants emerald-on-hover; the kit ships blue. The author must override the kit's hover palette wholesale for text swatches.
+- **Spec recommendation:** Adopt Figma — `--swatch-ring-hover: var(--color-deep-emerald-green-300)` for text swatches in BOTH Rectangle and Round shapes.
+- **Question for designer:** Confirm.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-4, §3.2, §4.3.
+
+---
+
+## 38. 2026-05-08 — Swatch focus indicator: drop-shadow ring vs Figma's 4 px solid border (OQ-SW-5)
+
+- **Item:** Figma's focus state differs by type:
+  - text · M · Focus (`1385:32515`): 2 px emerald-300 border + outer drop-shadow `0 0 0 4px #E1EBDD` (= `Focus/Primary`)
+  - color · M · Focus (`1385:33268`): 4 px-thick `blue.500` solid border, no drop-shadow
+- **Why flag:** Two different focus indicators for two types of swatch is inconsistent and the 4 px solid border on color swatches creates layout shift (the chip grows by 2 px on focus). It also visually clashes with the 2 px Selected outer ring (focus-on-selected = thick blue ring obscuring the green selected ring).
+- **Spec recommendation:** Standardise on the text-swatch pattern across all types: thin border + outer `box-shadow: var(--shadow-focus\/primary)` drop-shadow. No layout shift, consistent visual language with form-field / form-checkbox / button.
+- **Question for designer:** Confirm. The alternative is to keep Figma's color-swatch 4 px focus border, in which case we must also reserve 2 px of margin around every color swatch to absorb the layout shift, which complicates group layout. The drop-shadow approach is preferred.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-5, §3, §4.
+
+---
+
+## 39. 2026-05-08 — Selected text-swatch label: weight 600 + emerald-500 (OQ-SW-6)
+
+- **Item:** Figma reports text · M · Selected (`1385:32557`) label color = `deepEmeraldGreen.500` (`#004D40`) at font-weight 600 (`ITC Avant Garde Gothic Pro Demi`, remapped to DM Sans 600 per `fontFamilyOverrides`). Default is weight 500 + `slateBlue.600`.
+- **Why flag:** Toggling between sizes / colors causes visible text weight + color shifts. This is intentional emphasis but worth confirming, because it can be perceived as a "page jump" if the user is rapidly comparing options.
+- **Spec recommendation:** Adopt Figma exactly.
+- **Question for designer:** Confirm, or specify a softer treatment (e.g. weight stays 500, color shifts only).
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-6, §3.2, §4.3.
+
+---
+
+## 40. 2026-05-08 — Disabled text-swatch label color: drop the 75 % opacity, use `slateBlue.300` directly (OQ-SW-7)
+
+- **Item:** Figma reports text · M · Disabled (`1385:32599`) label = `slateBlue.400` (`#7C96AD`) with `opacity: 0.75`. Multiplied through, this resolves visually equivalent to a flat `slateBlue.300` (`#9DB0C2`) — but the opacity layer creates a stacking context that interferes with the diagonal-slash overlay z-ordering and complicates the `currentColor`-based glyph color we want for any future check overlay.
+- **Spec recommendation:** Replace `slateBlue.400 + opacity 0.75` with a flat `color: var(--color-slate-blue-300)`. Visually identical, simpler stacking.
+- **Question for designer:** Confirm — or specify if there is a perceptual reason to retain the opacity multiplier.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-7, §3.2, §4.3.
+
+---
+
+## 41. 2026-05-08 — Swatch sizes XS / S below WCAG 2.5.8 touch-target threshold (OQ-SW-8)
+
+- **Item:** Figma color/image swatch sizes for XS = 16, S = 15.75 (sic, treat as 16), M = 20, L = 22, XL = 24 px. Sizes XS / S / M are smaller than the WCAG 2.5.8 24 × 24 px target. The Hyvä UI 2.7.1 kit overrides Figma here and forces all background-color/image swatches to a fixed 32 × 32 px regardless of variant.
+- **Spec recommendation:** Keep Figma's chip dimensions for the visible chip, but extend the wrapping `<label>` via padding so the interactive hit area is ≥24×24 px for all sizes XS through L. Document in the README that **size M or larger is the recommended default for primary attribute pickers on mobile**; XS / S are reserved for filter-facet rows where the parent fieldset row already provides a larger interactive surface.
+- **Question for designer:** Confirm. Specifically, do we ship XS and S at all in v1, or restrict to M / L / XL?
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-8, §5, §7.
+
+---
+
+## 42. 2026-05-08 — Swatch text-pill padding: pixel-perfect values, esp. L = 12 / 16 px (OQ-SW-9)
+
+- **Item:** Figma reports per-size dimensions (e.g. `text · L · Default` = 48 × 44 px outer, no inner padding directly probed for L). Spec §5.2 derives padding by reverse engineering from outer dimension minus content (label "L" width). For Size L: 48 wide × 44 tall outer with `text-base/leading-6` (16 px font, 24 px line-height) leaves ~12 px vertical padding — unusually low for a 44 px-tall pill. M and XL look proportional.
+- **Why flag:** Without probing the `Base/_Swatch {base}` instance for each size separately, the padding values are inferred. Author should confirm pixel-perfect padding from Figma at implementation time before shipping.
+- **Question for designer:** Provide / confirm the exact `padding-block` and `padding-inline` for each text swatch size (XS, S, M, L, XL). Especially L feels visually tight per the spec author's calculation.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-9, §5.2.
+
+---
+
+## 43. 2026-05-08 — Swatch shell `[aria-invalid]` support for unanswered required pickers (OQ-SW-10)
+
+- **Item:** PDP attribute pickers are typically required (size + color must be selected before "Add to cart"). On submit attempt with no selection, the consumer (Alpine on the form / fieldset) sets `aria-invalid="true"` on the `<fieldset class="swatch-group">`. The shell should react with a tinted legend (rose-700) and a tinted focus ring (`Focus/Error`) without the consumer having to repaint anything.
+- **Why flag:** Figma does not include an "invalid / unanswered" variant for swatches. This is a standard UX pattern (mirrors form-checkbox `aria-invalid` support — questions.md #29).
+- **Spec recommendation:** Add `&[aria-invalid="true"]` to the `swatch-group` shell, overriding the legend color to `rose.700` and switching `--swatch-focus-ring` to `Focus/Error`. The same modifier on `swatch-group--multi` (multi-select) should be no-op since multi-select facets are never required.
+- **Question for designer:** Confirm. Provide a Figma frame if a custom design exists.
+- **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-10, §9.

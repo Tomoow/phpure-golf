@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Swatches — A-swatches-rounded — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only scaffolding. Mirrors the form-checkbox preview pattern:
+         * page chrome + matrix grid + force-* helpers that simulate :hover /
+         * :focus-visible / :checked / :disabled / out-of-stock without user
+         * interaction so every state is captured in one screenshot.
+         *
+         * These classes are NOT part of the shipped component.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: 9rem repeat(5, minmax(0, 1fr));
+            gap: 0.75rem 1rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+        .matrix > .col-head,
+        .matrix > .row-head {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .matrix > .row-head {
+            text-align: right;
+            padding-inline-end: 0.5rem;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 3rem;
+            gap: 0.5rem;
+        }
+        .stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(18rem, 1fr));
+            gap: 1rem 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+        .stack--full {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .caption {
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--color-slate-blue-500);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-block-end: 0.25rem;
+        }
+        .ladder {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .section { margin-block-end: 2rem; }
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            background: var(--color-white);
+            max-width: 22rem;
+        }
+        .product-card__title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-blue-800);
+        }
+        .product-card__price {
+            font-size: 0.875rem;
+            color: var(--color-slate-blue-600);
+            margin-block-start: -0.25rem;
+        }
+
+        /*
+         * Forced-state scaffolding. The shell binds its visual to
+         * `:has(:hover…)` / `:has(:focus-visible)` / `:has(:checked)` /
+         * `:has(:disabled)` / `&.is-out-of-stock`. These preview-only
+         * helpers inject the SAME visuals so every state can be shown
+         * without real input interaction.
+         *
+         * Force-* uses `!important` on tokens so it wins over real input
+         * state when the cells contain real <input> elements.
+         */
+
+        /* Force HOVER — outer ring on the chip. Use the same token
+         * (`--swatch-ring-hover`) the real `:hover` rule reads. */
+        .force-hover .swatch--color .swatch__chip,
+        .force-hover .swatch--image .swatch__chip {
+            outline: 2px solid var(--swatch-ring-hover) !important;
+            outline-offset: 2px;
+        }
+        .force-hover .swatch--text {
+            --swatch-border: var(--color-deep-emerald-green-300) !important;
+            --swatch-color: var(--color-slate-blue-800) !important;
+            --swatch-text-weight: 600 !important;
+        }
+
+        /* Force SELECTED — inner shadow + outer ring for color/image, palette
+         * swap for text. Mirrors the `:has(:checked)` rule. */
+        .force-selected .swatch--color .swatch__chip,
+        .force-selected .swatch--image .swatch__chip {
+            box-shadow: var(--shadow-additional\/swatch-inner) !important;
+            outline: 2px solid var(--swatch-ring-selected) !important;
+            outline-offset: 2px;
+            border-color: transparent !important;
+        }
+        .force-selected .swatch--text {
+            --swatch-border: var(--color-deep-emerald-green-300) !important;
+            --swatch-color: var(--color-deep-emerald-green-500) !important;
+            --swatch-text-weight: 600 !important;
+        }
+
+        /* Force FOCUS — soft glow on the chip. */
+        .force-focus .swatch__chip {
+            box-shadow: var(--swatch-focus-ring) !important;
+        }
+        /* Selected + focus combo: layer the inner shadow under the focus ring. */
+        .force-selected.force-focus .swatch--color .swatch__chip,
+        .force-selected.force-focus .swatch--image .swatch__chip {
+            box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring) !important;
+        }
+
+        /* Force DISABLED / OUT-OF-STOCK — opacity + diagonal slash overlay.
+         * The shell already applies opacity via `:has(:disabled)`; we
+         * additionally stamp the slash for static demo. */
+        .force-disabled .swatch,
+        .force-out-of-stock .swatch {
+            opacity: 0.6 !important;
+            cursor: not-allowed !important;
+        }
+        .force-disabled .swatch--color .swatch__chip::after,
+        .force-disabled .swatch--image .swatch__chip::after,
+        .force-out-of-stock .swatch--color .swatch__chip::after,
+        .force-out-of-stock .swatch--image .swatch__chip::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(
+                130deg,
+                transparent calc(50% - 0.5px),
+                var(--color-slate-blue-400) calc(50% - 0.5px),
+                var(--color-slate-blue-400) calc(50% + 0.5px),
+                transparent calc(50% + 0.5px)
+            );
+            border-radius: inherit;
+            pointer-events: none;
+        }
+        .force-disabled .swatch--text,
+        .force-out-of-stock .swatch--text {
+            --swatch-bg: var(--color-slate-blue-100) !important;
+            --swatch-border: var(--color-slate-blue-300) !important;
+            --swatch-color: var(--color-slate-blue-300) !important;
+            --swatch-text-weight: 600 !important;
+        }
+        .force-disabled .swatch--text .swatch__chip::after,
+        .force-out-of-stock .swatch--text .swatch__chip::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(
+                -45deg,
+                transparent calc(50% - 1px),
+                var(--color-slate-blue-400) calc(50% - 1px),
+                var(--color-slate-blue-400) calc(50% + 1px),
+                transparent calc(50% + 1px)
+            );
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Swatches — A-swatches-rounded</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 swatches kit. Figma node
+            <code>1385:32405</code>. ONE <code>@utility swatch</code> on the
+            wrapping <code>&lt;label&gt;</code> drives every visual through CSS
+            custom properties and <code>:has()</code> state selectors. Three
+            types (<code>swatch--color</code>, <code>swatch--text</code>,
+            <code>swatch--image</code>), two shapes (default round +
+            <code>swatch--rectangle</code>), five sizes (XS / S / M / L / XL).
+            No Alpine — state lives in the native <code>&lt;input
+            type="radio"&gt;</code> or <code>&lt;input type="checkbox"&gt;</code>.
+            Color swatches receive their product hex via
+            <code>style="--swatch-bg: #14B8A6"</code> — the ONE inline-style
+            whitelist for this utility. Every other token resolves to
+            <code>theme.css</code>.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. STATE MATRIX — Type x State, Size = M (default), Round shape -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>State matrix — Size M, Round shape (default)</h2>
+            <p class="note">
+                Three types (Color / Text / Image) x five states (Default /
+                Hover / Focus-visible / Selected / Disabled or Out-of-stock).
+                Forced-state classes simulate the visual without real
+                interaction. The "Live" interactive section below wires real
+                <code>&lt;input type="radio"&gt;</code> elements so the actual
+                <code>:hover</code> / <code>:focus-visible</code> /
+                <code>:checked</code> selectors fire.
+            </p>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus-visible</div>
+                <div class="col-head">Selected</div>
+                <div class="col-head">Disabled / OOS</div>
+
+                <!-- ── Color row ─────────────────────────────────────── -->
+                <div class="row-head">Color</div>
+                <div class="cell">
+                    <!-- Inline `--swatch-bg` is the consumer-set product hex.
+                         This is the ONE inline-style whitelist; the linter
+                         must not flag it. Real product attribute config. -->
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="radio" name="m-color" value="teal" class="swatch__input" />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="radio" name="m-color-h" value="teal" class="swatch__input" />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="radio" name="m-color-f" value="teal" class="swatch__input" />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="radio" name="m-color-s" value="teal" class="swatch__input" checked />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--color is-out-of-stock" style="--swatch-bg: #DC2626;" aria-disabled="true">
+                        <input type="radio" name="m-color-d" value="red" class="swatch__input" disabled />
+                        <span class="sr-only">Red (out of stock)</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <!-- ── Text row ──────────────────────────────────────── -->
+                <div class="row-head">Text</div>
+                <div class="cell">
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="m-size" value="m" class="swatch__input" />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="m-size-h" value="m" class="swatch__input" />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="m-size-f" value="m" class="swatch__input" />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="m-size-s" value="m" class="swatch__input" checked />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--text is-out-of-stock" aria-disabled="true">
+                        <input type="radio" name="m-size-d" value="xs" class="swatch__input" disabled />
+                        <span class="swatch__chip">XS</span>
+                        <span class="sr-only">(out of stock)</span>
+                    </label>
+                </div>
+
+                <!-- ── Image row ─────────────────────────────────────── -->
+                <div class="row-head">Image</div>
+                <div class="cell">
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="m-mat" value="leather" class="swatch__input" />
+                        <span class="sr-only">Leather</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="m-mat-h" value="leather" class="swatch__input" />
+                        <span class="sr-only">Leather</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="m-mat-f" value="leather" class="swatch__input" />
+                        <span class="sr-only">Leather</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="m-mat-s" value="leather" class="swatch__input" checked />
+                        <span class="sr-only">Leather</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--image is-out-of-stock" aria-disabled="true">
+                        <input type="radio" name="m-mat-d" value="suede" class="swatch__input" disabled />
+                        <span class="sr-only">Suede (out of stock)</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1531877264784-7e1f0d31a164?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. STATE MATRIX, Size = S — confirms palette parity at smaller size -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>State matrix — Size S</h2>
+            <p class="note">
+                Same matrix at <code>swatch--s</code>. Confirms palette is
+                identical across sizes — only dimensions and typography scale.
+            </p>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus-visible</div>
+                <div class="col-head">Selected</div>
+                <div class="col-head">Disabled / OOS</div>
+
+                <div class="row-head">Color</div>
+                <div class="cell">
+                    <label class="swatch swatch--color swatch--s" style="--swatch-bg: #2F9483;">
+                        <input type="radio" name="s-color" value="emerald" class="swatch__input" />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--color swatch--s" style="--swatch-bg: #2F9483;">
+                        <input type="radio" name="s-color-h" value="emerald" class="swatch__input" />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--color swatch--s" style="--swatch-bg: #2F9483;">
+                        <input type="radio" name="s-color-f" value="emerald" class="swatch__input" />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--color swatch--s" style="--swatch-bg: #2F9483;">
+                        <input type="radio" name="s-color-s" value="emerald" class="swatch__input" checked />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--color swatch--s is-out-of-stock" style="--swatch-bg: #B68D40;" aria-disabled="true">
+                        <input type="radio" name="s-color-d" value="gold" class="swatch__input" disabled />
+                        <span class="sr-only">Gold (out of stock)</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <div class="row-head">Text</div>
+                <div class="cell">
+                    <label class="swatch swatch--text swatch--s">
+                        <input type="radio" name="s-size" value="s" class="swatch__input" />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--text swatch--s">
+                        <input type="radio" name="s-size-h" value="s" class="swatch__input" />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--text swatch--s">
+                        <input type="radio" name="s-size-f" value="s" class="swatch__input" />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--text swatch--s">
+                        <input type="radio" name="s-size-s" value="s" class="swatch__input" checked />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--text swatch--s is-out-of-stock" aria-disabled="true">
+                        <input type="radio" name="s-size-d" value="xs" class="swatch__input" disabled />
+                        <span class="swatch__chip">XS</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. STATE MATRIX, Size = L — palette parity at the largest size -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>State matrix — Size L</h2>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">Default</div>
+                <div class="col-head">Hover</div>
+                <div class="col-head">Focus-visible</div>
+                <div class="col-head">Selected</div>
+                <div class="col-head">Disabled / OOS</div>
+
+                <div class="row-head">Color</div>
+                <div class="cell">
+                    <label class="swatch swatch--color swatch--l" style="--swatch-bg: #B68D40;">
+                        <input type="radio" name="l-color" value="gold" class="swatch__input" />
+                        <span class="sr-only">Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--color swatch--l" style="--swatch-bg: #B68D40;">
+                        <input type="radio" name="l-color-h" value="gold" class="swatch__input" />
+                        <span class="sr-only">Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--color swatch--l" style="--swatch-bg: #B68D40;">
+                        <input type="radio" name="l-color-f" value="gold" class="swatch__input" />
+                        <span class="sr-only">Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--color swatch--l" style="--swatch-bg: #B68D40;">
+                        <input type="radio" name="l-color-s" value="gold" class="swatch__input" checked />
+                        <span class="sr-only">Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--color swatch--l is-out-of-stock" style="--swatch-bg: #F1E3C6;" aria-disabled="true">
+                        <input type="radio" name="l-color-d" value="champagne" class="swatch__input" disabled />
+                        <span class="sr-only">Champagne (out of stock)</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <div class="row-head">Text</div>
+                <div class="cell">
+                    <label class="swatch swatch--text swatch--l">
+                        <input type="radio" name="l-size" value="l" class="swatch__input" />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                </div>
+                <div class="cell force-hover">
+                    <label class="swatch swatch--text swatch--l">
+                        <input type="radio" name="l-size-h" value="l" class="swatch__input" />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                </div>
+                <div class="cell force-focus">
+                    <label class="swatch swatch--text swatch--l">
+                        <input type="radio" name="l-size-f" value="l" class="swatch__input" />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                </div>
+                <div class="cell force-selected">
+                    <label class="swatch swatch--text swatch--l">
+                        <input type="radio" name="l-size-s" value="l" class="swatch__input" checked />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                </div>
+                <div class="cell force-out-of-stock">
+                    <label class="swatch swatch--text swatch--l is-out-of-stock" aria-disabled="true">
+                        <input type="radio" name="l-size-d" value="xl" class="swatch__input" disabled />
+                        <span class="swatch__chip">XL</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 4. SIZE LADDER (XS / S / M / L / XL) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Size ladder — XS / S / M / L / XL</h2>
+            <p class="note">
+                Five sizes per spec §5. XS and S add wrapping-label padding so
+                the touch target meets WCAG 2.5.8 (>=24x24). The chip itself
+                stays at the size value. 2XL / 3XL are deferred to v2 — that
+                tier is better expressed as a card pattern (OQ-SW-5).
+            </p>
+
+            <h3>Color (round)</h3>
+            <div class="ladder">
+                <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #14B8A6;">
+                    <input type="radio" name="ladder-c" value="xs" class="swatch__input" />
+                    <span class="sr-only">Teal XS</span>
+                    <span class="swatch__chip" aria-hidden="true"></span>
+                </label>
+                <label class="swatch swatch--color swatch--s" style="--swatch-bg: #14B8A6;">
+                    <input type="radio" name="ladder-c" value="s" class="swatch__input" />
+                    <span class="sr-only">Teal S</span>
+                    <span class="swatch__chip" aria-hidden="true"></span>
+                </label>
+                <label class="swatch swatch--color swatch--m" style="--swatch-bg: #14B8A6;">
+                    <input type="radio" name="ladder-c" value="m" class="swatch__input" />
+                    <span class="sr-only">Teal M</span>
+                    <span class="swatch__chip" aria-hidden="true"></span>
+                </label>
+                <label class="swatch swatch--color swatch--l" style="--swatch-bg: #14B8A6;">
+                    <input type="radio" name="ladder-c" value="l" class="swatch__input" />
+                    <span class="sr-only">Teal L</span>
+                    <span class="swatch__chip" aria-hidden="true"></span>
+                </label>
+                <label class="swatch swatch--color swatch--xl" style="--swatch-bg: #14B8A6;">
+                    <input type="radio" name="ladder-c" value="xl" class="swatch__input" />
+                    <span class="sr-only">Teal XL</span>
+                    <span class="swatch__chip" aria-hidden="true"></span>
+                </label>
+            </div>
+
+            <h3>Text (round pill, default)</h3>
+            <div class="ladder">
+                <label class="swatch swatch--text swatch--xs">
+                    <input type="radio" name="ladder-t" value="xs" class="swatch__input" />
+                    <span class="swatch__chip">XS</span>
+                </label>
+                <label class="swatch swatch--text swatch--s">
+                    <input type="radio" name="ladder-t" value="s" class="swatch__input" />
+                    <span class="swatch__chip">S</span>
+                </label>
+                <label class="swatch swatch--text swatch--m">
+                    <input type="radio" name="ladder-t" value="m" class="swatch__input" />
+                    <span class="swatch__chip">M</span>
+                </label>
+                <label class="swatch swatch--text swatch--l">
+                    <input type="radio" name="ladder-t" value="l" class="swatch__input" />
+                    <span class="swatch__chip">L</span>
+                </label>
+                <label class="swatch swatch--text swatch--xl">
+                    <input type="radio" name="ladder-t" value="xl" class="swatch__input" />
+                    <span class="swatch__chip">XL</span>
+                </label>
+            </div>
+
+            <h3>Image (round)</h3>
+            <div class="ladder">
+                <label class="swatch swatch--image swatch--xs">
+                    <input type="radio" name="ladder-i" value="xs" class="swatch__input" />
+                    <span class="sr-only">Material XS</span>
+                    <span class="swatch__chip" aria-hidden="true">
+                        <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                    </span>
+                </label>
+                <label class="swatch swatch--image swatch--s">
+                    <input type="radio" name="ladder-i" value="s" class="swatch__input" />
+                    <span class="sr-only">Material S</span>
+                    <span class="swatch__chip" aria-hidden="true">
+                        <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                    </span>
+                </label>
+                <label class="swatch swatch--image swatch--m">
+                    <input type="radio" name="ladder-i" value="m" class="swatch__input" />
+                    <span class="sr-only">Material M</span>
+                    <span class="swatch__chip" aria-hidden="true">
+                        <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                    </span>
+                </label>
+                <label class="swatch swatch--image swatch--l">
+                    <input type="radio" name="ladder-i" value="l" class="swatch__input" />
+                    <span class="sr-only">Material L</span>
+                    <span class="swatch__chip" aria-hidden="true">
+                        <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                    </span>
+                </label>
+                <label class="swatch swatch--image swatch--xl">
+                    <input type="radio" name="ladder-i" value="xl" class="swatch__input" />
+                    <span class="sr-only">Material XL</span>
+                    <span class="swatch__chip" aria-hidden="true">
+                        <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                    </span>
+                </label>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 5. RECTANGLE SHAPE — palette swap (color/image: blue rings) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Shape — Rectangle</h2>
+            <p class="note">
+                <code>swatch--rectangle</code> opts out of the round default.
+                For <code>swatch--color</code> and <code>swatch--image</code>
+                this also swaps the outer-ring palette to blue (per OQ-SW-3,
+                kept for backwards compatibility — round + emerald is the
+                brand-recommended default). Text rectangle keeps emerald rings;
+                only the radius changes to <code>md</code>.
+            </p>
+            <div class="stack">
+                <div>
+                    <span class="caption">Color rectangle (blue rings)</span>
+                    <div class="ladder">
+                        <label class="swatch swatch--color swatch--rectangle" style="--swatch-bg: #14B8A6;">
+                            <input type="radio" name="rect-c" value="teal" class="swatch__input" />
+                            <span class="sr-only">Teal</span>
+                            <span class="swatch__chip" aria-hidden="true"></span>
+                        </label>
+                        <label class="swatch swatch--color swatch--rectangle force-hover" style="--swatch-bg: #DC2626;">
+                            <input type="radio" name="rect-c-h" value="red" class="swatch__input" />
+                            <span class="sr-only">Red (hover)</span>
+                            <span class="swatch__chip" aria-hidden="true"></span>
+                        </label>
+                        <label class="swatch swatch--color swatch--rectangle force-selected" style="--swatch-bg: #B68D40;">
+                            <input type="radio" name="rect-c-s" value="gold" class="swatch__input" checked />
+                            <span class="sr-only">Gold (selected)</span>
+                            <span class="swatch__chip" aria-hidden="true"></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <span class="caption">Text rectangle (emerald rings, md radius)</span>
+                    <div class="ladder">
+                        <label class="swatch swatch--text swatch--rectangle">
+                            <input type="radio" name="rect-t" value="m" class="swatch__input" />
+                            <span class="swatch__chip">M</span>
+                        </label>
+                        <label class="swatch swatch--text swatch--rectangle force-hover">
+                            <input type="radio" name="rect-t-h" value="l" class="swatch__input" />
+                            <span class="swatch__chip">L</span>
+                        </label>
+                        <label class="swatch swatch--text swatch--rectangle force-selected">
+                            <input type="radio" name="rect-t-s" value="xl" class="swatch__input" checked />
+                            <span class="swatch__chip">XL</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 6. LIVE PRODUCT-CARD MOCK — real radios, full keyboard support -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Interactive — product-card style mock</h2>
+            <p class="note">
+                Real <code>&lt;input type="radio"&gt;</code> elements grouped
+                by <code>&lt;fieldset&gt;</code>. Click any swatch or Tab into
+                a fieldset and use arrow keys to cycle. The Red color swatch
+                and Size XL are out-of-stock — disabled inputs render the
+                diagonal slash and the consumer-supplied
+                <code>&lt;span class="sr-only"&gt;(out of stock)&lt;/span&gt;</code>
+                announces it to AT.
+            </p>
+            <div class="product-card">
+                <div class="product-card__title">Pro V1 polo</div>
+                <div class="product-card__price">$95</div>
+
+                <fieldset class="swatch-group">
+                    <legend class="swatch-group__legend">Color</legend>
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="radio" name="live-color" value="teal" class="swatch__input" checked />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #2F9483;">
+                        <input type="radio" name="live-color" value="emerald" class="swatch__input" />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #5B7C99;">
+                        <input type="radio" name="live-color" value="slate" class="swatch__input" />
+                        <span class="sr-only">Slate Blue</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #B68D40;">
+                        <input type="radio" name="live-color" value="gold" class="swatch__input" />
+                        <span class="sr-only">Burnished Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #F1E3C6;">
+                        <input type="radio" name="live-color" value="champagne" class="swatch__input" />
+                        <span class="sr-only">Champagne</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color is-out-of-stock" style="--swatch-bg: #DC2626;" aria-disabled="true">
+                        <input type="radio" name="live-color" value="red" class="swatch__input" disabled />
+                        <span class="sr-only">Red (out of stock)</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </fieldset>
+
+                <fieldset class="swatch-group">
+                    <legend class="swatch-group__legend">Size</legend>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="live-size" value="s" class="swatch__input" />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="live-size" value="m" class="swatch__input" checked />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="live-size" value="l" class="swatch__input" />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                    <label class="swatch swatch--text is-out-of-stock" aria-disabled="true">
+                        <input type="radio" name="live-size" value="xl" class="swatch__input" disabled />
+                        <span class="swatch__chip">XL</span>
+                        <span class="sr-only">(out of stock)</span>
+                    </label>
+                </fieldset>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 7. DISABLED FIELDSET — entire group locked -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Disabled fieldset</h2>
+            <p class="note">
+                Native <code>&lt;fieldset disabled&gt;</code> cascades the
+                disabled state to every descendant input. The shell's
+                <code>:has(:disabled)</code> selector fires per-swatch so each
+                chip carries the diagonal slash + reduced opacity.
+            </p>
+            <div class="stack stack--full">
+                <fieldset class="swatch-group" disabled>
+                    <legend class="swatch-group__legend">Material (locked)</legend>
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="dis-mat" value="leather" class="swatch__input" />
+                        <span class="sr-only">Leather</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1542840411-9a4d6efb05f0?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="dis-mat" value="suede" class="swatch__input" />
+                        <span class="sr-only">Suede</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1531877264784-7e1f0d31a164?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                    <label class="swatch swatch--image">
+                        <input type="radio" name="dis-mat" value="canvas" class="swatch__input" />
+                        <span class="sr-only">Canvas</span>
+                        <span class="swatch__chip" aria-hidden="true">
+                            <img class="swatch__media" src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=80&h=80&q=70" alt="" />
+                        </span>
+                    </label>
+                </fieldset>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 8. INVALID FIELDSET — group-level error message -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Invalid fieldset (group-level error)</h2>
+            <p class="note">
+                Per OQ-SW-10, the swatch shell does NOT add per-option invalid
+                borders — a per-option red ring would conflict with the
+                selected ring. The error is communicated at the field-group
+                level via <code>form-group__hint--error</code>, which the
+                consumer applies to the legend's adjacent message.
+            </p>
+            <div class="stack stack--full">
+                <fieldset class="swatch-group" aria-invalid="true" aria-describedby="size-error">
+                    <legend class="swatch-group__legend">Size</legend>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="inv-size" value="s" class="swatch__input" required />
+                        <span class="swatch__chip">S</span>
+                    </label>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="inv-size" value="m" class="swatch__input" required />
+                        <span class="swatch__chip">M</span>
+                    </label>
+                    <label class="swatch swatch--text">
+                        <input type="radio" name="inv-size" value="l" class="swatch__input" required />
+                        <span class="swatch__chip">L</span>
+                    </label>
+                    <span id="size-error" class="form-group__hint form-group__hint--error" style="margin-block-start: 0.5rem; width: 100%;">
+                        Please choose a size before adding to cart.
+                    </span>
+                </fieldset>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 9. MULTI-SELECT FACET — checkbox inputs (filter context) -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Multi-select facet (filter context)</h2>
+            <p class="note">
+                Layered-nav style: <code>&lt;input type="checkbox"&gt;</code>
+                instead of radio. The shell's <code>:has(:checked)</code>
+                selector matches both — the consumer chooses the input type.
+                <code>swatch-group--tight</code> reduces the gap to 4 px for
+                dense facet rows.
+            </p>
+            <div class="stack stack--full">
+                <fieldset class="swatch-group swatch-group--tight">
+                    <legend class="swatch-group__legend">Filter by color (multi-select)</legend>
+                    <label class="swatch swatch--color" style="--swatch-bg: #14B8A6;">
+                        <input type="checkbox" name="facet-color[]" value="teal" class="swatch__input" checked />
+                        <span class="sr-only">Teal</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #2F9483;">
+                        <input type="checkbox" name="facet-color[]" value="emerald" class="swatch__input" checked />
+                        <span class="sr-only">Emerald</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #5B7C99;">
+                        <input type="checkbox" name="facet-color[]" value="slate" class="swatch__input" />
+                        <span class="sr-only">Slate Blue</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #B68D40;">
+                        <input type="checkbox" name="facet-color[]" value="gold" class="swatch__input" />
+                        <span class="sr-only">Burnished Gold</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                    <label class="swatch swatch--color" style="--swatch-bg: #F1E3C6;">
+                        <input type="checkbox" name="facet-color[]" value="champagne" class="swatch__input" />
+                        <span class="sr-only">Champagne</span>
+                        <span class="swatch__chip" aria-hidden="true"></span>
+                    </label>
+                </fieldset>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

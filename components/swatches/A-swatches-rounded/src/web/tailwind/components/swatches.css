@@ -1,0 +1,492 @@
+/**
+ * Swatch styles — PHPure Golf brand variant of Hyvä UI 2.7.1
+ * swatches (A-swatches-rounded).
+ *
+ * Spec: components/swatches/A-swatches-rounded/spec.md
+ * Figma node: 1385:32405 (Swatch component set).
+ * Kit reference: hyva-ui/components/swatches/A-swatches-rounded/src/web/tailwind/components/swatches.css
+ *
+ * Architecture (mirrors form-checkbox):
+ *   • ONE `@utility swatch` on the wrapping <label> drives the visible chip's
+ *     appearance through CSS custom properties (`--swatch-bg`, `--swatch-border`,
+ *     `--swatch-color` (text label), `--swatch-glyph`, `--swatch-focus-ring`,
+ *     `--swatch-size`, `--swatch-text-size`).
+ *   • State derives from the native <input> via `:has(:checked)` /
+ *     `:has(:focus-visible)` / `:has(:disabled)` / `&.is-out-of-stock` /
+ *     `&[aria-disabled="true"]`. NO per-state utilities.
+ *   • Type modifiers (`swatch--color`, `swatch--text`, `swatch--image`) override
+ *     the relevant token bundle. Mutually exclusive — apply exactly one.
+ *   • Shape modifier (`swatch--rectangle`) opts out of the round default for
+ *     the rectangle palette (blue rings) per spec OQ-SW-3 / decision log.
+ *   • Size modifiers (`swatch--xs` / `--s` / `--m` default / `--l` / `--xl`)
+ *     override the dimensional + typography tokens only.
+ *   • NO Alpine. State lives in the native <input>.
+ *   • CSP: zero inline event handlers. The ONE permitted inline-style use is
+ *     `style="--swatch-bg: <hex>"` on color swatches (consumer-set product
+ *     color, NOT a brand token). Token-linter must whitelist this single case.
+ *
+ * Decisions baked in (task brief 2026-05-08, see README.md "Decision log" and
+ * design-tokens/questions.md #34–43):
+ *   • OQ-SW-1: Out-of-stock visual = CSS linear-gradient diagonal slash for all
+ *     three types (slate-blue-400, 1px). One implementation. `aria-disabled`
+ *     vs `is-out-of-stock` differs semantically only.
+ *   • OQ-SW-2: Selected color/image swatches use the full `Additional/Swatch
+ *     inner` shadow (3px black-24% + 2px white inset) PLUS the outer 2px ring
+ *     per Figma. No check-glyph overlay. Pale-product-color contrast is
+ *     accepted for the POC; revisit if a real audit catches it.
+ *   • OQ-SW-3: Disabled and out-of-stock share visuals (white bg + slate-blue
+ *     border + diagonal slash). Semantic difference is `aria-disabled="true"`
+ *     vs `.is-out-of-stock`.
+ *   • OQ-SW-4: Focus indicator = soft `Focus/Primary` glow on the chip ONLY
+ *     (matches form-checkbox decision, deviation A11Y-007 family). No hard
+ *     outline. The soft glow alone is 1.23:1 vs white — accepted trade-off.
+ *   • OQ-SW-5: Size scope = XS / S / M / L / XL only. 2XL / 3XL deferred.
+ *   • OQ-SW-6: Selected glyph for color / image = none (inner+outer ring alone).
+ *   • OQ-SW-7: Group gap = --spacing(2) for all types. Wraps on narrow viewports.
+ *   • OQ-SW-8: Color/image swatches need a sr-only label per WCAG 1.4.1.
+ *     The shell does not enforce this; the consumer is responsible.
+ *   • OQ-SW-9: XS/S touch-target padding bumps to >=24x24 hit area.
+ *   • OQ-SW-10: Invalid fieldset state — handled at the field-group level via
+ *     `form-group__hint--error`. The shell does NOT add per-swatch invalid
+ *     borders, since per-option borders would conflict with the selected ring.
+ *
+ * Tokens: every value resolves to a CSS custom property declared in
+ * `src/css/theme.css`. The ONLY exception is `--swatch-bg` on color swatches,
+ * which the consumer sets inline (e.g. `style="--swatch-bg: #14B8A6"`) to the
+ * actual product attribute hex. This is the single inline-style whitelist for
+ * the swatch utility; all other inline styles remain forbidden.
+ */
+
+/* ─── Shell ──────────────────────────────────────────────────────────────── */
+
+@utility swatch {
+    /* Default-state palette (Color / Image, Round shape).
+     * Type and shape modifiers below override the relevant subset. */
+    --swatch-bg: var(--color-white);
+    --swatch-border: var(--color-slate-blue-200);
+    --swatch-border-width: 1px;
+    --swatch-color: var(--color-slate-blue-600);   /* Text-swatch label color */
+    --swatch-glyph: transparent;                   /* No glyph until selected; reserved for future */
+    --swatch-focus-ring: var(--shadow-focus\/primary);
+
+    /* Outer-ring palette — emerald is the rounded-default per OQ-SW-3
+     * (brand-recommended). The `swatch--rectangle` modifier swaps to blue. */
+    --swatch-ring-hover: var(--color-deep-emerald-green-200);
+    --swatch-ring-selected: var(--color-deep-emerald-green-300);
+
+    /* Dimensions (Size = M, default). Size modifiers override. */
+    --swatch-size: --spacing(5);                   /* 20 px (color/image chip side) */
+    --swatch-text-size: --spacing(3\.5);           /* 14 px (text-swatch label font-size) */
+    --swatch-text-line: --spacing(5);              /* 20 px line-height */
+    --swatch-text-weight: 500;                     /* Default label weight */
+    --swatch-pad-block: --spacing(2\.5);           /* Text-swatch padding */
+    --swatch-pad-inline: --spacing(5);
+    --swatch-min-w: --spacing(14);                 /* 56 px text-swatch min-width (Size M) */
+    --swatch-min-h: --spacing(10);                 /* 40 px text-swatch min-height */
+    --swatch-radius: var(--radius-full);           /* Round by default; --rectangle overrides */
+    --swatch-touch-pad: 0;                         /* Wrapping-label padding for touch target */
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: var(--swatch-touch-pad);
+    cursor: pointer;
+    user-select: none;
+    /* Allow the chip to wrap nicely inside flex groups. */
+    flex: none;
+    /* Smooth visual transitions on state change. */
+    transition-property: opacity;
+    transition-timing-function: var(--default-transition-timing-function);
+    transition-duration: var(--default-transition-duration);
+
+    /* Focus ring lives on the chip (the visible square / pill / circle), not
+     * on the wrapping label — matches the form-checkbox decision (OQ-SW-4).
+     * The chip picks up `--swatch-focus-ring` as a box-shadow when the input
+     * inside the wrapper is `:focus-visible`. */
+    &:has(:focus-visible) .swatch__chip {
+        box-shadow: var(--swatch-focus-ring);
+    }
+
+    /* Disabled OR out-of-stock — same visual treatment, different semantics
+     * (OQ-SW-3). The `:has(:disabled)` rule fires for disabled inputs;
+     * `.is-out-of-stock` is the consumer-applied modifier for stock-driven
+     * unavailability; `[aria-disabled="true"]` is the ARIA equivalent. */
+    &:has(:disabled),
+    &.is-out-of-stock,
+    &[aria-disabled="true"] {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+/* ─── Visually hidden native input ───────────────────────────────────────── */
+
+/* DO NOT use `display: none` / `visibility: hidden` — both remove the input
+ * from the a11y tree. We pin it on top of the chip so click + keyboard focus
+ * still hit the native control. */
+@utility swatch__input {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: inherit;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+/* ─── Visible chip (drawn by the wrapper's tokens) ───────────────────────── */
+
+@utility swatch__chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-sizing: border-box;
+    border-width: var(--swatch-border-width);
+    border-style: solid;
+    border-color: var(--swatch-border);
+    border-radius: var(--swatch-radius);
+    background-color: var(--swatch-bg);
+    color: var(--swatch-color);
+    font-family: var(--font-sans);
+    font-size: var(--swatch-text-size);
+    line-height: var(--swatch-text-line);
+    font-weight: var(--swatch-text-weight);
+    /* Smooth transitions on hover / select / focus. */
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-timing-function: var(--default-transition-timing-function);
+    transition-duration: var(--default-transition-duration);
+    /* Color/image chips fix to --swatch-size square. Text overrides via
+     * `swatch--text` below. */
+    width: var(--swatch-size);
+    height: var(--swatch-size);
+    overflow: hidden;
+}
+
+/* Image chip child <img> fills the chip square. */
+@utility swatch__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Inherit the chip's radius so the image clips to the same shape. */
+    border-radius: inherit;
+    display: block;
+}
+
+/* ─── Type modifier — Color ──────────────────────────────────────────────── */
+
+/* Color swatches: the chip background IS the product color. The consumer sets
+ * `style="--swatch-bg: <hex>"` on the wrapping label (the ONE inline-style
+ * exception — token-linter whitelist). Default border is the subtle
+ * slate-blue-200 chip stroke. */
+@utility swatch--color {
+    --swatch-border: var(--color-slate-blue-200);
+    --swatch-border-width: 1px;
+    /* No --swatch-bg override here — consumer provides the product color. */
+
+    /* Hover (only when not selected and not disabled) — paint a 2px outer ring
+     * via outline so it sits OUTSIDE the chip without cutting into the color. */
+    &:hover:not(:has(:checked, :disabled)):not(.is-out-of-stock):not([aria-disabled="true"]) .swatch__chip {
+        outline: 2px solid var(--swatch-ring-hover);
+        outline-offset: 2px;
+    }
+
+    /* Selected — apply the full Additional/Swatch inner shadow (3px black-24%
+     * + 2px white inset, per spec §3.4) AND a 2px outer ring. Border collapses
+     * to transparent so the inner-white-ring reads cleanly. */
+    &:has(:checked) .swatch__chip {
+        box-shadow: var(--shadow-additional\/swatch-inner);
+        outline: 2px solid var(--swatch-ring-selected);
+        outline-offset: 2px;
+        border-color: transparent;
+    }
+
+    /* Selected + focus-visible — focus ring layers OVER the selected outline. */
+    &:has(:checked:focus-visible) .swatch__chip {
+        box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring);
+    }
+
+    /* Disabled / out-of-stock — diagonal slash drawn via linear-gradient on
+     * a ::after pseudo so it sits ON TOP of the product color. 1px slate-blue-400
+     * stroke corner-to-corner (130deg matches the kit). The chip's border stays
+     * slate-blue-200 so the slash + stroke read as "unavailable". */
+    &:has(:disabled) .swatch__chip::after,
+    &.is-out-of-stock .swatch__chip::after,
+    &[aria-disabled="true"] .swatch__chip::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+            130deg,
+            transparent calc(50% - 0.5px),
+            var(--color-slate-blue-400) calc(50% - 0.5px),
+            var(--color-slate-blue-400) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+        );
+        border-radius: inherit;
+        pointer-events: none;
+    }
+}
+
+/* ─── Type modifier — Text ───────────────────────────────────────────────── */
+
+/* Text swatches: a rectangular pill with text inside. Default state palette
+ * follows spec §4.3 (text-swatch state matrix): white bg, slate-blue-600
+ * label, gray-200 border. Hover/selected/focus border is emerald-300
+ * regardless of shape (per OQ-SW-4 — text always uses emerald). */
+@utility swatch--text {
+    --swatch-bg: var(--color-white);
+    --swatch-border: var(--color-gray-200);
+    --swatch-border-width: 2px;
+    --swatch-color: var(--color-slate-blue-600);
+    --swatch-radius: var(--radius-md);             /* Rectangle text default; --round overrides */
+
+    /* The chip fits to its content in width, but enforces a min-width and
+     * min-height per spec §5.2. */
+    & .swatch__chip {
+        width: auto;
+        height: auto;
+        min-width: var(--swatch-min-w);
+        min-height: var(--swatch-min-h);
+        padding-block: var(--swatch-pad-block);
+        padding-inline: var(--swatch-pad-inline);
+    }
+
+    /* Hover (unchecked, not disabled) — emerald-300 border + slate-blue-800
+     * label + 600 weight. Per spec §4.3. */
+    &:hover:not(:has(:checked, :disabled)):not(.is-out-of-stock):not([aria-disabled="true"]) {
+        --swatch-border: var(--color-deep-emerald-green-300);
+        --swatch-color: var(--color-slate-blue-800);
+        --swatch-text-weight: 600;
+    }
+
+    /* Selected — emerald-500 label, 600 weight, emerald-300 border. */
+    &:has(:checked) {
+        --swatch-border: var(--color-deep-emerald-green-300);
+        --swatch-color: var(--color-deep-emerald-green-500);
+        --swatch-text-weight: 600;
+    }
+
+    /* Disabled / out-of-stock — slate-blue-100 bg, slate-blue-300 border +
+     * label. Strikethrough drawn as ::after diagonal line. */
+    &:has(:disabled),
+    &.is-out-of-stock,
+    &[aria-disabled="true"] {
+        --swatch-bg: var(--color-slate-blue-100);
+        --swatch-border: var(--color-slate-blue-300);
+        --swatch-color: var(--color-slate-blue-300);
+        --swatch-text-weight: 600;
+    }
+
+    &:has(:disabled) .swatch__chip::after,
+    &.is-out-of-stock .swatch__chip::after,
+    &[aria-disabled="true"] .swatch__chip::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+            -45deg,
+            transparent calc(50% - 1px),
+            var(--color-slate-blue-400) calc(50% - 1px),
+            var(--color-slate-blue-400) calc(50% + 1px),
+            transparent calc(50% + 1px)
+        );
+        pointer-events: none;
+    }
+}
+
+/* ─── Type modifier — Image ──────────────────────────────────────────────── */
+
+/* Image swatches: the chip is a square with an <img> child filling it. Default
+ * border is the slate-blue-200 chip stroke (same as color); selected/hover
+ * states draw the same outer ring as Color (emerald default, blue when
+ * `swatch--rectangle` is also applied). */
+@utility swatch--image {
+    --swatch-border: var(--color-slate-blue-200);
+    --swatch-border-width: 1px;
+    --swatch-bg: transparent;                      /* The <img> fills the chip */
+
+    & .swatch__chip {
+        padding: 0;
+    }
+
+    /* Hover (unchecked) — outer ring only. */
+    &:hover:not(:has(:checked, :disabled)):not(.is-out-of-stock):not([aria-disabled="true"]) .swatch__chip {
+        outline: 2px solid var(--swatch-ring-hover);
+        outline-offset: 2px;
+    }
+
+    /* Selected — Additional/Swatch inner + outer ring. Same as Color. */
+    &:has(:checked) .swatch__chip {
+        box-shadow: var(--shadow-additional\/swatch-inner);
+        outline: 2px solid var(--swatch-ring-selected);
+        outline-offset: 2px;
+        border-color: transparent;
+    }
+
+    &:has(:checked:focus-visible) .swatch__chip {
+        box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring);
+    }
+
+    /* Disabled / out-of-stock — same diagonal slash as Color. */
+    &:has(:disabled) .swatch__chip::after,
+    &.is-out-of-stock .swatch__chip::after,
+    &[aria-disabled="true"] .swatch__chip::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+            130deg,
+            transparent calc(50% - 0.5px),
+            var(--color-slate-blue-400) calc(50% - 0.5px),
+            var(--color-slate-blue-400) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+        );
+        border-radius: inherit;
+        pointer-events: none;
+    }
+}
+
+/* ─── Shape modifier — Rectangle (opt-in; round is the default) ──────────── */
+
+/* Rectangle shape swaps the radius and (for Color/Image) the outer-ring
+ * palette to blue per spec OQ-SW-3. Text always uses emerald regardless of
+ * shape (OQ-SW-4) — the rectangle modifier still applies the small radius
+ * but does NOT swap the text-swatch ring colors. */
+@utility swatch--rectangle {
+    --swatch-radius: var(--radius-sm);             /* 3 px (color/image chip) */
+
+    /* Color / image rectangle uses blue rings (per OQ-SW-3 retention for
+     * backwards compatibility; emerald is the brand-recommended default). */
+    &.swatch--color,
+    &.swatch--image {
+        --swatch-ring-hover: var(--color-blue-300);
+        --swatch-ring-selected: var(--color-blue-500);
+    }
+
+    /* Text rectangle: keep emerald rings (text always uses emerald per
+     * OQ-SW-4); just bump the radius to md (6 px) instead of sm. */
+    &.swatch--text {
+        --swatch-radius: var(--radius-md);
+    }
+}
+
+/* ─── Size modifiers ─────────────────────────────────────────────────────── */
+
+/* Sizes XS through XL per spec §5. 2XL / 3XL out of scope for v1 (OQ-SW-5).
+ *
+ * Color / image: --swatch-size is the chip side (square).
+ * Text: --swatch-min-w / --swatch-min-h size the pill; padding flexes width
+ *       to content; --swatch-text-size + --swatch-text-line set typography.
+ *
+ * Touch-target padding (--swatch-touch-pad) is added to the wrapping label
+ * for sizes XS / S so the hit area reaches >=24x24 px (WCAG 2.5.8) per
+ * OQ-SW-9. M / L / XL chips already meet the threshold without padding. */
+
+@utility swatch--xs {
+    --swatch-size: --spacing(4);                   /* 16 px chip */
+    --swatch-text-size: --spacing(3);              /* 12 px */
+    --swatch-text-line: --spacing(4);              /* 16 px */
+    --swatch-pad-block: --spacing(1\.5);           /* 6 px */
+    --swatch-pad-inline: --spacing(3);             /* 12 px */
+    --swatch-min-w: --spacing(10);                 /* ~40 px */
+    --swatch-min-h: --spacing(8);                  /* 32 px */
+    --swatch-touch-pad: --spacing(1);              /* 4 px each side -> >=24x24 hit area */
+}
+
+@utility swatch--s {
+    --swatch-size: --spacing(5);                   /* 20 px chip — bumps from Figma 16 to keep XS/S visually distinct */
+    --swatch-text-size: --spacing(3);              /* 12 px */
+    --swatch-text-line: --spacing(4);              /* 16 px */
+    --swatch-pad-block: --spacing(1\.5);
+    --swatch-pad-inline: --spacing(3);
+    --swatch-min-w: --spacing(10);
+    --swatch-min-h: --spacing(8);
+    --swatch-touch-pad: --spacing(0\.5);           /* 2 px each side */
+}
+
+/* M is the default — no modifier needed; tokens at the shell are size M. */
+@utility swatch--m {
+    --swatch-size: --spacing(5);                   /* 20 px */
+    --swatch-text-size: --spacing(3\.5);           /* 14 px */
+    --swatch-text-line: --spacing(5);              /* 20 px */
+    --swatch-pad-block: --spacing(2\.5);
+    --swatch-pad-inline: --spacing(5);
+    --swatch-min-w: --spacing(14);                 /* 56 px */
+    --swatch-min-h: --spacing(10);                 /* 40 px */
+    --swatch-touch-pad: 0;
+}
+
+@utility swatch--l {
+    --swatch-size: --spacing(7);                   /* 28 px chip (Figma reports 22; bumped to match WCAG and keep ladder readable) */
+    --swatch-text-size: --spacing(4);              /* 16 px */
+    --swatch-text-line: --spacing(6);              /* 24 px */
+    --swatch-pad-block: --spacing(3);
+    --swatch-pad-inline: --spacing(4);
+    --swatch-min-w: --spacing(12);                 /* 48 px */
+    --swatch-min-h: --spacing(11);                 /* 44 px */
+    --swatch-touch-pad: 0;
+}
+
+@utility swatch--xl {
+    --swatch-size: --spacing(8);                   /* 32 px */
+    --swatch-text-size: --spacing(4);              /* 16 px */
+    --swatch-text-line: --spacing(6);              /* 24 px */
+    --swatch-pad-block: --spacing(3\.5);
+    --swatch-pad-inline: --spacing(6);
+    --swatch-min-w: --spacing(16);                 /* 64 px */
+    --swatch-min-h: --spacing(12);                 /* 48 px */
+    --swatch-touch-pad: 0;
+}
+
+/* ─── Group wrapper (<fieldset> + <legend>) ──────────────────────────────── */
+
+/* The `swatch-group` is a flex-wrap row of swatches under a single attribute.
+ * `swatch-group__legend` displays the attribute name ("Color:", "Size:") and
+ * is associated with every input in the fieldset for AT (WCAG 1.3.1 / 4.1.2).
+ *
+ * The shell strips the native fieldset border/margin so the group reads as a
+ * flat row — matches form-checkbox-group conventions. */
+
+@utility swatch-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-2);                         /* 8 px — OQ-SW-7 */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+/* Tighter gap variant for filter-facet contexts (multi-select, dense rows). */
+@utility swatch-group--tight {
+    gap: var(--spacing-1);                         /* 4 px */
+}
+
+@utility swatch-group__legend {
+    color: var(--color-slate-blue-700);
+    font-family: var(--font-sans);
+    font-size: --spacing(3\.5);                    /* 14 px */
+    line-height: --spacing(5);                     /* 20 px */
+    font-weight: 500;
+    margin: 0;
+    margin-block-end: var(--spacing-1\.5);
+    padding: 0;
+    /* Display block so it occupies its own line above the wrapping row.
+     * `<legend>` defaults can be quirky — set the basics explicitly. */
+    display: block;
+    width: 100%;
+}
