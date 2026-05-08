@@ -148,8 +148,10 @@
      * indeterminate), per the designer's 2026-05-08 update: a disabled
      * checkbox always has a white background with a slate-blue-300 border,
      * regardless of its selection state. The glyph (check or bar) renders
-     * in slate-blue-500 (4.39:1 vs white) so the user can still see WHAT
-     * the disabled value was. The input stays tab-reachable (no
+     * in slate-blue-200 (designer call) so the indicator reads as
+     * "locked / inactive". slate-blue-200 vs white is 1.70:1 — below 3:1
+     * for non-text UI, but WCAG 1.4.3 / 1.4.11 explicitly exempt inactive
+     * user-interface components. The input stays tab-reachable (no
      * pointer-events:none) per WCAG 2.4.3.
      *
      * Earlier behavior (Q#31): disabled-checked retained the emerald-200
@@ -161,7 +163,7 @@
         --check-hint-color: var(--color-slate-blue-300);
         --check-bg: var(--color-white);
         --check-border: var(--color-slate-blue-300);
-        --check-glyph: var(--color-slate-blue-500);
+        --check-glyph: var(--color-slate-blue-200);
         cursor: not-allowed;
     }
 
