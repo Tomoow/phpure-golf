@@ -127,12 +127,21 @@
         --check-bg: var(--color-deep-emerald-green-400);
     }
 
-    /* Focus ring + solid outline on the wrapper. Drives off `:focus-visible`
-     * inside the input so mouse clicks don't paint the ring. */
-    &:has(:focus-visible) {
+    /* Focus ring lives ON THE BOX, not on the wrapping label, per the
+     * designer's Figma spec (drop-shadow: x=0 y=0 blur=0 spread=4 color=
+     * #E1EBDD = `--shadow-focus/primary`). The earlier a11y pass had also
+     * applied a 2 px hard outline + outline-offset on the wrapper to meet
+     * WCAG 1.4.11 (3:1) — designer reverted that on 2026-05-08 in favor
+     * of the Figma look. The soft glow alone is 1.23:1 vs white (fails
+     * 1.4.11); accept the trade-off per the design owner.
+     *
+     * Implementation note: target `.form-checkbox__box` from the wrapper
+     * via `:has(:focus-visible) .form-checkbox__box` so the ring only
+     * encloses the 20×20 box, not the entire label row. The error /
+     * warning / success modifiers override `--check-focus-ring` so the
+     * ring tints to the matching feedback color. */
+    &:has(:focus-visible) .form-checkbox__box {
         box-shadow: var(--check-focus-ring);
-        outline: 2px solid var(--check-focus-outline);
-        outline-offset: 2px;
     }
 
     /* Disabled — keep emerald fill on Checked / Indeterminate so the user's

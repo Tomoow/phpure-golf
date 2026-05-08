@@ -149,11 +149,11 @@
         }
         .force-indeterminate .form-checkbox__box > svg { opacity: 0; }
         .force-indeterminate .form-checkbox__box::after { opacity: 1; }
-        /* Force FOCUS-visible: paint the ring + outline. */
-        .force-focus .form-checkbox {
+        /* Force FOCUS-visible: paint the soft glow ring on the BOX (matches
+         * the live `:focus-visible` rule which targets `.form-checkbox__box`
+         * via `:has()`, not the entire wrapping label). */
+        .force-focus .form-checkbox__box {
             box-shadow: var(--check-focus-ring);
-            outline: 2px solid var(--check-focus-outline);
-            outline-offset: 2px;
         }
         /* Force DISABLED: slate-blue cascade for label + hint + box-glyph.
          * For the unchecked case, slate-blue-300 border + white bg. For the
