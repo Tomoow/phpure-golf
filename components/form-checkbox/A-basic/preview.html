@@ -140,35 +140,46 @@
             --check-border: transparent;
             --check-glyph: var(--color-white);
         }
-        .force-checked .form-checkbox__box > svg { opacity: 1; }
-        /* Force INDETERMINATE: same fill, hide the SVG, show the bar. */
+        .force-checked .form-checkbox__box > svg { opacity: 1 !important; }
+        .force-checked .form-checkbox__box::after { opacity: 0 !important; }
+        /* Force INDETERMINATE: same fill, hide the SVG, show the bar.
+         * !important is required here because the matrix-demo cells contain
+         * a real <input>: clicking a force-indeterminate cell toggles the
+         * input to :checked, which makes the production rule
+         * `:has(:checked:not(:indeterminate)) … svg { opacity: 1 }` fire and
+         * paint a check ON TOP of the indeterminate bar. The force-* class
+         * has to win the cascade so the visual stays locked to its demo
+         * state regardless of what the user clicks. */
         .force-indeterminate .form-checkbox {
             --check-bg: var(--color-deep-emerald-green-200);
             --check-border: transparent;
             --check-glyph: var(--color-white);
         }
-        .force-indeterminate .form-checkbox__box > svg { opacity: 0; }
-        .force-indeterminate .form-checkbox__box::after { opacity: 1; }
+        .force-indeterminate .form-checkbox__box > svg { opacity: 0 !important; }
+        .force-indeterminate .form-checkbox__box::after { opacity: 1 !important; }
         /* Force FOCUS-visible: paint the soft glow ring on the BOX (matches
          * the live `:focus-visible` rule which targets `.form-checkbox__box`
          * via `:has()`, not the entire wrapping label). */
         .force-focus .form-checkbox__box {
             box-shadow: var(--check-focus-ring);
         }
-        /* Force DISABLED: slate-blue cascade for label + hint + box-glyph.
-         * For the unchecked case, slate-blue-300 border + white bg. For the
-         * checked / indeterminate cases the calling cell adds force-checked
-         * or force-indeterminate to keep the emerald fill, while disabled
-         * shifts the glyph to slate-blue-300 (see Q#31 resolution). */
+        /* Force DISABLED — unified white-bg + grey-border treatment for ALL
+         * variants (unchecked, checked, indeterminate). Updated 2026-05-08
+         * per the designer's "white background and grey border for disabled"
+         * direction. The glyph (check or bar) paints in slate-blue-500
+         * (4.39:1 vs white) so the user can still see WHAT was disabled.
+         * `!important` is needed on bg/border because force-checked /
+         * force-indeterminate set those tokens earlier in source order
+         * via `.force-checked .form-checkbox` / `.force-indeterminate
+         * .form-checkbox`; the disabled cascade has to win when both
+         * classes are stacked on a matrix demo cell. */
         .force-disabled .form-checkbox {
             --check-label-color: var(--color-slate-blue-400);
             --check-hint-color: var(--color-slate-blue-300);
-            --check-glyph: var(--color-slate-blue-300);
+            --check-glyph: var(--color-slate-blue-500) !important;
+            --check-bg: var(--color-white) !important;
+            --check-border: var(--color-slate-blue-300) !important;
             cursor: not-allowed;
-        }
-        .force-disabled.force-unchecked .form-checkbox {
-            --check-bg: var(--color-white);
-            --check-border: var(--color-slate-blue-300);
         }
 
         [x-cloak] { display: none !important; }

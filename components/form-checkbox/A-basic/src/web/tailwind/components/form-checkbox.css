@@ -144,21 +144,25 @@
         box-shadow: var(--check-focus-ring);
     }
 
-    /* Disabled — keep emerald fill on Checked / Indeterminate so the user's
-     * choice is still legible (Q#31). Unchecked disabled gets the slate-blue
-     * cascade. The glyph color shifts to slate-blue-300 in BOTH cases so
-     * checked-disabled reads as "set but not editable". The input stays tab
-     * reachable (no pointer-events:none) per WCAG 2.4.3. */
+    /* Disabled — single rule for all three variants (unchecked / checked /
+     * indeterminate), per the designer's 2026-05-08 update: a disabled
+     * checkbox always has a white background with a slate-blue-300 border,
+     * regardless of its selection state. The glyph (check or bar) renders
+     * in slate-blue-500 (4.39:1 vs white) so the user can still see WHAT
+     * the disabled value was. The input stays tab-reachable (no
+     * pointer-events:none) per WCAG 2.4.3.
+     *
+     * Earlier behavior (Q#31): disabled-checked retained the emerald-200
+     * fill with a greyed-out glyph. Reverted on 2026-05-08 — designer
+     * preferred the unified white-on-grey treatment for clearer "this
+     * is locked" semantics. */
     &:has(:disabled) {
         --check-label-color: var(--color-slate-blue-400);
         --check-hint-color: var(--color-slate-blue-300);
-        --check-glyph: var(--color-slate-blue-300);
-        cursor: not-allowed;
-    }
-
-    &:has(:disabled:not(:checked, :indeterminate)) {
         --check-bg: var(--color-white);
         --check-border: var(--color-slate-blue-300);
+        --check-glyph: var(--color-slate-blue-500);
+        cursor: not-allowed;
     }
 
     /* Invalid — border-only signal (per Q#29). Box bg + glyph stay brand-correct
