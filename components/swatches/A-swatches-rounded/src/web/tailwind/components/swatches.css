@@ -64,7 +64,7 @@
      * Type and shape modifiers below override the relevant subset. */
     --swatch-bg: var(--color-white);
     --swatch-border: var(--color-slate-blue-200);
-    --swatch-border-width: 1px;
+    --swatch-border-width: 2px;                    /* All swatches use 2 px borders for parity (designer 2026-05-08). */
     --swatch-color: var(--color-slate-blue-600);   /* Text-swatch label color */
     --swatch-glyph: transparent;                   /* No glyph until selected; reserved for future */
     --swatch-focus-ring: var(--shadow-focus\/primary);
@@ -192,7 +192,7 @@
  * slate-blue-200 chip stroke. */
 @utility swatch--color {
     --swatch-border: var(--color-slate-blue-200);
-    --swatch-border-width: 1px;
+    --swatch-border-width: 2px;
     /* No --swatch-bg override here — consumer provides the product color. */
 
     /* Hover (only when not selected and not disabled) — paint a 2px outer ring
@@ -202,11 +202,12 @@
         outline-offset: 2px;
     }
 
-    /* Selected — apply the full Additional/Swatch inner shadow (3px black-24%
-     * + 2px white inset, per spec §3.4) AND a 2px outer ring. Border collapses
-     * to transparent so the inner-white-ring reads cleanly. */
+    /* Selected — outer 2px ring only. The earlier implementation also applied
+     * `box-shadow: Additional/Swatch inner` (a 3px black-24% inset over a 2px
+     * white inset), which read as a hard "grey inner border" on top of the
+     * product color. Designer asked to drop the inset stack 2026-05-08; the
+     * outer ring is the sole selection signifier now. */
     &:has(:checked) .swatch__chip {
-        box-shadow: var(--shadow-additional\/swatch-inner);
         outline: 2px solid var(--swatch-ring-selected);
         outline-offset: 2px;
         border-color: transparent;
@@ -214,7 +215,7 @@
 
     /* Selected + focus-visible — focus ring layers OVER the selected outline. */
     &:has(:checked:focus-visible) .swatch__chip {
-        box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring);
+        box-shadow: var(--swatch-focus-ring);
     }
 
     /* Disabled / out-of-stock — diagonal slash drawn via linear-gradient on
@@ -314,7 +315,7 @@
  * `swatch--rectangle` is also applied). */
 @utility swatch--image {
     --swatch-border: var(--color-slate-blue-200);
-    --swatch-border-width: 1px;
+    --swatch-border-width: 2px;
     --swatch-bg: transparent;                      /* The <img> fills the chip */
 
     & .swatch__chip {
@@ -327,16 +328,16 @@
         outline-offset: 2px;
     }
 
-    /* Selected — Additional/Swatch inner + outer ring. Same as Color. */
+    /* Selected — outer 2px ring only (no inner-shadow stack; same fix as
+     * swatch--color, designer 2026-05-08). */
     &:has(:checked) .swatch__chip {
-        box-shadow: var(--shadow-additional\/swatch-inner);
         outline: 2px solid var(--swatch-ring-selected);
         outline-offset: 2px;
         border-color: transparent;
     }
 
     &:has(:checked:focus-visible) .swatch__chip {
-        box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring);
+        box-shadow: var(--swatch-focus-ring);
     }
 
     /* Disabled / out-of-stock — same diagonal slash as Color. */
@@ -360,23 +361,14 @@
 
 /* ─── Shape modifier — Rectangle (opt-in; round is the default) ──────────── */
 
-/* Rectangle shape swaps the radius and (for Color/Image) the outer-ring
- * palette to blue per spec OQ-SW-3. Text always uses emerald regardless of
- * shape (OQ-SW-4) — the rectangle modifier still applies the small radius
- * but does NOT swap the text-swatch ring colors. */
+/* Rectangle just swaps the radius. The selected ring stays the SAME emerald-
+ * 300 across every type and shape (designer 2026-05-08). The earlier
+ * implementation swapped to blue rings for color/image rectangles per
+ * Figma drift; designer chose consistency over Figma in this case. */
 @utility swatch--rectangle {
     --swatch-radius: var(--radius-sm);             /* 3 px (color/image chip) */
 
-    /* Color / image rectangle uses blue rings (per OQ-SW-3 retention for
-     * backwards compatibility; emerald is the brand-recommended default). */
-    &.swatch--color,
-    &.swatch--image {
-        --swatch-ring-hover: var(--color-blue-300);
-        --swatch-ring-selected: var(--color-blue-500);
-    }
-
-    /* Text rectangle: keep emerald rings (text always uses emerald per
-     * OQ-SW-4); just bump the radius to md (6 px) instead of sm. */
+    /* Text rectangle: bump radius to md (6 px). Ring color unchanged. */
     &.swatch--text {
         --swatch-radius: var(--radius-md);
     }
@@ -429,12 +421,16 @@
 }
 
 @utility swatch--l {
-    --swatch-size: --spacing(7);                   /* 28 px chip (Figma reports 22; bumped to match WCAG and keep ladder readable) */
+    /* L sits between M (20-px chip / 56×40 pill / 20-px inline pad) and
+     * XL (32-px chip / 64×48 pill / 24-px inline pad). The earlier values
+     * had pad-inline (16 px) SMALLER than pad-block (12 px), inverting
+     * the pill proportion every other size uses. Re-aligned 2026-05-08. */
+    --swatch-size: --spacing(7);                   /* 28 px chip */
     --swatch-text-size: --spacing(4);              /* 16 px */
     --swatch-text-line: --spacing(6);              /* 24 px */
-    --swatch-pad-block: --spacing(3);
-    --swatch-pad-inline: --spacing(4);
-    --swatch-min-w: --spacing(12);                 /* 48 px */
+    --swatch-pad-block: --spacing(3);              /* 12 px */
+    --swatch-pad-inline: 1.375rem;                 /* 22 px — sits between M's 20 and XL's 24. Direct rem because Tailwind v4 `--spacing()` rejects mid-step fractions like 5.5; the rest of the file uses spaced tokens. */
+    --swatch-min-w: --spacing(15);                 /* 60 px */
     --swatch-min-h: --spacing(11);                 /* 44 px */
     --swatch-touch-pad: 0;
 }

@@ -148,11 +148,12 @@
             --swatch-text-weight: 600 !important;
         }
 
-        /* Force SELECTED — inner shadow + outer ring for color/image, palette
-         * swap for text. Mirrors the `:has(:checked)` rule. */
+        /* Force SELECTED — outer ring only for color/image (the inner
+         * Additional/Swatch shadow stack was dropped 2026-05-08 per
+         * designer call), palette swap for text. Mirrors the live
+         * `:has(:checked)` rules in swatches.css. */
         .force-selected .swatch--color .swatch__chip,
         .force-selected .swatch--image .swatch__chip {
-            box-shadow: var(--shadow-additional\/swatch-inner) !important;
             outline: 2px solid var(--swatch-ring-selected) !important;
             outline-offset: 2px;
             border-color: transparent !important;
@@ -167,10 +168,10 @@
         .force-focus .swatch__chip {
             box-shadow: var(--swatch-focus-ring) !important;
         }
-        /* Selected + focus combo: layer the inner shadow under the focus ring. */
+        /* Selected + focus combo: focus glow only (no inner shadow). */
         .force-selected.force-focus .swatch--color .swatch__chip,
         .force-selected.force-focus .swatch--image .swatch__chip {
-            box-shadow: var(--shadow-additional\/swatch-inner), var(--swatch-focus-ring) !important;
+            box-shadow: var(--swatch-focus-ring) !important;
         }
 
         /* Force DISABLED / OUT-OF-STOCK — opacity + diagonal slash overlay.
