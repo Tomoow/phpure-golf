@@ -56,8 +56,9 @@ app/design/frontend/Phpure/golf/web/tailwind/package-lock.json
 Thumbs.db
 
 # ── PHPure Golf Hyvä UI POC ──
-# Vite build output
+# Vite build output + dependency cache (auto-generated, no need to track)
 /dist
+/.vite
 
 # Hyvä UI kit is commercially licensed (see hyva-ui/LICENSE.md if present).
 # Hyvä's license forbids redistribution — the kit must NEVER land in this
