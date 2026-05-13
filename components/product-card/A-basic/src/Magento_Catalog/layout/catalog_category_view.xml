@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+    PHPure Golf — product-card / A-basic layout wiring.
+
+    Mirrors the Hyvä kit's `catalog_category_view.xml` for
+    product-card / A-card-with-swatches. Same `referenceBlock` target
+    (`category.products.list`), same `hide_rating_summary` argument.
+    The actual `item.phtml` template is swapped at the
+    `catalog_list_item.xml` handle (see sibling file).
+-->
+<page
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceBlock name="category.products.list">
+            <arguments>
+                <argument name="hide_rating_summary" xsi:type="boolean">false</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

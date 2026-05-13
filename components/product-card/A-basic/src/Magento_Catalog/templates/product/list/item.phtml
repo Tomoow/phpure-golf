@@ -1,0 +1,325 @@
+<?php
+/**
+ * Hyvä Themes — PHPure Golf brand variant of product-card / A-basic.
+ *
+ * Spec: components/product-card/A-basic/spec.md
+ * Figma node: 2256:7466 (`ui_productcard_a_swatches`)
+ * Kit reference: hyva-ui-reference/components/product-card/A-card-with-swatches/
+ *
+ * Mirrors the kit's `item.phtml`: same ViewModels, same escaper, same
+ * `$product->isSaleable()` form-vs-div branching, same child-block slots
+ * (stockstatus, wishlist, compare, swatches, addto). Class names follow
+ * the atomic-design covenant documented in product-card.css.
+ *
+ * Decisions baked in (PC-1 .. PC-18 in product-card.css). PC-12: the
+ * compare slot stays wired (kit-compatibility) but is only rendered when
+ * `$showAddToCompare` is true.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\BlockJsDependencies;
+use Hyva\Theme\ViewModel\ProductCompare;
+use Hyva\Theme\ViewModel\ProductListItem;
+use Hyva\Theme\ViewModel\ProductPage;
+use Hyva\Theme\ViewModel\Wishlist;
+use Magento\Catalog\Block\Product\View;
+use Magento\Catalog\Helper\Output as CatalogOutputHelper;
+use Magento\Catalog\ViewModel\Product\OptionsData as ProductOptionsData;
+use Magento\Framework\Escaper;
+
+// phpcs:disable Magento2.Templates.ThisInTemplate.FoundThis
+// phpcs:disable Magento2.Templates.ThisInTemplate.FoundHelper
+// phpcs:disable Generic.Files.LineLength.TooLong
+// phpcs:disable Generic.WhiteSpace.ScopeIndent
+
+/** @var View $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var ProductPage $productViewModel */
+$productViewModel = $viewModels->require(ProductPage::class);
+
+/** @var ProductListItem $productListItemViewModel */
+$productListItemViewModel = $viewModels->require(ProductListItem::class);
+
+/** @var CatalogOutputHelper $catalogOutputHelper */
+$catalogOutputHelper = $this->helper(CatalogOutputHelper::class);
+
+/** @var ProductCompare $compareViewModel */
+$compareViewModel = $viewModels->require(ProductCompare::class);
+/** @var Wishlist $wishlistViewModel */
+$wishlistViewModel = $viewModels->require(Wishlist::class);
+
+/** @var ProductOptionsData $productOptionsViewmodel */
+$productOptionsViewmodel = $viewModels->require(ProductOptionsData::class);
+
+/** @var Magento\Catalog\Model\Product $product */
+if (! ($product = $block->getData('product'))) {
+    return;
+}
+
+$imageDisplayArea  = $block->getData('image_display_area');
+$viewMode          = $block->getData('view_mode');
+$showDescription   = (bool) $block->getData('show_description');
+$showAddToWishlist = $wishlistViewModel->isEnabled();
+$showAddToCompare  = $compareViewModel->showInProductList();
+$viewIsGrid        = $viewMode === 'grid';
+$viewIsList        = $viewMode === 'list';
+$productType       = $product->getTypeId();
+$isProductGroupedOrBundle = $productType === 'bundle' || $productType === 'grouped';
+$productId         = (int) $product->getId();
+$options           = $productOptionsViewmodel->getOptionsData($product);
+
+$hideDetails       = (bool) ($block->getData('hide_details') ?: false);
+$hideRatingSummary = (bool) ($block->getData('hide_rating_summary') ?: false);
+
+$imageCustomAttributes = $product->getData('image_custom_attributes')
+    ?? $block->getData('image_custom_attributes')
+    ?? [];
+$productName = $catalogOutputHelper->productAttribute($product, $product->getName(), 'name');
+
+/* PHPure Golf — runtime data attributes for the card chrome.
+ * `promo_discount_percentage` and `brand_label` follow the kit pattern
+ * of reading custom product attributes by code; consumers ensure the
+ * attributes exist in `eav_attribute`. Both fall back to empty strings
+ * so the markup is well-formed even when absent. */
+$promoDiscount = (string) ($product->getData('promo_discount_percentage') ?: '');
+$brandLabel    = (string) ($product->getData('brand_label') ?: '');
+$isPromo       = $promoDiscount !== '';
+$isNew         = (bool) $product->getData('is_new'); /* Mark the "New" beige ribbon. */
+
+/* Layout-mode CSS class: --grid by default, --list when view_mode=list. */
+$layoutModifier = $viewIsList ? 'product-card--list' : 'product-card--grid';
+
+/* Ensure the required JS is rendered on the page (price-box, etc.). */
+$viewModels->require(BlockJsDependencies::class)->setBlockTemplateDependency($block, 'Magento_Catalog::product/list/js/price-box.phtml');
+
+/* Saleable form vs disabled div — kit pattern. */
+$rootClass = sprintf('product-card %s', $layoutModifier);
+?>
+
+<?php if ($product->isSaleable()): ?>
+    <form method="post"
+          action="<?= $escaper->escapeUrl($productViewModel->getAddToCartUrl($product, ['useUencPlaceholder' => true])) ?>"
+          class="<?= $escaper->escapeHtmlAttr($rootClass) ?>"
+          <?php if ($product->getOptions()): ?>
+              enctype="multipart/form-data"
+          <?php endif; ?>
+          <?php foreach ($block->getData('product_data_attributes') ?? [] as $attribute => $include): ?>
+              <?php if ($include): ?>
+                  <?= $escaper->escapeHtml(sprintf('data-%s', $attribute)) ?>="<?= $escaper->escapeHtmlAttr((string) $product->getData($attribute)) ?>"
+              <?php endif; ?>
+          <?php endforeach; ?>
+    >
+        <?= /** @noEscape */ $block->getBlockHtml('formkey') ?>
+        <input type="hidden" name="product" value="<?= $productId ?>">
+        <?php foreach ($options as $optionItem): ?>
+            <input type="hidden"
+                   name="<?= $escaper->escapeHtmlAttr((string) $optionItem['name']) ?>"
+                   value="<?= $escaper->escapeHtmlAttr((string) $optionItem['value']) ?>">
+        <?php endforeach; ?>
+<?php else: ?>
+    <div class="<?= $escaper->escapeHtmlAttr($rootClass) ?>"
+        <?php foreach ($block->getData('product_data_attributes') ?? [] as $attribute => $include): ?>
+            <?php if ($include): ?>
+                <?= $escaper->escapeHtml(sprintf('data-%s', $attribute)) ?>="<?= $escaper->escapeHtmlAttr((string) $product->getData($attribute)) ?>"
+            <?php endif; ?>
+        <?php endforeach; ?>
+    >
+<?php endif; ?>
+
+        <?php /* ── Corner badges (absolutely-positioned hanging ribbons) ──
+                PC-7: List mode applies `--sm` so Mobile List gets the
+                32-px small-typography badge; the `--sm` utility's
+                `@media (min-width: 768px)` rule restores the 40-px
+                default at desktop. PHTML markup stays viewport-agnostic. */ ?>
+        <?php $badgeSmModifier = $viewIsList ? ' product-card__badge--sm' : ''; ?>
+        <?php if ($isNew): ?>
+            <span class="product-card__badge product-card__badge--new<?= $escaper->escapeHtmlAttr($badgeSmModifier) ?>">
+                <?= $escaper->escapeHtml(__('New')) ?>
+            </span>
+        <?php endif; ?>
+        <?php if ($isPromo): ?>
+            <span class="product-card__badge product-card__badge--promo<?= $escaper->escapeHtmlAttr($badgeSmModifier) ?>"
+                  aria-label="<?= $escaper->escapeHtmlAttr(__('%1 percent off', $promoDiscount)) ?>">
+                <span aria-hidden="true">-<?= $escaper->escapeHtml($promoDiscount) ?>%</span>
+            </span>
+        <?php endif; ?>
+
+        <?php /* ── Image link (kit pattern: title + image are the only product links) ── */ ?>
+        <?php if ($blockImage = $block->getImage($product, $imageDisplayArea)): ?>
+            <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
+               class="product-card__image-frame"
+               title="<?= $escaper->escapeHtmlAttr((string) $product->getName()) ?>"
+               tabindex="-1"
+            >
+                <?= $blockImage
+                    ->setTemplate('Magento_Catalog::product/list/image.phtml')
+                    ->setData('custom_attributes', array_merge(
+                        is_array($imageCustomAttributes) ? $imageCustomAttributes : [],
+                        ['class' => 'product-card__image']
+                    ))
+                    ->setProductId($productId)
+                    ->toHtml() ?>
+            </a>
+        <?php endif; ?>
+
+        <?php /* ── Body: brand → title → reviews → swatches → (description) → price → status → action → compare ── */ ?>
+        <div class="product-card__body">
+
+            <?php if ($brandLabel !== ''): ?>
+                <span class="product-card__brand"><?= $escaper->escapeHtml($brandLabel) ?></span>
+            <?php endif; ?>
+
+            <?php /* PC-17: <h3> wraps the product-page link. */ ?>
+            <h3 class="product-card__title">
+                <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
+                   data-product-id="<?= $escaper->escapeHtmlAttr((string) $productId) ?>"
+                >
+                    <?= /* @noEscape */ $productName ?>
+                </a>
+            </h3>
+
+            <?php if (!$hideRatingSummary): ?>
+                <?= $block->getReviewsSummaryHtml($product, 'short') ?>
+            <?php endif; ?>
+
+            <?php /* Color swatches — consumer-supplied child block. The atom class
+                    strings (`swatch-group`, `swatch swatch--color swatch--s|--xs`)
+                    are produced verbatim by the swatches child template. */ ?>
+            <?php if ($swatchesBlock = $block->getChildBlock('swatches')): ?>
+                <?= $swatchesBlock->setData('product', $product)->toHtml() ?>
+            <?php endif; ?>
+
+            <?php /* Description — Desktop List only (PC-11: 2-line clamp). */ ?>
+            <?php if ($viewIsList && $showDescription): ?>
+                <p class="product-card__description">
+                    <?= /* @noEscape */ $productViewModel->getShortDescriptionForProduct($product) ?>
+                </p>
+            <?php endif; ?>
+
+            <?php if ($product->isAvailable() && !$hideDetails): ?>
+                <?= $block->getProductDetailsHtml($product) ?>
+            <?php endif; ?>
+
+            <?php if ($isProductGroupedOrBundle): ?>
+                <span class="sr-only">
+                    <?= $escaper->escapeHtml(__('The price depends on the options chosen on the product page')) ?>
+                </span>
+            <?php endif; ?>
+
+            <?php /* ── Price row ── */ ?>
+            <div class="product-card__price-row"<?= $isPromo ? ' data-promo="true"' : '' ?>>
+                <?php if ($isPromo): ?>
+                    <span class="sr-only"><?= $escaper->escapeHtml(__('Sale price')) ?></span>
+                <?php else: ?>
+                    <span class="sr-only"><?= $escaper->escapeHtml(__('Price')) ?></span>
+                <?php endif; ?>
+
+                <?php /* The kit's `getProductPriceHtml()` returns the rendered price-box.
+                        For PHPure Golf we restyle through `__price-current` / `__price-old`
+                        so the price-box block must render its outputs into these classes.
+                        The default Magento price-box markup will continue to work because
+                        the surrounding row carries our styling tokens; consumers may
+                        re-template the price-box at the layout-XML level to use our
+                        slot classes directly. */ ?>
+                <span class="product-card__price-current" aria-hidden="<?= $isPromo ? 'false' : 'false' ?>">
+                    <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product) ?>
+                </span>
+
+                <?php if ($isPromo): ?>
+                    <?php /* Old (regular) price strikethrough. Hyvä kit returns the
+                            old price inside `getProductPriceHtml()` when special-price
+                            is active; this branch is rendered ONLY when the consumer's
+                            price-box template emits a `regular_price` element. Consumers
+                            replace this span with the rendered `old-price` block in
+                            their own price-box override. */ ?>
+                    <span class="product-card__price-old">
+                        <span class="sr-only"><?= $escaper->escapeHtml(__('Original price')) ?></span>
+                        <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product, false, 'old_price') ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+
+            <?php /* ── Stock status (PC-2: between price and action row, all 4 layouts) ── */ ?>
+            <?php if ($stockStatusBlock = $block->getChildBlock('stockstatus')): ?>
+                <?= $stockStatusBlock->setData('product', $product)->toHtml() ?>
+            <?php endif; ?>
+
+            <?php /* ── Action row: Add to cart + Wishlist ── */ ?>
+            <div class="product-card__action-row">
+                <div>
+                    <?php if ($product->isSaleable()): ?>
+                        <?php if ($isProductGroupedOrBundle): ?>
+                            <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
+                               class="btn btn-primary btn-icon-leading btn-size-m"
+                               aria-label="<?= $escaper->escapeHtmlAttr(__('Configure %1 on the product page', $productName)) ?>"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                </svg>
+                                <span class="md:inline"><?= $escaper->escapeHtml(__('Configure')) ?></span>
+                            </a>
+                        <?php else: ?>
+                            <button type="submit"
+                                    class="btn btn-primary btn-icon-leading btn-size-m"
+                                    aria-label="<?= $escaper->escapeHtmlAttr(__('Add to cart') . ' ' . $productName) ?>"
+                                    data-addto="cart"
+                            >
+                                <?php /* Heroicons outline-24 shopping-cart. */ ?>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                </svg>
+                                <?php /* PC-8: same atom on Desktop + Mobile. Mobile hides
+                                        the visible label and keeps an sr-only label so
+                                        AT still reads "Add to cart". */ ?>
+                                <span class="sr-only md:not-sr-only"><?= $escaper->escapeHtml(__('Add to cart')) ?></span>
+                            </button>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
+                <div>
+                    <?php if ($showAddToWishlist && ($wishlistBlock = $block->getChildBlock('wishlist'))): ?>
+                        <?= $wishlistBlock
+                            ->setData('product', $product)
+                            ->setData('class', 'btn btn-secondary btn-icon-only-round btn-size-m')
+                            ->toHtml() ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php /* ── Add to comparison (form-checkbox atom, size M default) ──
+                    The kit's compare/button.phtml outputs a <button>; for the
+                    PHPure Golf brand the consumer overrides that template with
+                    a <label>.form-checkbox structure (size M default) so the
+                    interaction reads as a comparison toggle, not a CTA. The
+                    class string `form-checkbox` is passed through but the
+                    consumer's template must render the matching DOM. PC-12:
+                    slot kept wired for kit-compatibility, rendered only when
+                    `$showAddToCompare` is true. */ ?>
+            <?php if ($showAddToCompare && ($compareBlock = $block->getChildBlock('compare'))): ?>
+                <?= $compareBlock
+                    ->setData('product', $product)
+                    ->setData('class', 'form-checkbox')
+                    ->toHtml() ?>
+            <?php endif; ?>
+
+            <?php if ($addToBlock = $block->getChildBlock('addto')): ?>
+                <?= $addToBlock->setProduct($product)->getChildHtml() ?>
+            <?php endif; ?>
+        </div>
+
+<?php if ($product->isSaleable()): ?>
+    </form>
+<?php else: ?>
+    </div>
+<?php endif; ?>

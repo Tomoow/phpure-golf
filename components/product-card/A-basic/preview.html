@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product Card — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only scaffolding. Mirrors the status / swatches / form-checkbox
+         * preview patterns: page chrome + section headers + demo-mobile-frame
+         * wrappers that simulate the 375 px viewport in-place. These classes
+         * are NOT part of the shipped component.
+         *
+         * The DOM, class strings, and structural arrangement below MIRROR the
+         * Magento PHTML output verbatim — same `product-card` shell, same
+         * layout modifier, same atom class strings, same Alpine directives
+         * (none here; the card is non-interactive in this preview).
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .section { margin-block-end: 3rem; }
+
+        /* Desktop demo grid: 2 cards side by side at their natural width. */
+        .demo-desktop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 23.5rem));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--color-slate-blue-50);
+            border-radius: var(--radius-lg);
+        }
+        .demo-desktop-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            max-width: 60rem;
+            background: var(--color-slate-blue-50);
+            border-radius: var(--radius-lg);
+        }
+        /* Mobile frame: simulates the 375 px viewport so the responsive
+         * breakpoint in product-card.css drops below `md:`. Cards inside
+         * render at their Mobile width per spec. */
+        .demo-mobile-frame {
+            max-width: 22.5rem;                /* 360 px */
+            padding: 1.5rem;
+            background: var(--color-slate-blue-50);
+            border-radius: var(--radius-lg);
+        }
+        .demo-mobile-frame--grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.875rem;
+        }
+        .demo-mobile-frame--list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        /* The action-row's first cell ("Add to cart") and the wishlist atom
+         * already self-size correctly via the `__action-row` utility; no
+         * preview helper needed. The Mobile sr-only label + Desktop visible
+         * label switch is handled by `sr-only md:not-sr-only` on the inner
+         * `<span>`. */
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Product Card — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 product-card molecule.
+            Figma node <code>2256:7466</code>. Composes five approved atoms
+            (<code>btn</code>, <code>swatch</code>, <code>review-summary</code>,
+            <code>status</code>, <code>form-checkbox</code>) plus nine card-local
+            sub-elements (<code>product-card</code> shell, <code>__image-frame</code>,
+            <code>__image</code>, <code>__badge</code>, <code>__price-row</code>,
+            <code>__description</code>, <code>__brand</code>, <code>__title</code>,
+            <code>__action-row</code>, <code>__body</code>). Eight variant leaves:
+            Desktop / Mobile × Grid / List × default / promo. The matrix below
+            renders one card per leaf plus an out-of-stock state demo.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. DESKTOP GRID — 2 cards (default + promo)                  -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Desktop Grid — 2 cards (default, promo)</h2>
+            <p class="note">
+                Cards at their natural 376 px width inside a 1280 px viewport
+                breakpoint. Default = no promo badge, single price in
+                slate-blue-800. Promo = red `-20%` ribbon hanging from top,
+                current price flips to red-600, strikethrough old price at
+                18 px (Desktop Grid uses the larger old-price size — PC-3).
+            </p>
+            <div class="demo-desktop-grid">
+
+                <!-- Card 1: Desktop Grid, default (no promo) -->
+                <div class="product-card product-card--grid">
+                    <span class="product-card__badge product-card__badge--new">New</span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-d1" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-d1" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-d1" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-d1" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row">
+                            <span class="sr-only">Price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-d1" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Card 2: Desktop Grid, promo -->
+                <div class="product-card product-card--grid">
+                    <span class="product-card__badge product-card__badge--promo" aria-label="20 percent off">
+                        <span aria-hidden="true">-20%</span>
+                    </span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-d2" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-d2" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-d2" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-d2" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row" data-promo="true">
+                            <span class="sr-only">Sale price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                            <span class="product-card__price-old">
+                                <span class="sr-only">Original price</span>
+                                <span aria-hidden="true">$118.00</span>
+                            </span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-d2" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. DESKTOP LIST — 2 cards stacked (default, promo)            -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Desktop List — 2 cards stacked (default, promo)</h2>
+            <p class="note">
+                List layout: 320 × 320 square image on the left, content column
+                on the right. Description renders only in List view (PC-11:
+                2-line clamp with ellipsis). Promo current price stays at
+                24/32; old price at 16/24 (PC-3 — Desktop List uses the smaller
+                old-price size).
+            </p>
+            <div class="demo-desktop-list">
+
+                <!-- Card 3: Desktop List, default. The PHTML applies
+                     `product-card__badge--sm` whenever view_mode=list
+                     (PC-7); the modifier's `@media (min-width: 768px)`
+                     rule restores the 40-px default badge at desktop. -->
+                <div class="product-card product-card--list">
+                    <span class="product-card__badge product-card__badge--new product-card__badge--sm">New</span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <p class="product-card__description">
+                            Lightweight performance golf shoe with championship-grade
+                            grip. Built for walking 36 holes a day without a callus.
+                            Available in four signature Druids colors and two upper
+                            materials.
+                        </p>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-d3" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-d3" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-d3" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-d3" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s is-out-of-stock" style="--swatch-bg: #52B4A8;">
+                                <input class="swatch__input" type="radio" name="color-d3" value="teal" disabled />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Teal (out of stock)</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row">
+                            <span class="sr-only">Price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-d3" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Card 4: Desktop List, promo -->
+                <div class="product-card product-card--list">
+                    <span class="product-card__badge product-card__badge--promo product-card__badge--sm" aria-label="20 percent off">
+                        <span aria-hidden="true">-20%</span>
+                    </span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <p class="product-card__description">
+                            Lightweight performance golf shoe with championship-grade
+                            grip. Built for walking 36 holes a day without a callus.
+                            Available in four signature Druids colors and two upper
+                            materials.
+                        </p>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-d4" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-d4" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-d4" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-d4" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s is-out-of-stock" style="--swatch-bg: #52B4A8;">
+                                <input class="swatch__input" type="radio" name="color-d4" value="teal" disabled />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Teal (out of stock)</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row" data-promo="true">
+                            <span class="sr-only">Sale price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                            <span class="product-card__price-old">
+                                <span class="sr-only">Original price</span>
+                                <span aria-hidden="true">$118.00</span>
+                            </span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-d4" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. MOBILE GRID — 2 cards (default, promo)                    -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Mobile Grid (375 px breakpoint) — 2 cards (default, promo)</h2>
+            <p class="note">
+                The <code>.demo-mobile-frame</code> wrapper caps the row at
+                360 px so the responsive breakpoint in product-card.css falls
+                below <code>md:</code>. Mobile Grid uses XS swatches, Demi
+                (weight 500) title, root <code>py-4</code> only with image
+                wrapper <code>px-2</code> + body wrapper <code>px-3</code>.
+                Add-to-cart button shows the icon only — the visible label is
+                hidden via <code>sr-only md:not-sr-only</code> (PC-8). NO new
+                atom variant.
+            </p>
+            <div class="demo-mobile-frame demo-mobile-frame--grid">
+
+                <!-- Card 5: Mobile Grid, default -->
+                <div class="product-card product-card--grid">
+                    <span class="product-card__badge product-card__badge--new">New</span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-m1" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-m1" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-m1" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-m1" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row">
+                            <span class="sr-only">Price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-m1" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Card 6: Mobile Grid, promo -->
+                <div class="product-card product-card--grid">
+                    <span class="product-card__badge product-card__badge--promo" aria-label="20 percent off">
+                        <span aria-hidden="true">-20%</span>
+                    </span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-m2" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-m2" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-m2" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-m2" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row" data-promo="true">
+                            <span class="sr-only">Sale price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                            <span class="product-card__price-old">
+                                <span class="sr-only">Original price</span>
+                                <span aria-hidden="true">$118.00</span>
+                            </span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-m2" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 4. MOBILE LIST — 2 cards stacked (default, promo)             -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Mobile List (375 px breakpoint) — 2 cards stacked (default, promo)</h2>
+            <p class="note">
+                Horizontal compact card, ~50/50 split. Image + action row in
+                the LEFT column; brand/title/swatches/price/compare in the
+                RIGHT column. New badge uses the smaller-typography
+                <code>--sm</code> sub-variant (PC-7, 32 px tall, 12/16 type).
+                Promo current price downshifts to 20/28 here only (PC-1).
+            </p>
+            <div class="demo-mobile-frame demo-mobile-frame--list">
+
+                <!-- Card 7: Mobile List, default -->
+                <div class="product-card product-card--list">
+                    <span class="product-card__badge product-card__badge--new product-card__badge--sm">New</span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-ml1" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-ml1" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-ml1" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-ml1" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row">
+                            <span class="sr-only">Price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-ml1" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Card 8: Mobile List, promo (PC-1: current price downshifts to 20/28) -->
+                <div class="product-card product-card--list">
+                    <span class="product-card__badge product-card__badge--promo product-card__badge--sm" aria-label="20 percent off">
+                        <span aria-hidden="true">-20%</span>
+                    </span>
+
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-ml2" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-ml2" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-ml2" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--xs" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-ml2" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row" data-promo="true">
+                            <span class="sr-only">Sale price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                            <span class="product-card__price-old">
+                                <span class="sr-only">Original price</span>
+                                <span aria-hidden="true">$118.00</span>
+                            </span>
+                        </div>
+
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        aria-label="Add Flyknit Racer to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-ml2" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 5. STATES — Out-of-stock                                       -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>States — Out of stock</h2>
+            <p class="note">
+                Single Desktop Grid card with the stock-status atom flipped
+                to <code>status--out-of-stock</code>. Per PC-2: the action
+                row stays the same (Add to cart + Wishlist) — swapping the
+                primary CTA for a "Notify me" button is a future
+                composition, not part of this molecule.
+            </p>
+            <div class="demo-desktop-grid">
+
+                <!-- Card 9: Desktop Grid, out-of-stock state -->
+                <div class="product-card product-card--grid">
+                    <a href="#" class="product-card__image-frame" tabindex="-1">
+                        <img class="product-card__image"
+                             alt=""
+                             src="./figma-screenshots/product-bag.png" />
+                    </a>
+
+                    <div class="product-card__body">
+                        <span class="product-card__brand">Druids</span>
+
+                        <h3 class="product-card__title">
+                            <a href="#">Flyknit Racer</a>
+                        </h3>
+
+                        <span class="review-summary"
+                              style="--review-fill: 0.82;"
+                              role="img"
+                              aria-label="Rated 4.1 out of 5 stars based on 12 reviews">
+                            <span class="review-summary__stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                    <span class="review-summary__star"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0.5l2.06 4.18 4.61.67-3.34 3.26.79 4.59L7 11.04 2.88 13.2l.79-4.59L0.33 5.35l4.61-.67L7 0.5z"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12)</span>
+                            </span>
+                        </span>
+
+                        <fieldset class="swatch-group" aria-label="Color">
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #9FB4A9;">
+                                <input class="swatch__input" type="radio" name="color-oos" value="sage" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Sage</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #047857;">
+                                <input class="swatch__input" type="radio" name="color-oos" value="emerald" checked />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Emerald</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #3A3A3A;">
+                                <input class="swatch__input" type="radio" name="color-oos" value="charcoal" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Charcoal</span>
+                            </label>
+                            <label class="swatch swatch--color swatch--s" style="--swatch-bg: #B45309;">
+                                <input class="swatch__input" type="radio" name="color-oos" value="amber" />
+                                <span class="swatch__chip" aria-hidden="true"></span>
+                                <span class="sr-only">Amber</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="product-card__price-row">
+                            <span class="sr-only">Price</span>
+                            <span class="product-card__price-current">$95.00</span>
+                        </div>
+
+                        <!-- PC-2: stock-status flipped to out-of-stock; action row unchanged. -->
+                        <span class="status status--dot status--out-of-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">Out of stock</span>
+                        </span>
+
+                        <div class="product-card__action-row">
+                            <div>
+                                <button type="submit"
+                                        class="btn btn-primary btn-icon-leading btn-size-m"
+                                        disabled
+                                        aria-disabled="true"
+                                        aria-label="Add Flyknit Racer to cart (out of stock)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span class="product-card__cta-label">Add to cart</span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button"
+                                        class="btn btn-secondary btn-icon-only-round btn-size-m"
+                                        aria-pressed="false"
+                                        aria-label="Add Flyknit Racer to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-checkbox">
+                            <input class="form-checkbox__input" type="checkbox" name="compare-oos" />
+                            <span class="form-checkbox__box" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </span>
+                            <span class="form-checkbox__text">
+                                <span class="form-checkbox__label">Add to comparison</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+</body>
+</html>

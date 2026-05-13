@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reviews summary — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only scaffolding. Mirrors the status + swatches +
+         * form-checkbox preview patterns: page chrome + grid + product-
+         * card scaffold. These classes are NOT part of the shipped atom.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .variant-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem 1rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+        }
+        .variant-row {
+            display: grid;
+            grid-template-columns: 18rem minmax(0, 1fr);
+            gap: 1rem;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--color-slate-blue-100);
+        }
+        .variant-row:last-child {
+            border-bottom: 0;
+        }
+        .variant-row__label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .ladder {
+            display: grid;
+            grid-template-columns: 4rem minmax(0, 1fr);
+            gap: 0.5rem 1rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+        }
+        .ladder__label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-slate-blue-500);
+        }
+        .stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(18rem, 1fr));
+            gap: 1.25rem 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+        .section { margin-block-end: 2rem; }
+
+        /* Product-card scaffold — same as status preview. */
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            background: var(--color-white);
+            max-width: 22rem;
+        }
+        .product-card__title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-blue-800);
+        }
+        .product-card__price {
+            font-size: 0.875rem;
+            color: var(--color-slate-blue-600);
+        }
+        .product-card__reviews {
+            margin-block-start: 0.25rem;
+        }
+
+        .empty-frame {
+            display: inline-block;
+            min-width: 14rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px dashed var(--color-slate-blue-300);
+            border-radius: var(--radius-md);
+            background: var(--color-white);
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Reviews summary — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 review-summary atom. Figma node
+            <code>1385:28923</code>. ONE <code>@utility review-summary</code> on the row
+            drives every visual through CSS custom-property slot tokens
+            (<code>--review-fill</code>, <code>--review-gap-slots</code>,
+            <code>--review-gap-inline</code>). Three slots (Leading, Stars, Trailing)
+            compose by inclusion / omission of children — no root-level variant
+            modifiers needed. Read-only display only — no hover / focus / active.
+            Filled stars at <code>champagne-beige-700</code>, empty track at
+            <code>slate-blue-200</code>. Fractional fill driven per-row by inline
+            <code>style="--review-fill: 0..1"</code> — the ONE whitelisted inline
+            style for this atom.
+        </p>
+
+        <!-- Reusable inline SVG defs for the Figma 5-point star path.
+             `currentColor` flows from `.review-summary__stars-track` (slate-blue-200)
+             and `.review-summary__stars-fill` (champagne-beige-700) via the CSS
+             `color` property on those wrappers. The SVG dimensions (14 × 13.37 px)
+             realise the spec's 3-px inset inside the 20×20 slot — the slot's flex
+             centering positions the glyph. -->
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <defs>
+                <symbol id="rs-star" viewBox="0 0 14 13.3715">
+                    <path d="M6.45387 0.396789C6.62577 -0.132262 7.37423 -0.132263 7.54613 0.396788L8.80494 4.271C8.88182 4.5076 9.1023 4.66779 9.35107 4.66779H13.4247C13.9809 4.66779 14.2122 5.37962 13.7622 5.70659L10.4666 8.10099C10.2653 8.24722 10.1811 8.50641 10.258 8.74301L11.5168 12.6172C11.6887 13.1463 11.0832 13.5862 10.6331 13.2592L7.33753 10.8648C7.13627 10.7186 6.86373 10.7186 6.66247 10.8648L3.36687 13.2592C2.91683 13.5862 2.31131 13.1463 2.48321 12.6172L3.74202 8.74301C3.81889 8.50641 3.73468 8.24722 3.53341 8.10099L0.23781 5.7066C-0.212228 5.37962 0.0190606 4.66779 0.575338 4.66779H4.64893C4.8977 4.66779 5.11818 4.5076 5.19506 4.271L6.45387 0.396789Z" fill="currentColor"/>
+                </symbol>
+            </defs>
+        </svg>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. VARIANT GRID — 12 representative leaves of the 24 -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Variant grid — 12 representative leaves</h2>
+            <p class="note">
+                The full Figma set has 24 leaves (3 Leading values × 2 Stars values
+                × 4 Trailing values). Here are 12 representative combinations
+                covering both star-present and star-absent rows. The
+                <code>--review-fill</code> demo value is <code>0.82</code> (=
+                "4.1 / 5") for every row that includes stars, matching the
+                trailing "4.1" score. The empty-state leaf (no stars, no leading,
+                no trailing) renders nothing — section 4 covers that.
+            </p>
+
+            <div class="variant-grid">
+                <!-- Leaf 1 — Stars only -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Stars only</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 2 — Stars + Score -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Stars + score</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 3 — Stars + Count -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Stars + count</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 4 — Stars + Score + Count -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Stars + score + count</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 5 — Title + Stars -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title + stars</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                            </span>
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 6 — Title + Stars + Score + Count -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title + stars + score + count</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                            </span>
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 7 — Title + Counter + Stars -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title + counter pill + stars</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                                <span class="review-summary__leading-counter" aria-label="9 reviews">
+                                    <span aria-hidden="true">9</span>
+                                </span>
+                            </span>
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 8 — Title + Counter + Stars + Score + Count (widest) -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title + counter + stars + score + count</div>
+                    <div>
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                                <span class="review-summary__leading-counter" aria-label="9 reviews">
+                                    <span aria-hidden="true">9</span>
+                                </span>
+                            </span>
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 9 — Title only (no stars) -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title only (no stars)</div>
+                    <div>
+                        <span class="review-summary">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 10 — Title + Counter (no stars) -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Title + counter pill (no stars)</div>
+                    <div>
+                        <span class="review-summary">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                                <span class="review-summary__leading-counter" aria-label="9 reviews">
+                                    <span aria-hidden="true">9</span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 11 — Score only -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Score only</div>
+                    <div>
+                        <span class="review-summary">
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Leaf 12 — Score + Count (no stars) -->
+                <div class="variant-row">
+                    <div class="variant-row__label">Score + count (no stars)</div>
+                    <div>
+                        <span class="review-summary">
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. FILL LADDER -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Fill ladder — 0 → 1.0</h2>
+            <p class="note">
+                Seven values exercising the <code>--review-fill</code> contract.
+                The cluster is clipped from the right by
+                <code>calc((1 - var(--review-fill)) * 100%)</code>; one numeric
+                drives all five stars (RV-7). Score column shows the equivalent
+                "X.X / 5" string a consumer would render alongside.
+            </p>
+            <div class="ladder">
+                <!-- Each row: fill label + cluster + score -->
+                <div class="ladder__label">0.00</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0">
+                        <span class="review-summary__stars" role="img" aria-label="0 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">0.0</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">0.20</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0.2">
+                        <span class="review-summary__stars" role="img" aria-label="1 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">1.0</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">0.40</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0.4">
+                        <span class="review-summary__stars" role="img" aria-label="2 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">2.0</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">0.50</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0.5">
+                        <span class="review-summary__stars" role="img" aria-label="2.5 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">2.5</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">0.60</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0.6">
+                        <span class="review-summary__stars" role="img" aria-label="3 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">3.0</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">0.80</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 0.8">
+                        <span class="review-summary__stars" role="img" aria-label="4 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">4.0</span></span>
+                    </span>
+                </div>
+
+                <div class="ladder__label">1.00</div>
+                <div>
+                    <span class="review-summary" style="--review-fill: 1">
+                        <span class="review-summary__stars" role="img" aria-label="5 out of 5 stars">
+                            <span class="review-summary__stars-track" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                            <span class="review-summary__stars-fill" aria-hidden="true">
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                            </span>
+                        </span>
+                        <span class="review-summary__trailing"><span class="review-summary__score">5.0</span></span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. ON-CARD USAGE -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>On-card usage (in context)</h2>
+            <p class="note">
+                The atom dropped inside the same <code>.product-card</code>
+                scaffold used by the status preview, so the designer can see
+                it next to a title + price.
+            </p>
+            <div class="stack">
+                <div class="product-card">
+                    <div class="product-card__title">Pro V1 polo</div>
+                    <div class="product-card__price">$95</div>
+                    <div class="product-card__reviews">
+                        <span class="review-summary" style="--review-fill: 0.82">
+                            <span class="review-summary__stars" role="img" aria-label="4.1 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__score">4.1</span>
+                                <span class="review-summary__count">(12 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Caddyshack visor</div>
+                    <div class="product-card__price">$42</div>
+                    <div class="product-card__reviews">
+                        <span class="review-summary" style="--review-fill: 1">
+                            <span class="review-summary__stars" role="img" aria-label="5 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                            <span class="review-summary__trailing">
+                                <span class="review-summary__count">(3 reviews)</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Eagle club set</div>
+                    <div class="product-card__price">$1,295</div>
+                    <div class="product-card__reviews">
+                        <span class="review-summary" style="--review-fill: 0.7">
+                            <span class="review-summary__leading">
+                                <p class="review-summary__leading-title">Reviews</p>
+                                <span class="review-summary__leading-counter" aria-label="9 reviews">
+                                    <span aria-hidden="true">9</span>
+                                </span>
+                            </span>
+                            <span class="review-summary__stars" role="img" aria-label="3.5 out of 5 stars">
+                                <span class="review-summary__stars-track" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                                <span class="review-summary__stars-fill" aria-hidden="true">
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                    <span class="review-summary__star"><svg width="14" height="13.3715"><use href="#rs-star"/></svg></span>
+                                </span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Birdie golf glove</div>
+                    <div class="product-card__price">$28</div>
+                    <div class="product-card__reviews">
+                        <!-- Empty state — no data. The atom renders nothing
+                             when no children are supplied. The consumer
+                             provides the optional fallback span. -->
+                        <span class="review-summary">
+                            <span class="review-summary__empty-fallback">(0 reviews)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 4. EMPTY STATE -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Empty state — no reviews yet</h2>
+            <p class="note">
+                Per RV-6, the atom renders nothing when no data is supplied
+                (the literal Figma string "[Empty Reviews summary component]"
+                is a Figma-authoring guard rail, not a runtime element).
+                Consumers that prefer a degraded "no reviews yet" affordance
+                can compose the optional
+                <code>.review-summary__empty-fallback</code> span — DM Sans
+                14/20 weight 500, slate-blue-500 — as the sole child of
+                <code>.review-summary</code>.
+            </p>
+
+            <h3>Atom with no children — renders nothing</h3>
+            <div class="empty-frame">
+                <span class="review-summary"></span>
+                <!-- Above span is intentionally empty. The dashed frame is
+                     preview-only and shows there is no visible output. -->
+            </div>
+
+            <h3>Atom with optional "(0 reviews)" fallback</h3>
+            <div>
+                <span class="review-summary">
+                    <span class="review-summary__empty-fallback">(0 reviews)</span>
+                </span>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

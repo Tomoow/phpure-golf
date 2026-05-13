@@ -1,0 +1,283 @@
+/**
+ * Reviews summary styles — PHPure Golf brand variant of Hyvä UI 2.7.1
+ * review summary atom (A-basic).
+ *
+ * Spec: components/review/A-basic/spec.md
+ * Figma node: 1385:28923 ("Reviews summary" frame, 24 leaves).
+ * Kit reference: hyva-ui-reference/components/product-reviews/A-basic/
+ *   ships a full PDP review LIST (Magento_Review/list.phtml). This atom
+ *   is the compact rating-summary ROW that the list re-uses inside each
+ *   review card. The list's `role="img"` + `aria-label` pattern (lines
+ *   85–100) is mirrored on `.review-summary__stars`. Everything else
+ *   (leading title + pill, trailing score / count, half-star clipping,
+ *   empty state) is brand-new and authored from spec.
+ *
+ * Architecture (mirrors status.css):
+ *   • ONE `@utility review-summary` on the row driving its slot tokens:
+ *       --review-fill         — 0..1 numeric, the fraction of the stars
+ *                               cluster that should render as filled.
+ *                               Set per-row inline as `style="--review-fill: 0.82"`
+ *                               (the ONE whitelisted inline style for this
+ *                               atom; analogous to `--swatch-bg` on the
+ *                               color-swatches atom). Token-linter respects
+ *                               the whitelist when the row carries the
+ *                               `/* token-linter: allow inline --review-fill *\/`
+ *                               comment marker on the consumer side.
+ *       --review-gap-slots    — 12 px gap between the three top-level
+ *                               slot-groups (leading / stars / trailing).
+ *       --review-gap-inline   — 4 px gap inside the leading slot
+ *                               (title ↔ counter pill) and inside the
+ *                               trailing slot (score ↔ count).
+ *   • Sub-utilities for each anatomy node:
+ *       review-summary__leading            — wrapper for title + optional pill
+ *       review-summary__leading-title      — "Reviews" label
+ *       review-summary__leading-counter    — 20×20 deep-emerald circular pill
+ *                                            with white numeric label
+ *       review-summary__stars              — wrapper, carries `role="img"`
+ *                                            and `aria-label` per a11y contract
+ *       review-summary__star               — 20×20 slot, holds the two-layer
+ *                                            empty/filled star stack
+ *       review-summary__score              — bold "4.1"
+ *       review-summary__count              — slate-blue-500 "(12 reviews)"
+ *       review-summary__empty-fallback     — optional consumer-supplied
+ *                                            "(0 reviews)" string in
+ *                                            slate-blue-500 (spec §6 / RV-6)
+ *   • Read-only display only. No `:hover` / `:focus-visible` / `:active`
+ *     selectors. No Alpine. No state machinery (RV-1).
+ *   • Single 20-px star size — no S / M / L modifiers (RV-2).
+ *   • CSP: zero inline event handlers, zero `<script>`. The single
+ *     allowed inline style is `style="--review-fill: ..."` on the row;
+ *     this is style, not script, and is the documented runtime contract
+ *     (RV-7).
+ *
+ * Decisions baked in (orchestrator-confirmed 2026-05-13, see README.md
+ * "Decision log" and design-tokens/questions.md #50–57):
+ *   • RV-1: read-only display only — no hover / focus / active. The atom
+ *           does not participate in keyboard nav. The consumer may wrap
+ *           it in an `<a>` for "Jump to reviews" link semantics.
+ *   • RV-2: single 20-px star size. No size axis.
+ *   • RV-3: `font-variation-settings: 'opsz' 14` on the counter is NOT
+ *           applied — local DM Sans variable file doesn't ship the
+ *           `opsz` axis. Visual delta is sub-pixel at 14 px. Same answer
+ *           as status atom (ST-2).
+ *   • RV-4: title-pill radius uses `--radius-full` (9999 px) — visually
+ *           identical to Figma's `10px` (= half of the 20×20 box, i.e. a
+ *           perfect circle) but resolves to an existing token. No
+ *           `border-radius: 10px` raw value.
+ *   • RV-5: star glyph is the Figma custom 5-point path inlined verbatim
+ *           in the preview (and in any future Magento_Review consumer
+ *           template). NOT Heroicons. Same brand-glyph exception as
+ *           status's filled dot.
+ *   • RV-6: empty state renders nothing when no data. The consumer may
+ *           pass a `.review-summary__empty-fallback` "(0 reviews)" span
+ *           in `--color-slate-blue-500` as a degraded state. The literal
+ *           Figma string "[Empty Reviews summary component]" is a
+ *           Figma-authoring guard rail, NOT a runtime element.
+ *   • RV-7: runtime contract — one numeric per row drives the visual
+ *           star fill via `--review-fill: 0..1`. The filled layer of
+ *           each `.review-summary__star` is clipped from the right by
+ *           `calc((1 - var(--review-fill)) * 100%)` relative to the
+ *           CLUSTER width. Score and count strings are independent
+ *           consumer-supplied text. Per-row (cluster-level) is the
+ *           recommended consumer API — easier to set one number than
+ *           five.
+ *   • RV-8: FIGMA-EXACT FIRST — filled star at `champagne-beige-700`
+ *           (#BFAB82) on white. WCAG 1.4.11 contrast = 1.94:1, which
+ *           does not meet the 3:1 UI-component threshold. Mitigation is
+ *           that the textual score / count at slate-blue-800 (15.34:1)
+ *           is the canonical value; the stars are decorative
+ *           reinforcement carried by `role="img"` + `aria-label` on the
+ *           cluster (mirroring the kit's pattern). Designer will eyeball
+ *           the live preview and decide whether to bump to `.800`;
+ *           tracked as "designer-deferred — pending live-preview review."
+ *
+ * Tokens: every value resolves to a CSS custom property declared in
+ * `src/css/theme.css`. No raw hex, no arbitrary spacing values, no
+ * `@apply`, no inline styles (except the whitelisted `--review-fill`).
+ */
+
+/* ─── Shell ──────────────────────────────────────────────────────────────── */
+
+@utility review-summary {
+    /* Slot tokens. */
+    --review-fill: 0;                              /* 0..1 — consumer overrides inline (RV-7). */
+    --review-gap-slots: --spacing(3);              /* 12 px — between leading / stars / trailing. */
+    --review-gap-inline: --spacing(1);             /*  4 px — inside leading and trailing groups. */
+
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;                       /* Figma items-start across all 24 leaves. */
+    gap: var(--review-gap-slots);
+    /* Hug content per Figma; consumer parent constrains width if needed. */
+    width: max-content;
+    max-width: 100%;
+    /* Outer row height is driven by the 20 px star slots and the 20 px
+     * line-height of the inline text — no explicit height needed. */
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+}
+
+/* ─── Leading slot ───────────────────────────────────────────────────────── */
+
+@utility review-summary__leading {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--review-gap-inline);                 /*  4 px — title ↔ counter pill. */
+}
+
+/* Title text ("Reviews"). DM Sans 14/20, weight 600 (Demi). */
+@utility review-summary__leading-title {
+    color: var(--color-slate-blue-800);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);                     /* 14 px */
+    line-height: --spacing(5);                     /* 20 px */
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+}
+
+/* Counter pill — 20×20 circular badge, deep-emerald-500 background,
+ * white numeric label. `--radius-full` is the existing token that gives
+ * the same visual as Figma's `10px` (= half of 20) for the 20×20 box
+ * (RV-4). The label is DM Sans 12/16, weight 600 (Demi). */
+@utility review-summary__leading-counter {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: --spacing(5);                           /* 20 px */
+    height: --spacing(5);                          /* 20 px */
+    background: var(--color-deep-emerald-green-500);
+    border-radius: var(--radius-full);
+    color: var(--color-white);
+    font-family: var(--font-sans);
+    font-size: --spacing(3);                       /* 12 px */
+    line-height: --spacing(4);                     /* 16 px */
+    font-weight: 600;
+    /* No padding, no border — the flex centering owns positioning. */
+    margin: 0;
+    padding: 0;
+}
+
+/* ─── Stars cluster ──────────────────────────────────────────────────────── */
+
+/* Wrapper for the 5 stars. Carries `role="img"` + `aria-label` per the
+ * kit pattern (list.phtml lines 85–88). The individual `.review-summary__star`
+ * spans are decorative (`aria-hidden`) — the cluster's aria-label is the
+ * canonical value.
+ *
+ * The fill clipping uses `clip-path: inset(0 X 0 0)` on a CHILD layer
+ * (`.review-summary__stars-fill`) that overlays the empty layer.
+ * `--review-fill` is read once at the cluster level; the unfilled inset
+ * is `calc((1 - var(--review-fill)) * 100%)` (RV-7). */
+@utility review-summary__stars {
+    position: relative;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex: none;
+    /* No `gap`. The −2 px slot overlap is realised on the slot child via
+     * `margin-inline-end: calc(--spacing(0.5) * -1)` (= −2 px). */
+}
+
+/* The empty (track) layer is the base — five empty stars rendered at
+ * `--color-slate-blue-200`. */
+@utility review-summary__stars-track {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    color: var(--color-slate-blue-200);
+}
+
+/* The filled (value) layer is absolutely positioned on top of the
+ * track, clipped from the right by `(1 - --review-fill) * 100%`. Its
+ * star glyphs render at `--color-champagne-beige-700` (RV-8 — designer-
+ * deferred contrast call). `pointer-events: none` because the cluster
+ * is non-interactive. */
+@utility review-summary__stars-fill {
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    color: var(--color-champagne-beige-700);
+    /* Clip from the right edge so the leftmost fraction stays visible. */
+    clip-path: inset(0 calc((1 - var(--review-fill)) * 100%) 0 0);
+    pointer-events: none;
+}
+
+/* Each star slot — 20×20 box. The visible glyph (~14 × 13.37 px) is
+ * inset by ~3 px on each side; the inset is realised on the inner SVG's
+ * `width` / `height` (14 / ~13.37 px) plus the slot's `flex` centering.
+ * Adjacent slots overlap by −2 px (margin-inline-end on slots 1..4).
+ * The last slot (`:last-child`) zeroes the margin. */
+@utility review-summary__star {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: --spacing(5);                           /* 20 px */
+    height: --spacing(5);                          /* 20 px */
+    margin-inline-end: calc(var(--spacing) * -0.5);/* −2 px overlap */
+    line-height: 0;                                /* Strip inline-SVG line-box padding. */
+}
+
+@utility review-summary__star {
+    &:last-child {
+        margin-inline-end: 0;
+    }
+}
+
+/* ─── Trailing slot ──────────────────────────────────────────────────────── */
+
+@utility review-summary__trailing {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--review-gap-inline);                 /*  4 px — score ↔ count. */
+}
+
+/* Score text ("4.1"). DM Sans 14/20, weight 700 (Bold). */
+@utility review-summary__score {
+    color: var(--color-slate-blue-800);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);                     /* 14 px */
+    line-height: --spacing(5);                     /* 20 px */
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+}
+
+/* Count text ("(12 reviews)"). DM Sans 14/20, weight 500. Slate-blue-500
+ * per Figma. RV-3: `font-variation-settings: 'opsz' 14` NOT applied —
+ * local DM Sans build does not ship the `opsz` axis. */
+@utility review-summary__count {
+    color: var(--color-slate-blue-500);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);                     /* 14 px */
+    line-height: --spacing(5);                     /* 20 px */
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+}
+
+/* ─── Empty-state degraded fallback ──────────────────────────────────────── */
+
+/* Optional consumer-supplied "(0 reviews)" string for products with no
+ * reviews yet. The atom itself renders nothing when no slots are
+ * supplied (RV-6). Consumers compose this span alone — usually as the
+ * sole child of `.review-summary`. Same color/typography as
+ * `.review-summary__count` so the empty state reads naturally as part
+ * of the count slot. */
+@utility review-summary__empty-fallback {
+    color: var(--color-slate-blue-500);
+    font-family: var(--font-sans);
+    font-size: --spacing(3.5);                     /* 14 px */
+    line-height: --spacing(5);                     /* 20 px */
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+}

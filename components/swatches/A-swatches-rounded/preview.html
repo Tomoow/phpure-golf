@@ -174,13 +174,28 @@
             box-shadow: var(--swatch-focus-ring) !important;
         }
 
-        /* Force DISABLED / OUT-OF-STOCK — opacity + diagonal slash overlay.
-         * The shell already applies opacity via `:has(:disabled)`; we
-         * additionally stamp the slash for static demo. */
+        /* Force DISABLED / OUT-OF-STOCK — universal slate-blue palette
+         * (bg slate-blue-100, border slate-blue-300, text slate-blue-300)
+         * across all three types, plus opacity + diagonal slash overlay.
+         * Color/image: override the inline product hex via a direct
+         * `background-color` on the chip (higher specificity than the
+         * `--swatch-bg` indirection); hide the image so the slate
+         * surface reads cleanly. Text: token swap via `--swatch-*`. */
         .force-disabled .swatch,
         .force-out-of-stock .swatch {
             opacity: 0.6 !important;
             cursor: not-allowed !important;
+        }
+        .force-disabled .swatch--color .swatch__chip,
+        .force-disabled .swatch--image .swatch__chip,
+        .force-out-of-stock .swatch--color .swatch__chip,
+        .force-out-of-stock .swatch--image .swatch__chip {
+            background-color: var(--color-slate-blue-100) !important;
+            border-color: var(--color-slate-blue-300) !important;
+        }
+        .force-disabled .swatch--image .swatch__media,
+        .force-out-of-stock .swatch--image .swatch__media {
+            display: none !important;
         }
         .force-disabled .swatch--color .swatch__chip::after,
         .force-disabled .swatch--image .swatch__chip::after,

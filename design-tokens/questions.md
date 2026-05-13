@@ -525,3 +525,378 @@ Each entry is numbered, dated, and records an ambiguity that blocked full token 
 - **Spec recommendation:** Add `&[aria-invalid="true"]` to the `swatch-group` shell, overriding the legend color to `rose.700` and switching `--swatch-focus-ring` to `Focus/Error`. The same modifier on `swatch-group--multi` (multi-select) should be no-op since multi-select facets are never required.
 - **Question for designer:** Confirm. Provide a Figma frame if a custom design exists.
 - **Cross-ref:** `components/swatches/A-swatches-rounded/spec.md` §2 OQ-SW-10, §9.
+
+---
+
+## 44. 2026-05-13 — Status atom: no size variants in Figma (OQ-ST-1)
+
+- **Item:** The Stock-status component set (`1385:32111`) ships a single fixed size — 24 px tall container, `text-base/leading-6/font-normal` label (DM Sans 500 @ 16/24), 12 × 12 dot or 20 × 20 icon. There is no S / M / L axis.
+- **Queried:** `1385:32111` metadata — 10 leaves (5 status × 2 styles); no `Size` property in any variant name.
+- **Why flag:** Stock status is commonly displayed at multiple sizes:
+  - **Small** on a product card chip (paired with `text-sm/leading-5` price labels).
+  - **Medium** on a PDP under the price (current Figma default).
+  - **Large** in a quick-view modal heading.
+  Without a Figma size axis the author has to either (a) ship only the 16/24 size and let consumers wrap it in a sized parent, or (b) extrapolate S (`text-sm` + 8 × 8 dot + 16 × 16 icon, gap 4 / 3 px) and L (`text-lg` + 14 × 14 dot + 24 × 24 icon, gap 8 / 6 px) and ship a 3-size shell.
+- **Need from designer:** Pick one:
+  1. **Ship size M only** (matches Figma). Document that consumers compose larger / smaller variants by their own type scale.
+  2. **Ship S / M / L.** Provide Figma references for S and L or confirm the extrapolation above is acceptable.
+- **Cross-ref:** `components/status/A-basic/spec.md` §3.3, §5, §6.2.
+
+---
+
+## 45. 2026-05-13 — Status atom: Figma applies `font-variation-settings: 'opsz' 14` to all labels (OQ-ST-2)
+
+- **Item:** Every label in `1385:32111` ships with `style={{ fontVariationSettings: "'opsz' 14" }}` per `get_design_context`. This is the optical-size axis of a variable font, set to 14 — meaning the font is rendered as if it were physically being typeset at 14 pt even though the actual font-size is 16 px.
+- **Queried:** `1385:32068`, `1385:32106` `get_design_context`.
+- **Why flag:** The substitute font in this POC is **DM Sans**, served self-hosted from `src/fonts/dm-sans/`. DM Sans (Google Fonts variable build) ships an `opsz` axis from 9 to 36 — but the local woff2 in this project may have been subset and may not include the axis. If `opsz` is requested on a font that doesn't expose it, browsers silently ignore the request (no visual difference). The Figma source intent is preserved, but the implementation needs an explicit decision.
+- **Need from designer:**
+  1. Confirm whether `font-variation-settings: 'opsz' 14` should be applied to the `.status__label` rule. If the local DM Sans build doesn't ship the axis, the rule is a no-op and can be safely added.
+  2. If the visual difference matters, the local DM Sans build may need to be regenerated with the `opsz` axis preserved.
+- **Cross-ref:** `components/status/A-basic/spec.md` §6.2.
+
+---
+
+## 46. 2026-05-13 — Status atom: no text-only (no-glyph) variant in Figma (OQ-ST-3)
+
+- **Item:** All 10 leaves include either a Coloured-Dot or an Icon glyph; there is no text-only variant.
+- **Queried:** `1385:32111` — `Style` property has 2 values only: `Coloured Dot`, `Icon`.
+- **Why flag:** A compact mobile mini-cart row, a category grid filter pill, or a search-result line item often omits indicator glyphs entirely (the text-status color alone communicates). If the dev team wants this variant the author can add a `status--text-only` modifier that hides `.status__glyph` and tints the label per the status semantic.
+- **Need from designer:** Confirm whether a text-only variant is needed. If yes, also confirm whether the label color should change (e.g. emerald-700 for in-stock label, rose-700 for out-of-stock label) — since without the glyph, the slate-blue-800 label becomes color-neutral and the status semantic is lost.
+- **Cross-ref:** `components/status/A-basic/spec.md` §7.3.
+
+---
+
+## 47. 2026-05-13 — Status atom: no "Notify me" / "Back-in-stock" CTA composition in Figma (OQ-ST-4)
+
+- **Item:** When a product is `Out of stock`, many e-commerce sites render a "Notify me when in stock" CTA either next to or replacing the status indicator. The Figma source for `1385:32109` and `1385:32071` shows only the status label; no CTA.
+- **Queried:** `1385:32109`, `1385:32071` `get_design_context` — only label + icon/dot, no button or link.
+- **Why flag:** Affects whether `components/status/A-basic` ships as a pure display atom (yes per Figma) or whether it needs a "with-action" composition variant. The cleanest answer is: status atom stays pure, and the CTA is a separate `<button>` atom composed alongside in the parent template (PDP, product card, quick-view).
+- **Need from designer / dev team:**
+  1. Confirm the status atom is display-only.
+  2. If a "with-action" composition is needed at the atom level (rather than the parent template level), provide a Figma frame.
+- **Cross-ref:** `components/status/A-basic/spec.md` §4, §9.
+
+---
+
+## 48. 2026-05-13 — Status atom: wrap / truncate policy and RTL behavior unspecified (OQ-ST-5, OQ-ST-6)
+
+- **Item — part a (wrap):** Figma sets `whitespace-nowrap` on the `<p>` label. When the parent container is narrower than the label, Figma's auto-layout would overflow rather than wrap. In production this matters because translated labels can be much longer than English (e.g. German "Vorrätig" → "Nicht auf Lager" = 16 chars; or Czech "Skladem" → "Není skladem" = 12 chars; long-string locales like Russian / Greek can push 25+ chars).
+- **Item — part b (RTL):** The Figma source is LTR-only. The glyph sits at the inline-start of the label. In RTL (Arabic / Hebrew) the standard expectation is for the glyph to flip to the right side (inline-start in RTL).
+- **Queried:** `1385:32068`–`1385:32110` `get_design_context` — no overflow / wrap rules beyond `whitespace-nowrap`. No RTL variants.
+- **Why flag:** Both decisions affect the CSS authored by `hyva-component-author`. Wrap: should it stay `nowrap` and force the consumer layout to provide enough width? Or should it allow wrap with `white-space: normal` as a `status--wrap` modifier? RTL: relying on flex + `gap` (logical) handles the glyph position automatically — but only if the author uses flex, not float / margin-inline-end.
+- **Need from designer:**
+  1. **Wrap policy:** confirm `whitespace-nowrap` is the default and provide a `status--wrap` modifier; OR confirm wrap is acceptable by default; OR pick a truncation policy (`overflow: hidden; text-overflow: ellipsis`).
+  2. **RTL:** confirm the glyph stays at inline-start (matching Figma's LTR layout) and that the author uses logical CSS (flex `gap`, `padding-inline-*`).
+- **Cross-ref:** `components/status/A-basic/spec.md` §8.1, §8.2.
+
+---
+
+## 49. 2026-05-13 — Status atom: emerald-500 and amber-500 indicators fail WCAG 1.4.11 (OQ-ST-7)
+
+- **Item:** Figma uses `Tailwind/emerald/500 = #10B981` for in-stock indicators and `Tailwind/amber/500 = #F59E0B` for the warning / "Stock status" variant. Both colors against `colors.white` produce:
+  - `emerald.500` on white: **2.49 : 1** — fails WCAG 2.2 SC 1.4.11 (≥ 3 : 1 required for UI components).
+  - `amber.500` on white: **2.18 : 1** — fails 1.4.11.
+  - `rose.500` on white: 4.13 : 1 — passes 1.4.11.
+- **Queried:** `1385:32068`, `1385:32072`, `1385:32106`, `1385:32110` — all return `emerald.500` or `amber.500`.
+- **Why flag:** Form-field (#13, A11Y-007) and form-checkbox (#30) both deviated from Figma to clear WCAG 1.4.11. The status atom should match the same audit. The textual label (`slateBlue.800`) does provide a redundant non-color cue, which is the WCAG mitigation path — but only if a screen-reader user or low-vision user can read the label. The dot/icon is then "decorative" and 1.4.11 doesn't strictly apply.
+- **Need from designer:** Pick one:
+  1. **Keep Figma exactly.** Document in `accessibility-review.md` that emerald-500 / amber-500 are decorative reinforcement only; the label carries the meaning. Add an explicit a11y note ("dot is `aria-hidden`; status is communicated by the label text").
+  2. **Bump to .600 shades to pass 1.4.11.** Use `emerald.600 = #059669` (3.06 : 1 — passes) and `amber.600 = #D97706` (3.43 : 1 — passes). Visually slightly darker but still recognisable. Affects the `--in-stock` and `--stock-status` modifiers.
+- **Cross-ref:** `components/status/A-basic/spec.md` §10.2, `accessibility-review.md`.
+
+---
+
+## 50. 2026-05-13 — Reviews summary: display-only vs interactive rating-input (OQ-RV-1)
+
+- **Item:** The Figma frame `1385:28923` contains 24 leaves but no `State` axis (no Hover / Focus / Active / Pressed). Every leaf is a **read-only display** of an already-computed rating. There is no clickable / keyboard-rateable variant.
+- **Queried:** `1385:28923` metadata — variant axes are `Leading`, `Stars`, `Trailing`. No `State`. No `Interactive` boolean.
+- **Why flag:** Many storefronts ship a separate but visually-similar "Rate this product" widget on the review-submission form (5 hover-fill-stars, clickable, ARIA `radiogroup` / `aria-valuenow`). It would be tempting to reuse this atom for both, but doing so quietly conflates a read-only display with an interactive input — different a11y contract, different DOM, different JS. The author needs an explicit decision.
+- **Need from designer / dev team:** Pick one:
+  1. **This atom is display-only.** A separate atom (`review/B-input` or `rating-input/A-basic`) will be designed later for the review-submission form. Spec recommendation.
+  2. **Extend this atom with an interactive variant.** Add a `State = Interactive` variant family. Requires Hover (highlight stars 1..N on mouseover), Focus (visible focus ring on the currently-keyboard-active star), Pressed (commit selection). Each star becomes a `<button>` or each row a `<fieldset role="radiogroup">`. Provide Figma references.
+- **Cross-ref:** `components/review/A-basic/spec.md` §2 (last paragraph), §7.
+
+---
+
+## 51. 2026-05-13 — Reviews summary: single 20-px star size only — no S / L axis (OQ-RV-2)
+
+- **Item:** All 24 leaves render at the same fixed size (20 × 20 px stars, 14 px label, 12 px pill-counter glyph). No Size axis. The Hyvä UI 2.7.1 kit (`product-reviews/A-basic`) exposes `rating_star_size` as a layout-XML config option defaulting to 24 px, with B-minimal defaulting to 20 px — so the kit normally supports multiple sizes via prop.
+- **Queried:** `1385:28923` metadata — no `Size` property.
+- **Why flag:** A 20 px star is right for a product-card row but visually small at PDP-header scale, and visually large at a mini-cart row or a search-result line item. Common e-commerce sizing tiers:
+  - **S:** 14 × 14 px stars + `text-xs/leading-4` text — for mini-cart, header dropdown, search results
+  - **M:** 20 × 20 px stars + `text-sm/leading-5` text — current Figma default
+  - **L:** 24 × 24 px stars + `text-base/leading-6` text — for PDP header
+- **Need from designer:** Pick one:
+  1. **Ship M only.** Document that consumers compose larger / smaller variants by wrapping the atom in a sized parent that overrides via CSS custom properties (e.g. `--review-summary-star-size: 24px`).
+  2. **Ship S / M / L.** Provide Figma references for S and L, or confirm the extrapolation above is acceptable. Author then adds `review-summary--s` and `review-summary--l` modifiers.
+- **Cross-ref:** `components/review/A-basic/spec.md` §2 ("What is NOT in the node"), §7.
+
+---
+
+## 52. 2026-05-13 — Reviews summary: `font-variation-settings: 'opsz' 14` on counter text (OQ-RV-3)
+
+- **Item:** The Counter text element (`(12 reviews)`) ships with `style={{ fontVariationSettings: "'opsz' 14" }}`. This is the optical-size variable-font axis set to 14, the same pattern observed in the Status atom (questions.md #45).
+- **Queried:** `1385:29145`, `1385:28922`, `1385:30231` `get_design_context`.
+- **Why flag:** Identical question to #45 — DM Sans served self-hosted from `src/fonts/dm-sans/` may or may not ship the `opsz` axis. If absent, the rule is silently ignored.
+- **Need from designer:** Same answer as #45 — confirm whether to apply `font-variation-settings: 'opsz' 14` to `.review-summary__count`. Spec recommendation: apply it; it is harmless when absent and matches Figma intent.
+- **Cross-ref:** `components/review/A-basic/spec.md` §4, §7.
+
+---
+
+## 53. 2026-05-13 — Reviews summary: title-pill radius is `10px`, not a named token (OQ-RV-4)
+
+- **Item:** The leading title-counter pill (`1384:29084`) renders as a 20 × 20 px square with `rounded-[10px]` — exactly half its size, i.e. a perfect circle. No existing `borderRadius` token equals 10 px (the scale is `sm = 2`, `base = 4`, `md = 6`, `lg = 8`, `xl = 12`, `2xl = 16`, `3xl = 24`, `full = 9999`).
+- **Queried:** `1385:29225`, `1385:30231`, `1385:29463` `get_design_context`.
+- **Why flag:** "Tokens only, no arbitrary values" per CLAUDE.md. `rounded-[10px]` is an arbitrary value. The visual intent (a circle on a 20 × 20 element) is captured perfectly by `rounded-full` (= 9999px) — the corner radius is clamped by the element's half-size, so a 20-px-square element with `rounded-full` renders identically to one with `rounded-[10px]`.
+- **Need from designer:** Confirm switching the implementation to `rounded-full` is acceptable. The alternative is to add `borderRadius.10` (= 10px / 0.625rem) as a new named token, but that adds a token used in exactly one place.
+- **Spec recommendation:** Use `rounded-full`. Same final pixels, no new tokens.
+- **Cross-ref:** `components/review/A-basic/spec.md` §4 (Radii), §7.
+
+---
+
+## 54. 2026-05-13 — Reviews summary: star glyph is a custom path, not Heroicons or Lucide (OQ-RV-5)
+
+- **Item:** Figma supplied two SVG assets (saved to `components/review/A-basic/figma-screenshots/star-{empty,filled}-*.svg`) with viewBox `0 0 14 13.3715` — a slightly wider-than-tall 5-point star. This does NOT match:
+  - **Heroicons solid `star`** (viewBox `0 0 20 20`, square aspect)
+  - **Lucide `star`** (viewBox `0 0 24 24`, square aspect; used by the kit's `product-reviews/A-basic`)
+- **Queried:** `1385:29185` `get_design_context` + asset download from `http://localhost:3845/assets/...`.
+- **Why flag:** CLAUDE.md mandates "Icons: Heroicons." The Figma design intentionally diverges. Two options:
+  1. **Inline the Figma path.** ~600 bytes per row, perfect visual parity, `currentColor`-driven so the same DOM works for both empty and filled (just change `color`).
+  2. **Substitute Heroicons solid `star`.** Looks visibly different — Heroicons' curve is fuller, the points are less sharp, and the aspect ratio is square not 14:13.4. The PHPure brand stars are pointier.
+- **Need from designer:** Confirm option 1 (inline the Figma path). Confirm CLAUDE.md's "Heroicons only" rule has an exception for brand-bespoke glyphs like this star (and the dot/icon glyphs in the status atom, which are also custom).
+- **Spec recommendation:** Inline. Update CLAUDE.md's icon policy with a footnote: "Heroicons for general-purpose UI iconography (close, chevron, search, etc.); brand-custom glyphs (review stars, status dots) inline from Figma."
+- **Cross-ref:** `components/review/A-basic/spec.md` §5, `figma-screenshots/README.md`.
+
+---
+
+## 55. 2026-05-13 — Reviews summary: empty-state placeholder leaf — Figma authoring guard vs runtime UI (OQ-RV-6)
+
+- **Item:** Leaf `1385:30346` (`Leading=None, Stars=False, Trailing=None`) is filled with the literal string `[Empty Reviews summary component]` rendered at `text-sm/leading-5/font-medium`, colour `rose.500` (`#F43F5E`).
+- **Queried:** `1385:30346` `get_design_context`.
+- **Why flag:** Two interpretations:
+  1. **Figma authoring hint.** Standard pattern — when every slot is empty, designer puts a loud warning so a consumer can't accidentally ship an invisible component. At runtime the atom should render nothing (`display: none` or skip the DOM entirely).
+  2. **Real "no reviews yet" string.** Designer intends `[Empty Reviews summary component]` to be replaced with `(No reviews yet)` or similar copy, styled in rose-500 to draw attention.
+- **Need from designer:** Pick one:
+  1. **Authoring hint.** Atom renders nothing if no rating data, no title, and no count are passed. Spec recommendation.
+  2. **Real degraded state.** Provide the actual copy ("No reviews yet" / "Be the first to review") and confirm rose-500 as the colour token (or specify another — rose-500 is a strong error colour, which is unusual for a neutral "no reviews" state; `slateBlue.500` would be more typical).
+- **Cross-ref:** `components/review/A-basic/spec.md` §6, §7.
+
+---
+
+## 56. 2026-05-13 — Reviews summary: stars and score in Figma demo are NOT synchronised (OQ-RV-7)
+
+- **Item:** Every Figma leaf with both stars and a score shows ~3.1 visible stars (the clipping insets on the 4th and 5th stars are `inset-[0_95%_0_0]` = 5% filled) BUT the trailing score reads `4.1`. Reality check: 4.1 / 5 = 82% fill, so a true 4.1 rating should show stars 1–4 fully filled + star 5 at 10% — instead Figma shows 3 + 5% + 5% = 3.1 effective fill, with a literal "4.1" string in the trailing slot.
+- **Queried:** `1385:28922`, `1385:29105`, `1385:29345`, `1385:29385`, `1385:30231` — all show the same de-synchronisation.
+- **Why flag:** Possibilities:
+  1. **Figma is just sloppy demo data.** Designer used a generic "partial fill" template for the stars and a generic "4.1" label, never intending the two to match. Runtime should compute both from a single source value. Spec recommendation.
+  2. **Intentional design contract:** stars and score communicate different things — e.g. score = "exact average" (4.1), stars = "rounded-to-nearest-half average" (4.0) or some other quantisation. In that case the spec needs to document the exact rounding rule.
+- **Need from designer:** Confirm the runtime contract:
+  1. Single source of truth: a numeric rating (0 to 5, inclusive, in any decimal precision) drives both the star fills (continuous) and the printed score (rounded to 1 decimal). Spec recommendation.
+  2. OR document a quantisation rule (e.g. stars rounded to halves, score to tenths).
+- **Cross-ref:** `components/review/A-basic/spec.md` §5 (Fractional fill).
+
+---
+
+## 57. 2026-05-13 — Reviews summary: champagneBeige-700 filled-star fails WCAG 1.4.11 on white (OQ-RV-8)
+
+- **Item:** Filled-star colour is `champagneBeige.700 = #BFAB82`. Contrast against `colors.base.white` (`#FFFFFF`) = **1.94 : 1** — fails WCAG 2.2 SC 1.4.11 (≥ 3 : 1 required for non-text UI components carrying meaning).
+- **Empty-star colour** is `slateBlue.200 = #BDCBD6` — contrast on white = **1.50 : 1** — also fails 1.4.11. (Expected — the empty-star is a "track" / decorative background, but it carries meaning as the 0-state.)
+- **Queried:** `1385:28923` `get_variable_defs`.
+- **Why flag:** Same WCAG question as form-field (#13, A11Y-007), form-checkbox (#30), swatches focus-ring discussion, and status atom (#49). The textual score (`4.1`) and the textual counter (`(12 reviews)`) DO provide redundant non-colour cues — and the parent `<div role="img" aria-label="X out of 5 stars">` puts the rating into the accessibility tree. With that mitigation, the stars themselves can be argued as "decorative reinforcement of an accessible name carried by the parent" and 1.4.11 doesn't strictly apply.
+- **Need from designer:** Pick one:
+  1. **Keep Figma exactly.** Document the rating in `accessibility-review.md` that the star colours are decorative reinforcement (the meaning is carried by `aria-label` and by the visible score text); the stars themselves are `aria-hidden`. Spec recommendation.
+  2. **Bump filled-star to a higher-contrast tone** — `champagneBeige.800 = #A58F60` (2.50 : 1) is still fail; `champagneBeige.900 = #8C733E` (3.43 : 1) passes. Or `burnishedGold.500 = #B68D40` (2.77 : 1, fail) → `burnishedGold.600 = #927133` (4.29 : 1, pass) — burnished-gold-600 is brand-consistent and passes 1.4.11 cleanly.
+- **Cross-ref:** `components/review/A-basic/spec.md` §4 (Colors), §7. `accessibility-review.md` (when updated).
+
+---
+
+## 58. 2026-05-13 — Product card: Mobile-List promo price size downshift (OQ-PC-1)
+
+- **Item:** Mobile List promo current-price renders at `text-xl/leading-7/font-normal` (20 / 28) instead of `text-2xl/leading-8/font-normal` (24 / 32) used in every other layout.
+- **Queried:** `11109:24757` `get_design_context` (price node in `11109:24852` neighbourhood).
+- **Why flag:** A 20 / 28 price vs 24 / 32 changes the visual weight of the most important card datum across breakpoints. May be intentional (Mobile List has very tight horizontal space with old + new prices side-by-side) or a Figma oversight.
+- **Need from designer:** Pick one. (a) Confirm 20 / 28 on Mobile List promo only; molecule adds a `.product-card__price-current--sm` modifier applied at the `md:` breakpoint when style=list and promo=true. (b) Normalise everything to 24 / 32 — the molecule needs no extra modifier.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.4, §7.
+
+---
+
+## 59. 2026-05-13 — Product card: stock-status slot placement + OOS CTA (OQ-PC-2)
+
+- **Item:** None of the eight in-scope Figma leaves (`2256:7466`) renders a stock-status indicator. The Hyvä kit template `product/list/item.phtml` calls `$block->getChildBlock('stockstatus')->...->toHtml()` between price and the action-row. The project ships an approved `status` atom with `status--stock-status` + `--in-stock` + `--out-of-stock` modifiers.
+- **Queried:** All 8 default-state leaves; no `stockstatus` slot visible.
+- **Why flag:** The molecule must wire up the slot for the dev team to import; absent a Figma reference, the placement and the OOS behaviour are unconstrained.
+- **Need from designer:** Three sub-decisions:
+  1. Is the in-stock indicator INTENTIONALLY hidden by design (common for "all listed products are in stock" stores) or just missing from the Figma frame? If hidden, the molecule renders the slot only when stock=out (recommendation).
+  2. If shown, where? Spec recommendation: under the price row, above the action row, single-line, `status--dot` style.
+  3. When out-of-stock, should the Add-to-cart button be replaced by a "Notify me when back in stock" CTA (the Hyvä kit drops the form entirely; some storefronts swap the CTA)?
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §3, §8, `components/status/A-basic/spec.md`.
+
+---
+
+## 60. 2026-05-13 — Product card: old strikethrough price inconsistency across layouts (OQ-PC-3)
+
+- **Item:** The old strikethrough price uses two different sizes across the four promo layouts:
+  - Desktop Grid promo: **18 / 28** (`text-lg/leading-7/font-light`) — Figma node `7681:31588`.
+  - Desktop List + Mobile Grid + Mobile List promo: **16 / 24** (`text-base/leading-6/font-light`) — Figma nodes `11109:24835`, `7681:31754`.
+  - Inter-price gap also varies: Desktop Grid 16 px, Desktop List 4 px, Mobile Grid 12 px, Mobile List 12 px.
+- **Queried:** All four promo leaves `get_design_context`.
+- **Why flag:** Probably a Figma slip — one designer copy-pasted with a different size override on one variant. But possible intent: Desktop Grid has the most vertical room to give the old price a slightly larger reading size.
+- **Need from designer:** Pick one (a) normalise all four to 16 / 24 with `gap-3` (12 px) — single CSS pattern; (b) document the variation and accept Desktop Grid as a deliberate larger-old-price exception (molecule gets a per-layout modifier).
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.4, §7.
+
+---
+
+## 61. 2026-05-13 — Product card: rotated-aspect-ratio image cropping (OQ-PC-4)
+
+- **Item:** Figma's image frame uses a `-rotate-45` outer wrapper + a nested `rotate-[24.47deg]` aspect-ratio keeper to crop the bag PNG into a stylised tilted-square. The visible product image inside the keeper is in NORMAL orientation; the rotation only affects the mask shape.
+- **Queried:** `2256:6813`, `5867:16446`, `5870:48292`, `11109:23975` `get_design_context`.
+- **Why flag:** This is a Figma prototyping artefact (auto-layout containers used to compute a non-integer aspect ratio). It does NOT translate to a meaningful CSS pattern — production code should render a straightforward `<img>` in a fixed-aspect-ratio container.
+- **Need from designer:** Confirm: the molecule should use `aspect-[336/240]` (Desktop Grid), `aspect-square` (Desktop List), `aspect-[142/102]` (Mobile Grid), `w-[109px] h-[102px]` (Mobile List) with a normal `object-cover` image. The rotation hack is ignored.
+- **Spec recommendation:** As above. The visual outcome is identical for any standard product photo.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.2, §5.
+
+---
+
+## 62. 2026-05-13 — Product card: hidden Hover variants + Clothes product (OQ-PC-5)
+
+- **Item:** Frame `2256:7466` contains two HIDDEN leaves: `2256:7442` (Desktop, List, **State=Hover**, Product=**Clothes**, Promo=False) and `2256:7394` (Desktop, **Style=Original Grid**, State=Hover, Product=Clothes, Promo=False). Both use Product=Clothes content and Hover state. The eight visible leaves are all Product=Gear, State=Default.
+- **Queried:** `2256:7466` metadata; both Hover leaves carry `hidden="true"`.
+- **Why flag:** (a) The Hover state for the live Gear leaves is unspecified — no canonical reference; (b) the "Original Grid" qualifier on `2256:7394` is undocumented; (c) Product=Clothes never appears un-hidden — does the molecule need to support it as a runtime variant or is it just a Figma authoring convenience?
+- **Need from designer:** Three answers:
+  1. Should the Hover variants be un-hidden so they become the source of truth for the molecule's `:hover` state? Or is Hover decoratively "Shadow/lg + 200 ms transition" per spec recommendation in OQ-PC-14?
+  2. What does "Original Grid" mean? Is `2256:7394` legacy / deprecated, or an alternative grid layout the molecule should support?
+  3. Is Product=Clothes a meaningful runtime axis (different image aspect ratio? different button arrangement?) or just authoring placeholder?
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §1, §8, §10 (OQ-PC-14).
+
+---
+
+## 63. 2026-05-13 — Product card: Mobile-Grid "Add to comparison" label wrap (OQ-PC-6)
+
+- **Item:** On Mobile Grid (`5867:16444`) the "Add to comparison" label is shown WRAPPED to two lines: "Add to" / "comparison". The 158-px card with `px-3` padding leaves ~110 px for the label + 6-px gap + 20-px box, so the label has ~84 px of width, which forces "Add to comparison" (16 chars) onto two lines.
+- **Queried:** `5867:16444` `get_design_context` (node `8058:60189`).
+- **Why flag:** Two interpretations: (a) intentional natural wrap — `whitespace-normal` and accept the two-line layout (spec recommendation), or (b) the label should be shortened to "Compare" on Mobile and stay single-line.
+- **Need from designer:** Pick one. If (b), need confirmation that "Compare" is the desired Mobile copy (matches some other storefronts but not the Hyvä kit default).
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §2.3, §3.
+
+---
+
+## 64. 2026-05-13 — Product card: Mobile-List "New" badge smaller-typography (OQ-PC-7)
+
+- **Item:** On Mobile List (`11109:23973`) the "New" badge renders smaller: `text-xs/leading-4/font-normal` (12 / 16) typography, 32 px height, `py-2 px-1`. Everywhere else the badge is `text-sm/leading-5/font-normal` (14 / 20), 40 px height, `py-2.5 px-1`.
+- **Queried:** `11109:23973` `get_design_context` (node `11109:24002`).
+- **Why flag:** The Mobile List card is the most space-constrained variant (228 px tall, two columns); a 40-px badge would visually crowd the 102-px image. The smaller badge makes sense, but the molecule needs to know whether this is layout-driven (handled via a `.product-card__badge--sm` modifier OR a `lg:` breakpoint utility) or part of a generic "compact" theme.
+- **Need from designer:** Confirm the molecule should apply the smaller badge on Mobile List ONLY (`md:hidden` / `md:visible` swap, or layout-XML arg `compact_badge=true`).
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.3, §5.
+
+---
+
+## 65. 2026-05-13 — Product card: Mobile primary button shape (icon-only-pill vs icon-only-round) (OQ-PC-8)
+
+- **Item:** On Mobile (Grid + List) the Add-to-cart button drops the "Add to cart" label and shows only the shopping-cart icon. The Figma DOM keeps the button as a `flex-1` wide pill (`rounded-full` + `flex-1` + `py-2.5 px-5`) — visually a WIDE PILL with just a centred icon, NOT a 40 × 40 circle.
+- **Queried:** `5867:16463`, `5870:48313`, `11109:24058` `get_design_context`.
+- **Why flag:** The existing `buttons/A-basic` atom exposes `btn-icon-only-round` which produces a CIRCLE (`size-10`), not a wide pill. The molecule needs a way to express "icon-only but width comes from parent" — either: (a) add a new `btn-icon-only-pill` utility to the atom, or (b) just keep `btn-icon-leading` and visually-hide the label with `sr-only` on Mobile while letting the button keep its wide-pill geometry from `flex-1`.
+- **Need from designer:** Pick one. Spec recommendation: (b) — keep `btn-icon-leading` + `<span class="sr-only">Add to cart</span>` on Mobile; the icon stays centred (`justify-center`) when there's no visible label. No new atom utility needed.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §3, `components/buttons/A-basic/spec.md`.
+
+---
+
+## 66. 2026-05-13 — Product card: swatch overflow policy when >5 colors (OQ-PC-9)
+
+- **Item:** All eight Figma leaves cap at 4 swatches (Grid) or 5 swatches (List). For a real product with 8+ colors, the molecule needs a defined overflow policy: (a) wrap to N lines, (b) horizontally scroll within the available width, (c) cap to first N and show a `+M more` chip linking to the PDP.
+- **Queried:** All 8 leaves — no leaf shows wrap, scroll, or +N indicator.
+- **Why flag:** Without a policy the molecule will silently truncate or wrap, possibly hiding stock-relevant variants. Common e-commerce default = option (c): cap to 5 + "+M more" chip.
+- **Need from designer:** Pick one. If (c), define the visual treatment for the `+M more` chip (recommendation: same swatch shape, `bg-slateBlue.100`, text `text-xs/leading-4/font-medium`, color `slateBlue.700`, content `+3` etc.).
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §3, `components/swatches/A-swatches-rounded/spec.md`.
+
+---
+
+## 67. 2026-05-13 — Product card: reviews-summary mono-single-star variant (OQ-PC-10)
+
+- **Item:** The product card uses a COMPACT mono-single-star reviews summary (1 filled star + "4.1" + "(12)"), NOT the full 5-star track. The current `review/A-basic` atom ships the 5-star track as default; there is no `--mono` or compact variant.
+- **Queried:** `5728:34291`, `I5728:34291;1395:30022;1384:29100` (Stars subgroup, contains only 1 star with `percentage="100%" style="Mono"`).
+- **Why flag:** Two options: (a) extend the `review` atom with a new `review-summary--mono` modifier that renders one filled star, the score, and the count — spec recommendation, keeps reuse clean; (b) the molecule embeds its own mini-reviews inline, bypassing the atom — adds duplication.
+- **Need from designer:** Confirm (a). If yes, this turns into a follow-up task on the `review` atom: add `--mono` modifier renderable from existing slots (single `__star` child instead of 5; same `__score` + `__count` slots).
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §3, `components/review/A-basic/spec.md`.
+
+---
+
+## 68. 2026-05-13 — Product card: description 2-line clamp strategy (Desktop List only) (OQ-PC-11)
+
+- **Item:** Desktop List shows a 2-line product description using `h-12 overflow-hidden text-ellipsis` (fixed-height crop with last-line ellipsis only). Standard CSS for true N-line clamp is `display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;` (Tailwind: `line-clamp-2`).
+- **Queried:** `11109:24604` `get_design_context`.
+- **Why flag:** `h-12 + text-ellipsis` ellipsises only if the LAST visible line overflows; if the description is short (e.g. 30 chars) it just shows the short text with no ellipsis (correct). If it's 1.5 lines, you get the first full line + the second half-line with `…`. `line-clamp-2` is more predictable.
+- **Need from designer:** Confirm `line-clamp-2` is acceptable (Tailwind v4 ships it as a utility). Spec recommendation: use `line-clamp-2` for predictability.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.5.
+
+---
+
+## 69. 2026-05-13 — Product card: compare-button slot (kit has it, Figma doesn't) (OQ-PC-12)
+
+- **Item:** The Hyvä kit's `product/list/item.phtml` includes a `<?php if ($showAddToCompare): ?>` compare-icon button next to the wishlist icon (lines 205-209 of the kit template). The PHPure Figma design does NOT render a compare icon button in any of the eight leaves.
+- **Queried:** All 8 leaves — no compare icon present.
+- **Why flag:** Two options: (a) the molecule drops the compare slot entirely (cleaner output, diverges from kit); (b) the molecule keeps the kit's compare slot wired-up but renders nothing by default — render only when a layout-XML arg `show_compare=true` is set.
+- **Need from designer:** Confirm (b) — spec recommendation. Preserves backward compat with the kit and keeps the design lean by default.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §4.6.
+
+---
+
+## 70. 2026-05-13 — Product card: demo swatch colors not in brand palette (OQ-PC-13)
+
+- **Item:** The Figma demo uses four swatch colors: `#9FB4A9` (sage), `#3A3A3A` (charcoal), `#52B4A8` (light teal, used for the OOS chip in List variants), `#B45309` (amber, == brand `amber.700`). Three of the four are NOT in `tokens.resolved.json`.
+- **Queried:** All 8 leaves — same four colors.
+- **Why flag:** Swatch colors are RUNTIME product data (the merchant configures them per product). The molecule's CSS doesn't bake any swatch color — the `swatches/A-swatches-rounded` atom takes `--swatch-bg` inline per chip. So no new tokens are needed for swatch fills. But it's worth confirming the demo values are stand-ins, not brand swatches.
+- **Need from designer:** Confirm: these are runtime demo data. No tokens to add.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §6.1.
+
+---
+
+## 71. 2026-05-13 — Product card: card hover shadow choice (OQ-PC-14)
+
+- **Item:** The Hover leaves are hidden (see OQ-PC-5), so the card's `:hover` shadow is unspecified in Figma. The Hyvä kit applies `hover:shadow-lg` on the form element.
+- **Queried:** `2256:7466` metadata + hidden leaves.
+- **Why flag:** Hover behaviour needs to be defined for the molecule to ship.
+- **Need from designer:** Confirm: apply `boxShadow.Shadow/lg` (`0px 4px 6px -2px rgba(0,0,0,0.05), 0px 10px 15px -3px rgba(0,0,0,0.1)`) on `:hover` with `transition: box-shadow 200ms ease-out`. No image zoom, no card translateY.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §8.
+
+---
+
+## 72. 2026-05-13 — Product card: DM Sans weight 600 (Demi) vs token weight 400 (OQ-PC-15)
+
+- **Item:** Multiple Figma elements specify `ITC AGGP:Demi` (weight 600) — including the Mobile product title and the "Add to cart" button label. The corresponding token entries in `tokens.resolved.json` are: `text-lg/leading-7/font-medium` weight **400**; `text-sm/leading-5/font-medium` weight **400**. Replacing ITC AGGP with DM Sans, weight 400 vs weight 600 is a visible difference (DM Sans 600 reads noticeably bolder).
+- **Queried:** `5867:16455` (Mobile title), `I1395:30244;1287:11913;1286:12570` (button label).
+- **Why flag:** This is the same Figma-fidelity-vs-token-truth tension flagged across multiple atoms. Two options:
+  1. **Correct the token weight.** Update `text-lg/leading-7/font-medium` and `text-sm/leading-5/font-medium` in `tokens.resolved.json` to weight 600. Re-run `scripts/build-tailwind-config.mjs`. Affects every component that already uses these tokens.
+  2. **Keep the token weight at 400.** Accept the visual difference (DM Sans 400 vs ITC AGGP Demi 600 will read slightly lighter in the molecule).
+- **Need from designer:** Pick one. This is a project-wide decision — answer it once and we apply across all components.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §7, `design-tokens/tokens.resolved.json` typography section.
+
+---
+
+## 73. 2026-05-13 — Product card: `font-variation-settings: 'opsz' 14` on text elements (OQ-PC-16)
+
+- **Item:** Same recurring question as #45 (status), #52 (review). Most text elements in the card carry `style={{ fontVariationSettings: "'opsz' 14" }}` in Figma. DM Sans served self-hosted from `/src/fonts/dm-sans/` may or may not ship the `opsz` axis.
+- **Queried:** Multiple nodes — pattern is everywhere.
+- **Why flag:** Same answer as #45 / #52 expected.
+- **Spec recommendation:** Apply it — harmless if absent.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §7. Cross-refs to questions.md #45, #52.
+
+---
+
+## 74. 2026-05-13 — Product card: heading level for product title (OQ-PC-17)
+
+- **Item:** The Hyvä kit doesn't wrap the title in a heading element — `<a class="product-item-link">…name…</a>`. The molecule's product title should be a heading for semantic correctness. Recommendation: `<h3>` (assuming category page uses `<h1>` for page name, `<h2>` for section headings like "Featured", `<h3>` per card).
+- **Queried:** `812:7347` (Desktop Grid title), `11109:24602` (List title), `5867:16455` (Mobile title).
+- **Why flag:** Diverges from the Hyvä kit pattern. Need confirmation that the molecule should override the kit and add heading semantics.
+- **Need from designer:** Confirm `<h3>` is the right level. Confirm overriding the kit is acceptable. If the parent listing page sometimes uses `<h2>` for cards (homepage hero slider), the molecule may need a `heading_level` layout-XML arg.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §9.2.
+
+---
+
+## 75. 2026-05-13 — Product card: touch-target sizes for icon-only buttons on Mobile (OQ-PC-18)
+
+- **Item:** `btn-size-m` produces a 40 × 40 px icon-only round button. WCAG 2.2 AAA recommends 44 × 44; WCAG 2.5.8 (level AA) requires 24 × 24. The 40 × 40 button passes AA but fails AAA.
+- **Queried:** `I812:7469;1287:15687` (wishlist), `I5867:16463;1287:11913` (mobile cart).
+- **Why flag:** Mobile users have higher mis-tap rates than desktop. The Mobile-Grid card has two adjacent 40-px icon-only round buttons (cart on the LEFT filling `flex-1`, wishlist on the RIGHT `shrink-0`) — they sit very close together.
+- **Need from designer:** Pick one: (a) keep 40 × 40 (matches Figma exactly, passes AA); document in `accessibility-review.md`; (b) bump to `btn-size-l` (44 × 44 or 48 × 48 — check the atom's L size) on Mobile only via a layout-XML arg or breakpoint utility.
+- **Spec recommendation:** (a) — keep Figma fidelity, document the AAA-fail in the a11y review.
+- **Cross-ref:** `components/product-card/A-basic/spec.md` §9.11, `components/buttons/A-basic/spec.md`.

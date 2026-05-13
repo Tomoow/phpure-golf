@@ -17,3 +17,6 @@
 @import '../../components/dropdown-list/A-basic/src/web/tailwind/components/dropdown-list.css';
 @import '../../components/form-checkbox/A-basic/src/web/tailwind/components/form-checkbox.css';
 @import '../../components/swatches/A-swatches-rounded/src/web/tailwind/components/swatches.css';
+@import '../../components/status/A-basic/src/web/tailwind/components/status.css';
+@import '../../components/review/A-basic/src/web/tailwind/components/review.css';
+@import '../../components/product-card/A-basic/src/web/tailwind/components/product-card.css';
