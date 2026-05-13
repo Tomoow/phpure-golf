@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+    PHPure Golf — product-card / A-basic template + child-block wiring.
+
+    Mirrors the Hyvä kit's `catalog_list_item.xml` for
+    product-card / A-card-with-swatches. Same `referenceBlock` target
+    (`product_list_item`), same compare-button child block (PC-12: kept
+    wired for kit-compatibility, rendered conditionally in item.phtml).
+    The template path points at our PHPure Golf-specific item.phtml.
+-->
+<page
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceBlock name="product_list_item" template="Magento_Catalog::product/list/item.phtml">
+            <block name="catalog.list.item.compare"
+                   as="compare"
+                   template="Magento_Catalog::product/list/compare/button.phtml"/>
+        </referenceBlock>
+    </body>
+</page>

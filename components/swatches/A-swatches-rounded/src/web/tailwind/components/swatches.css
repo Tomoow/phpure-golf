@@ -218,10 +218,19 @@
         box-shadow: var(--swatch-focus-ring);
     }
 
-    /* Disabled / out-of-stock — diagonal slash drawn via linear-gradient on
-     * a ::after pseudo so it sits ON TOP of the product color. 1px slate-blue-400
-     * stroke corner-to-corner (130deg matches the kit). The chip's border stays
-     * slate-blue-200 so the slash + stroke read as "unavailable". */
+    /* Disabled / out-of-stock — universal palette: bg slate-blue-100, border
+     * slate-blue-300 (designer 2026-05-08, parity with text swatch). The
+     * consumer's `--swatch-bg` product hex is overridden because the disabled
+     * affordance must not be confusable with a live color choice. The diagonal
+     * slash drawn via `::after` linear-gradient sits on top so the chip still
+     * reads as "unavailable". The `background-color` / `border-color`
+     * declarations on `.swatch__chip` outrank the inline `--swatch-bg`. */
+    &:has(:disabled) .swatch__chip,
+    &.is-out-of-stock .swatch__chip,
+    &[aria-disabled="true"] .swatch__chip {
+        background-color: var(--color-slate-blue-100);
+        border-color: var(--color-slate-blue-300);
+    }
     &:has(:disabled) .swatch__chip::after,
     &.is-out-of-stock .swatch__chip::after,
     &[aria-disabled="true"] .swatch__chip::after {
@@ -340,7 +349,22 @@
         box-shadow: var(--swatch-focus-ring);
     }
 
-    /* Disabled / out-of-stock — same diagonal slash as Color. */
+    /* Disabled / out-of-stock — universal palette: bg slate-blue-100, border
+     * slate-blue-300 (designer 2026-05-08, parity with text + color swatches).
+     * The product image is hidden so the disabled affordance is not
+     * confusable with a live material choice; the diagonal slash sits on
+     * top of the slate-blue chip. */
+    &:has(:disabled) .swatch__chip,
+    &.is-out-of-stock .swatch__chip,
+    &[aria-disabled="true"] .swatch__chip {
+        background-color: var(--color-slate-blue-100);
+        border-color: var(--color-slate-blue-300);
+    }
+    &:has(:disabled) .swatch__media,
+    &.is-out-of-stock .swatch__media,
+    &[aria-disabled="true"] .swatch__media {
+        display: none;
+    }
     &:has(:disabled) .swatch__chip::after,
     &.is-out-of-stock .swatch__chip::after,
     &[aria-disabled="true"] .swatch__chip::after {

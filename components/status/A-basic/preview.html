@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Status — A-basic — Preview (PHPure Golf)</title>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <style>
+        /*
+         * Preview-only scaffolding. Mirrors the swatches + form-checkbox
+         * preview patterns: page chrome + matrix grid + product-card
+         * scaffold. The matrix is 10 leaves (2 styles × 5 statuses);
+         * the atom is non-interactive (no per-variant state) so there
+         * are no force-* helpers — every leaf renders its single
+         * default state.
+         *
+         * These classes are NOT part of the shipped component.
+         */
+        .page {
+            font-family: var(--font-sans);
+            color: var(--color-slate-blue-800);
+            background: var(--color-white);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--color-slate-blue-700);
+        }
+        p.lede {
+            color: var(--color-slate-blue-600);
+            margin: 0 0 2rem;
+            max-width: 52rem;
+        }
+        p.note {
+            color: var(--color-slate-blue-500);
+            font-size: 0.8125rem;
+            margin: 0.25rem 0 0.75rem;
+            max-width: 52rem;
+        }
+        .matrix {
+            display: grid;
+            /* Row-head column + 5 status columns. */
+            grid-template-columns: 7rem repeat(5, minmax(0, 1fr));
+            gap: 0.75rem 1rem;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+        .matrix > .col-head,
+        .matrix > .row-head {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-slate-blue-500);
+        }
+        .matrix > .row-head {
+            text-align: right;
+            padding-inline-end: 0.5rem;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 2.5rem;
+        }
+        .stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(18rem, 1fr));
+            gap: 1.25rem 1.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+        }
+        .stack--full {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .section { margin-block-end: 2rem; }
+
+        /* Product-card scaffold reused from swatches preview — keeps the
+         * "in context" demo visually consistent with previously approved
+         * atoms. */
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--color-slate-blue-100);
+            border-radius: var(--radius-lg);
+            background: var(--color-white);
+            max-width: 22rem;
+        }
+        .product-card__title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-blue-800);
+        }
+        .product-card__price {
+            font-size: 0.875rem;
+            color: var(--color-slate-blue-600);
+        }
+        .product-card__status {
+            margin-block-start: 0.25rem;
+        }
+
+        /* Scaffolding for the long-label / nowrap demo. Used ONLY in
+         * section 3 to illustrate how a narrow consumer container
+         * relates to the atom's `white-space: nowrap` behavior. These
+         * classes are NOT part of the shipped atom. */
+        .demo-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .demo-frame {
+            width: 12rem;
+            padding: 0.75rem;
+            border: 1px dashed var(--color-slate-blue-300);
+            border-radius: var(--radius-md);
+            background: var(--color-white);
+        }
+        .demo-frame--clipped {
+            overflow: hidden;
+        }
+        .demo-clip {
+            /* Single-line overflow-clip wrapper. The consumer applies
+             * this around the atom when truncation is desired; the atom
+             * itself doesn't clip. */
+            display: block;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .demo-clip .status {
+            max-width: 100%;
+            overflow: hidden;
+        }
+        .demo-clip .status__label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            max-width: 100%;
+            /* Keep nowrap from the atom; the wrapper does the clipping. */
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>Status — A-basic</h1>
+        <p class="lede">
+            PHPure Golf brand variant of the Hyvä UI 2.7.1 stock-status atom. Figma node
+            <code>1385:32111</code>. ONE <code>@utility status</code> on the wrapping
+            <code>&lt;span&gt;</code> drives every visual through CSS custom-property
+            slot tokens (<code>--status-color</code>, <code>--status-gap</code>,
+            <code>--status-label-color</code>). Two styles (<code>status--dot</code>,
+            <code>status--icon</code>) × five statuses (<code>status--in-stock</code>,
+            <code>status--out-of-stock</code>, <code>status--stock-status</code>) = 10
+            leaves. Non-interactive — no hover / focus / active / disabled states. The
+            textual label is the canonical indicator at slate-blue-800; the glyph is
+            decorative reinforcement that picks up the per-status color via
+            <code>currentColor</code>.
+        </p>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 1. 10-VARIANT MATRIX — 2 styles × 5 statuses -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Variant matrix — 2 styles × 5 statuses</h2>
+            <p class="note">
+                All ten leaves on white. Row 1 uses the Coloured-Dot style
+                (<code>status--dot</code>, 12×12 filled-circle SVG, 6 px gap);
+                row 2 uses the Icon style (<code>status--icon</code>, 20×20
+                Heroicons solid SVG, 4 px gap). Status semantics: in-stock /
+                in-stock-count / count-in-stock all share emerald-500 +
+                <code>check-circle</code>; out-of-stock uses rose-500 +
+                <code>x-circle</code>; stock-status (warning / fallback) uses
+                amber-500 + <code>exclamation-circle</code>. The label always
+                stays slate-blue-800 — the per-status color modifier does NOT
+                tint the text.
+            </p>
+            <div class="matrix">
+                <div></div>
+                <div class="col-head">In stock</div>
+                <div class="col-head">In stock (#)</div>
+                <div class="col-head"># in stock</div>
+                <div class="col-head">Out of stock</div>
+                <div class="col-head">Stock status</div>
+
+                <!-- ── Dot row ──────────────────────────────────────── -->
+                <div class="row-head">Dot</div>
+
+                <div class="cell">
+                    <span class="status status--dot status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                <circle cx="6" cy="6" r="6" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <span class="status__label">In stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--dot status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                <circle cx="6" cy="6" r="6" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <span class="status__label">In stock (23)</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--dot status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                <circle cx="6" cy="6" r="6" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <span class="status__label">23 in stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--dot status--out-of-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                <circle cx="6" cy="6" r="6" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <span class="status__label">Out of stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--dot status--stock-status">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                <circle cx="6" cy="6" r="6" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <span class="status__label">Stock status</span>
+                    </span>
+                </div>
+
+                <!-- ── Icon row ─────────────────────────────────────── -->
+                <div class="row-head">Icon</div>
+
+                <div class="cell">
+                    <span class="status status--icon status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <!-- Heroicons solid 20 — check-circle -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">In stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--icon status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">In stock (23)</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--icon status--in-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">23 in stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--icon status--out-of-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <!-- Heroicons solid 20 — x-circle -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">Out of stock</span>
+                    </span>
+                </div>
+
+                <div class="cell">
+                    <span class="status status--icon status--stock-status">
+                        <span class="status__glyph" aria-hidden="true">
+                            <!-- Heroicons solid 20 — exclamation-circle -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1-9a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">Stock status</span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 2. ON-CARD USAGE — indicator inside a small product-card scaffold -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>On-card usage (in context)</h2>
+            <p class="note">
+                The atom dropped inside a small product-card scaffold so the
+                designer can see it next to a title + price. Same
+                <code>.product-card</code> block pattern used in the swatches
+                preview. Three example states: in-stock with count
+                (Coloured-Dot), out-of-stock (Icon), and stock-status warning
+                (Icon).
+            </p>
+            <div class="stack">
+                <div class="product-card">
+                    <div class="product-card__title">Pro V1 polo</div>
+                    <div class="product-card__price">$95</div>
+                    <div class="product-card__status">
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">23 in stock</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Caddyshack visor</div>
+                    <div class="product-card__price">$42</div>
+                    <div class="product-card__status">
+                        <span class="status status--icon status--out-of-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="status__label">Out of stock</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Eagle club set</div>
+                    <div class="product-card__price">$1,295</div>
+                    <div class="product-card__status">
+                        <span class="status status--icon status--stock-status">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1-9a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="status__label">Stock status</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-card__title">Birdie golf glove</div>
+                    <div class="product-card__price">$28</div>
+                    <div class="product-card__status">
+                        <span class="status status--dot status--in-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                                    <circle cx="6" cy="6" r="6" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span class="status__label">In stock</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────────────────────────────────────────────────────────── -->
+        <!-- 3. LONG LABEL — nowrap behavior demo + truncation note -->
+        <!-- ──────────────────────────────────────────────────────────── -->
+
+        <section class="section">
+            <h2>Long label / nowrap behavior</h2>
+            <p class="note">
+                Per Figma + ST-5, the atom sets <code>white-space: nowrap</code>
+                on the label. The indicator's intrinsic width grows with the
+                label content — it does NOT wrap to two lines, and it does
+                NOT clip. Overflow handling is the consumer parent's
+                responsibility (truncation with ellipsis, marquee, sr-only
+                fallback, etc.). Below: a long urgency-message label at full
+                width, the same label inside a 12-rem constrained card
+                (overflows the card's right edge), and the same label inside
+                a card with <code>overflow: hidden</code> + ellipsis applied
+                BY THE CONSUMER (not by the atom).
+            </p>
+
+            <h3>Full width — no constraint</h3>
+            <div class="stack stack--full">
+                <span class="status status--dot status--stock-status">
+                    <span class="status__glyph" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                            <circle cx="6" cy="6" r="6" fill="currentColor" />
+                        </svg>
+                    </span>
+                    <span class="status__label">Only 2 left — selling fast</span>
+                </span>
+            </div>
+
+            <h3>Constrained parent (12 rem) — atom overflows by design</h3>
+            <p class="note">
+                The atom does not clip itself. The "overflow" you see is the
+                indicator extending past the constrained container — exactly
+                the behavior the spec calls for (ST-5: consumer owns
+                overflow).
+            </p>
+            <div class="demo-row">
+                <div class="demo-frame">
+                    <span class="status status--icon status--out-of-stock">
+                        <span class="status__glyph" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="status__label">Out of stock — restocking on Monday</span>
+                    </span>
+                </div>
+            </div>
+
+            <h3>Consumer-applied truncation (overflow: hidden + ellipsis on a wrapper)</h3>
+            <p class="note">
+                When truncation is required, the consumer wraps the atom in
+                an <code>overflow: hidden</code> / <code>text-overflow:
+                ellipsis</code> container. The atom itself remains
+                <code>white-space: nowrap</code>; the wrapper clips. The
+                <code>.demo-clip</code> + <code>.demo-frame--clipped</code>
+                scaffolding in this preview is illustrative only — NOT part
+                of the shipped atom.
+            </p>
+            <div class="demo-row">
+                <div class="demo-frame demo-frame--clipped">
+                    <div class="demo-clip">
+                        <span class="status status--icon status--out-of-stock">
+                            <span class="status__glyph" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="status__label">Out of stock — restocking on Monday</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,180 @@
+/**
+ * Status indicator styles — PHPure Golf brand variant of Hyvä UI 2.7.1
+ * status (A-basic).
+ *
+ * Spec: components/status/A-basic/spec.md
+ * Figma node: 1385:32111 ("Stock status" frame).
+ * Kit reference: no `status` / `stockstatus` / `badge` folder exists in
+ * hyva-ui-reference. Closest structural analog is
+ * `notification/A-simple/` (icon + text pair) — but it's PHTML-only and
+ * ships no CSS. This atom is authored fresh from spec, following the
+ * established PHPure Golf atom pattern (see `swatches.css`): ONE shell
+ * `@utility` driven by CSS custom-property slot tokens + modifier
+ * classes layering on top.
+ *
+ * Architecture (mirrors swatches):
+ *   • ONE `@utility status` on the wrapping <span> (or <div role="status">)
+ *     drives the indicator's appearance through slot tokens:
+ *       --status-color        — glyph fill, inherited by the SVG via
+ *                               `color: var(--status-color)` on the shell
+ *                               and `fill="currentColor"` on the SVG paths.
+ *       --status-gap          — flex gap between glyph and label.
+ *       --status-label-color  — text color of `.status__label` (always
+ *                               slate-blue-800 by design, so the per-
+ *                               status modifier does NOT tint the text).
+ *   • Status modifiers (`status--in-stock`, `status--out-of-stock`,
+ *     `status--stock-status`) override `--status-color` only. The three
+ *     statuses (success / error / warning) are mutually exclusive —
+ *     apply exactly one.
+ *   • Style modifiers (`status--dot`, `status--icon`) override
+ *     `--status-gap` only. Mutually exclusive — apply exactly one. The
+ *     glyph SVG itself declares its own width/height attributes (12×12
+ *     for dot, 20×20 for icon), so no per-style CSS sizing is needed on
+ *     `.status__glyph`.
+ *   • `.status__label` ALWAYS carries `color: var(--status-label-color)`
+ *     (resolves to slate-blue-800) so the per-status color modifier
+ *     never tints the textual label. The label IS the canonical
+ *     indicator; the glyph is decorative reinforcement (a11y §10.2).
+ *   • Non-interactive. No `:hover` / `:focus-visible` / `:disabled`
+ *     selectors. No Alpine. No state machinery — the spec defines no
+ *     per-variant state (§4).
+ *   • CSP: zero inline event handlers, zero inline `style=`, zero
+ *     `<script>`. Token-linter has nothing to whitelist here.
+ *
+ * Decisions baked in (orchestrator-confirmed 2026-05-13, see README.md
+ * "Decision log" and design-tokens/questions.md #44–49):
+ *   • ST-1: single size, 24 px outer height. No S / M / L variants.
+ *           The line-height of the label drives the box; the glyph
+ *           sizes itself via SVG attributes.
+ *   • ST-2: `font-variation-settings: 'opsz' 14` from Figma is NOT
+ *           applied — local DM Sans variable file doesn't ship the
+ *           `opsz` axis. Visual delta is sub-pixel at 16 px.
+ *   • ST-3: no text-only variant. Atom is always glyph + text.
+ *   • ST-4: no "Notify me" CTA composition. This atom is the indicator
+ *           only; the consumer composes the CTA alongside it via the
+ *           buttons atom.
+ *   • ST-5: `white-space: nowrap` per Figma. Consumer handles overflow
+ *           at the parent layout level (truncation, sr-only fallback,
+ *           etc.). The atom does NOT clip.
+ *   • ST-6: LTR/RTL parity is handled by `display: flex` + `gap`
+ *           (which are writing-mode aware) without explicit
+ *           `flex-direction: row-reverse`. The glyph stays at the
+ *           inline-start side in both LTR and RTL.
+ *   • ST-7: FIGMA-EXACT FIRST — ship with `emerald-500`, `rose-500`,
+ *           `amber-500` per Figma. WCAG 1.4.11 (≥3:1 against white)
+ *           passes for rose-500 (4.13:1) but fails for emerald-500
+ *           (2.49:1) and amber-500 (2.18:1). Mitigation is the textual
+ *           label at slate-blue-800 (15.34:1) — the dot/icon is
+ *           decorative. The designer will eyeball the live preview and
+ *           decide whether to bump to the `.600` shades; do NOT
+ *           silently bump.
+ *
+ * Tokens: every value resolves to a CSS custom property declared in
+ * `src/css/theme.css`. No raw hex, no arbitrary spacing values, no
+ * inline styles. All `--status-*` slot tokens default to declared
+ * theme.css custom properties.
+ */
+
+/* ─── Shell ──────────────────────────────────────────────────────────────── */
+
+@utility status {
+    /* Slot tokens. Style + status modifiers below override `--status-gap`
+     * and `--status-color` respectively. `--status-label-color` is fixed
+     * to slate-blue-800 by design; consumers can override per case if
+     * they need a different label tone, but the default is the brand
+     * label tone for all 10 leaves. */
+    --status-color: var(--color-slate-blue-800);   /* Fallback if no status-* modifier */
+    --status-gap: var(--spacing-1\.5);             /* 6 px — matches dot default; icon overrides */
+    --status-label-color: var(--color-slate-blue-800);
+
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    /* `gap` is writing-mode aware (logical), so LTR/RTL parity comes
+     * for free without `flex-direction: row-reverse`. (ST-6.) */
+    gap: var(--status-gap);
+    /* Hug content per Figma; consumer parent constrains width if needed. */
+    width: max-content;
+    max-width: 100%;
+    /* Cascade the per-status color into the glyph SVG via currentColor. */
+    color: var(--status-color);
+    /* No padding, no border, no background, no radius, no shadow —
+     * transparent inline indicator (spec §5.1, §5.4). */
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+/* ─── Glyph wrapper ──────────────────────────────────────────────────────── */
+
+/* The wrapper exists for selector hooks and `flex: none` (so the glyph
+ * never shrinks). Sizing is handled by the SVG's own `width` / `height`
+ * attributes — 12×12 for dot, 20×20 for icon — so the atom is free of
+ * per-style CSS sizing here. The SVG inherits `currentColor` from the
+ * shell via `fill="currentColor"` on its paths. */
+@utility status__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    line-height: 0; /* Strip any line-box padding around the inline SVG. */
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────── */
+
+/* Always slate-blue-800, regardless of the status modifier. The textual
+ * label is the canonical indicator (WCAG 1.4.1 — color is not the sole
+ * means of conveying the status). DM Sans Medium 16/24 per spec §6.2. */
+@utility status__label {
+    color: var(--status-label-color);
+    font-family: var(--font-sans);
+    font-size: --spacing(4);                       /* 16 px */
+    line-height: --spacing(6);                     /* 24 px — also drives the 24 px outer height (ST-1) */
+    font-weight: 500;
+    white-space: nowrap;                           /* ST-5 — consumer owns overflow at the parent level. */
+    /* Strip any inherited padding/margin from text containers. */
+    margin: 0;
+    padding: 0;
+}
+
+/* ─── Style modifiers — Dot vs Icon ──────────────────────────────────────── */
+
+/* Coloured-Dot: 12×12 SVG glyph, 6 px gap. The "dot" is a filled
+ * `<circle>` SVG element drawn by the consumer; `currentColor` flows
+ * from the shell's `--status-color` through to `fill="currentColor"`
+ * on the circle path. */
+@utility status--dot {
+    --status-gap: var(--spacing-1\.5);             /* 6 px (spec §5.1) */
+}
+
+/* Icon: 20×20 Heroicons solid-20 glyph, 4 px gap. The icon picks its
+ * paths via the consumer's choice of `check-circle` / `x-circle` /
+ * `exclamation-circle` SVG markup. `fill="currentColor"` on the paths
+ * inherits the per-status color. */
+@utility status--icon {
+    --status-gap: var(--spacing-1);                /* 4 px (spec §5.1) */
+}
+
+/* ─── Status modifiers — In-stock / Out-of-stock / Stock-status ──────────── */
+
+/* In-stock (success). emerald-500 per Figma. Applies to the three
+ * "in-stock-*" variants (`in-stock`, `in-stock-count`, `count-in-stock`)
+ * — they share the same color + glyph semantics, only the label text
+ * differs. */
+@utility status--in-stock {
+    --status-color: var(--color-emerald-500);
+}
+
+/* Out-of-stock (error). rose-500 per Figma. Single label semantic. */
+@utility status--out-of-stock {
+    --status-color: var(--color-rose-500);
+}
+
+/* Stock-status (warning / unknown / fallback). amber-500 per Figma.
+ * Used when the actual stock value is pending lookup or otherwise
+ * indeterminate. */
+@utility status--stock-status {
+    --status-color: var(--color-amber-500);
+}
