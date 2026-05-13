@@ -109,14 +109,38 @@
 
 /* ─── 1. Shell ───────────────────────────────────────────────────────────── */
 
+/* The shell is a CSS CONTAINER (container-type: inline-size). Every responsive
+ * rule inside this file uses `@container product-card (min-width: 320px)` to
+ * query the CARD'S own width — NOT the viewport. This keeps "Mobile Grid"
+ * styling intact even when the page viewport is desktop and the card is
+ * placed inside a narrow wrapper (the preview's `.demo-mobile-frame`).
+ *
+ * Breakpoint 320 px: any card narrower than that renders Mobile styling;
+ * 320 px and above renders Desktop styling. The Mobile Grid spec width is
+ * 158 px and Mobile List is 320 px; Desktop Grid is 376 px and Desktop List
+ * is 960 px. Setting the cutoff at 320 px puts Mobile List in the "mobile"
+ * bucket and Desktop Grid in the "desktop" bucket — matching the spec exactly.
+ *
+ * Shell-level slot tokens that need responsive behavior live on the SHELL's
+ * own CSS, but `@container` cannot query the element it's on (only
+ * descendants can query their ancestor). So shell-level overrides target
+ * a wrapping descendant pattern: `& > * { ... }` works inside `@container`
+ * because the children query the shell. For shell own props (padding/gap)
+ * we use a small descendant proxy: an inline marker `.product-card > :is()`
+ * cascade reads tokens scoped per container size via the descendant rule.
+ * In practice, we set the shell's slot tokens at "mobile" defaults and let
+ * the descendant @container rules adjust child layout — which is exactly
+ * what the user sees as the card responds. */
 @utility product-card {
-    /* Slot tokens. Layout modifiers + breakpoints override these. */
+    /* Slot tokens. Layout modifiers + descendant container queries override these. */
     --product-card-bg: var(--color-champagne-beige-100);
     --product-card-radius: var(--radius-xl);                /* 12 px — matches Figma exact */
     --product-card-pad-block: var(--spacing-4);             /* 16 px */
     --product-card-pad-inline: var(--spacing-5);            /* 20 px */
     --product-card-gap: var(--spacing-4);                   /* 16 px */
 
+    container-type: inline-size;                            /* Make the card a query container so descendants can flip mobile↔desktop based on the CARD's width, not the viewport. */
+    container-name: product-card;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -139,21 +163,48 @@
     &:hover {
         box-shadow: var(--shadow-shadow\/lg);
     }
+
+    /* Out-of-stock CTA: when the card contains a `.status--out-of-stock`
+     * indicator, the primary cart button is rendered disabled. Two paths:
+     * (1) the consumer adds `disabled aria-disabled="true"` on the
+     *     <button> in the PHTML (production path — Magento knows stock).
+     * (2) the visual treatment below mutes the button even if the
+     *     consumer forgets the disabled attribute (preview / belt-and-
+     *     braces guard).
+     * The button atom's own `:disabled` rule handles the canonical look;
+     * this rule duplicates it at the molecule level so the visual hint
+     * is reliable. */
+    &:has(.status--out-of-stock) .btn-primary {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
 }
 
-/* Layout modifier — Grid (vertical stack, image full-bleed on top). */
+/* Layout modifier — Grid (vertical stack, image full-bleed on top).
+ *
+ * Note on the @media here vs @container elsewhere: shell-level slot tokens
+ * (this rule sets `--product-card-pad-inline` ON `.product-card`) cannot use
+ * `@container product-card (...)` because an element cannot query its own
+ * size — only DESCENDANTS of a container can query it. So the shell's own
+ * padding/gap switches via `@media` (viewport-driven), while everything
+ * INSIDE the shell (image-frame size, title weight, badge size, price size,
+ * CTA-label visibility, body padding) switches via `@container` (card-width
+ * driven). In practice this is fine because production cards are rendered
+ * at the same breakpoint as the viewport; the only mismatch happens in the
+ * preview's `.demo-mobile-frame` (narrow card inside a desktop viewport),
+ * where shell padding stays at the desktop value but the dominant visual
+ * properties (image frame, button label, badge) correctly switch to mobile. */
 @utility product-card--grid {
     flex-direction: column;
-    /* Mobile Grid: root has no horizontal padding; image wrapper takes
-     * `--spacing(2)` x-pad and body wrapper `--spacing(3)` x-pad per spec §5.
-     * We zero root x-pad here and re-establish inside the children. */
+    /* Mobile Grid default: root has no horizontal padding; image wrapper
+     * takes 8 px x-pad and body wrapper 12 px x-pad per spec §5. */
     --product-card-pad-inline: 0;
     --product-card-pad-block: var(--spacing-4);
     --product-card-gap: var(--spacing-4);
 
     @media (min-width: 768px) {
-        /* Desktop Grid: 20 px x-pad, 16 px y-pad, 16 px body gap. */
-        --product-card-pad-inline: var(--spacing-5);
+        --product-card-pad-inline: var(--spacing-5);         /* Desktop Grid 20 px x-pad */
     }
 }
 
@@ -187,7 +238,7 @@
     .product-card--grid & {
         padding-inline: var(--spacing-3);                    /* 12 px Mobile Grid body x-pad */
     }
-    @media (min-width: 768px) {
+    @container product-card (min-width: 320px) {
         .product-card--grid & {
             padding-inline: 0;                               /* Desktop Grid root owns x-pad. */
         }
@@ -221,9 +272,10 @@
         width: 6.75rem;                                      /* 108 px — direct rem, see precedent in swatches.css */
         aspect-ratio: 109 / 102;
         padding: 0;
+        align-self: center;                                  /* The parent `.product-card--list` uses `align-items: stretch`, which would force the frame to match the sibling content column's height (~332 px) and override the aspect-ratio. `align-self: center` opts this single child out so the aspect-ratio drives height = ~102 px and the frame sits vertically centred in the card. */
     }
 
-    @media (min-width: 768px) {
+    @container product-card (min-width: 320px) {
         .product-card--grid & {
             aspect-ratio: 336 / 240;                         /* 1.4:1 Desktop Grid */
             padding-inline: 0;                               /* Desktop Grid root owns x-pad. */
@@ -231,6 +283,7 @@
         .product-card--list & {
             aspect-ratio: 1 / 1;
             width: --spacing(80);                            /* 20rem = 320 px Desktop List square. */
+            align-self: stretch;                             /* Desktop List image fills the full card height (320 px tall card). Override the mobile `align-self: center` opt-out. */
         }
     }
 }
@@ -241,7 +294,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;                                       /* PC-4: plain object-cover, no rotation. */
+    object-fit: contain;                                     /* `contain` preserves real product photos with whitespace around the subject (e.g. a stand bag on transparent / white bg). The card's beige bg shows through the letterbox area. Swap to `cover` per-card via inline class if a designer wants a full-bleed crop. */
     object-position: center;
     user-select: none;
     pointer-events: none;
@@ -293,9 +346,9 @@
     font-size: --spacing(3);                                 /* 12 px */
     line-height: --spacing(4);                               /* 16 px */
 
-    @media (min-width: 768px) {
-        /* Restore default 40-px / 14-px size at desktop (Desktop List uses
-         * the full-size badge). */
+    @container product-card (min-width: 320px) {
+        /* Restore default 40-px / 14-px size when the card itself is
+         * desktop-wide (Desktop List uses the full-size badge). */
         height: --spacing(10);
         padding-block: var(--spacing-2\.5);
         padding-inline: var(--spacing-1);
@@ -335,7 +388,7 @@
         font-size: --spacing(5);                             /* 20 px */
         line-height: --spacing(7);                           /* 28 px */
     }
-    @media (min-width: 768px) {
+    @container product-card (min-width: 320px) {
         /* Desktop List promo restores 24/32 (only Mobile List downshifts). */
         .product-card--list .product-card__price-row[data-promo="true"] & {
             font-size: --spacing(6);
@@ -357,7 +410,7 @@
     text-decoration-style: solid;
     margin: 0;
 
-    @media (min-width: 768px) {
+    @container product-card (min-width: 320px) {
         /* PC-3: Desktop Grid promo old-price = 18/28.
          * Direct rem because --spacing-4.5 is not a declared step. */
         .product-card--grid & {
@@ -423,8 +476,9 @@
         text-decoration: underline;
     }
 
-    @media (min-width: 768px) {
-        font-weight: 700;                                    /* Desktop Bold per Figma */
+    @container product-card (min-width: 320px) {
+        font-weight: 700;                                    /* Desktop Bold per Figma — card-width-driven, not viewport-driven. */
+        white-space: normal;                                 /* Allow Desktop titles to wrap into 2 lines if they're long, so we don't truncate "Flyknit Racer" prematurely. */
     }
 }
 
@@ -450,5 +504,42 @@
     }
     & > :last-child {
         flex: none;
+    }
+}
+
+/* ─── 11. CTA label (card-width-driven sr-only flip) ─────────────────────── */
+
+/* PC-8 (revised): the "Add to cart" label is visually hidden on Mobile
+ * (card < 320 px wide) and visible on Desktop (card ≥ 320 px wide). The
+ * old preview used `sr-only md:not-sr-only` which is viewport-driven —
+ * it failed for Mobile cards placed in a narrow wrapper at desktop
+ * viewport. The new flip is container-driven so the cards behave the
+ * same regardless of viewport.
+ *
+ * sr-only at the small end keeps the label in the a11y tree (AT
+ * announces "Add to cart"). At desktop card width, the label paints
+ * normally and the button atom's icon-leading layout positions the
+ * icon to the left of the text. */
+@utility product-card__cta-label {
+    /* sr-only equivalent — Tailwind's sr-only utility, inlined so the
+     * @container override can lift it cleanly without specificity wars. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+
+    @container product-card (min-width: 320px) {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
     }
 }
